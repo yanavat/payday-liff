@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { ToastProvider } from '@/components/ui/toast'
 import '../globals.css'
 
 const inter = Inter({
@@ -47,7 +48,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale} className={`${inter.variable} ${notoSansThai.variable}`}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </NextIntlClientProvider>
       </body>
     </html>

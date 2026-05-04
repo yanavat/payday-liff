@@ -35,44 +35,44 @@
 
 ### Tokens & Base
 
-- [ ] Color tokens (primary, text, surface, border, semantic)
-- [ ] Typography scale
-- [ ] Spacing scale
-- [ ] Border radius & shadows
+- [x] Color tokens (primary, text, surface, border, semantic)
+- [x] Typography scale
+- [x] Spacing scale
+- [x] Border radius & shadows
 
 ### Shared Components
 
-- [ ] `<Avatar />` — xs / sm / md / lg with initials fallback
-- [ ] `<StatusBadge />` — pending / approved / rejected / disbursed
-- [ ] `<WorkTypeBadge />` — remote / on-site / hybrid
-- [ ] `<PayCycleBadge />` — monthly / weekly
-- [ ] `<TrendBadge />` — positive / negative with % and arrow
-- [ ] `<MetricCard />` — icon + label + value + trend
-- [ ] `<SectionHeader />` — title + optional action (··· or button)
-- [ ] `<FilterButton />` — with funnel icon + dropdown
-- [ ] `<TabBar />` — filter tabs with active state
-- [ ] `<ProgressBar />` — with label + percentage
-- [ ] `<DataTable />` — sortable headers + checkbox + pagination
-- [ ] `<SlideDrawer />` — right-anchored 480px with overlay
-- [ ] `<ConfirmModal />` — approve / reject confirmation
-- [ ] `<Toast />` — success / error / info variants (auto-dismiss 4s)
-- [ ] `<EmptyState />` — illustration + message
-- [ ] `<SkeletonRow />` — loading placeholder for tables
-- [ ] `<PINPad />` — 4-dot PIN input (ATM style)
-- [ ] `<QuickAmountButton />` — preset amount selector
-- [ ] `<StepIndicator />` — 3-step wizard progress
+- [x] `<Avatar />` — xs / sm / md / lg with initials fallback
+- [x] `<StatusBadge />` — pending / approved / rejected / disbursed
+- [x] `<WorkTypeBadge />` — remote / on-site / hybrid
+- [x] `<PayCycleBadge />` — monthly / weekly
+- [x] `<TrendBadge />` — positive / negative with % and arrow
+- [x] `<MetricCard />` — icon + label + value + trend
+- [x] `<SectionHeader />` — title + optional action (··· or button)
+- [x] `<FilterButton />` — with funnel icon + dropdown
+- [x] `<TabBar />` — filter tabs with active state
+- [x] `<ProgressBar />` — with label + percentage
+- [x] `<DataTable />` — sortable headers + checkbox + pagination
+- [x] `<SlideDrawer />` — right-anchored 480px with overlay
+- [x] `<ConfirmModal />` — approve / reject confirmation
+- [x] `<Toast />` — success / error / info variants (auto-dismiss 4s)
+- [x] `<EmptyState />` — illustration + message
+- [x] `<SkeletonRow />` — loading placeholder for tables
+- [x] `<PINPad />` — 4-dot PIN input (ATM style)
+- [x] `<QuickAmountButton />` — preset amount selector
+- [x] `<StepIndicator />` — 3-step wizard progress
 
 ---
 
 ## Phase 2 — Mock Data
 
-- [ ] `employees.ts` — 20 sample employees (mixed monthly/weekly)
-- [ ] `requests.ts` — 30 EWA requests (mixed status)
-- [ ] `departments.ts` — department list
-- [ ] `payrollCycles.ts` — current cycle data (monthly + weekly)
-- [ ] `reports.ts` — monthly/weekly aggregated data
-- [ ] `notifications.ts` — sample notification items
-- [ ] `currentUser.ts` — HR user + Employee user mock sessions
+- [x] `employees.ts` — 20 sample employees (mixed monthly/weekly)
+- [x] `requests.ts` — 30 EWA requests (mixed status)
+- [x] `departments.ts` — department list
+- [x] `payrollCycles.ts` — current cycle data (monthly + weekly)
+- [x] `reports.ts` — monthly/weekly aggregated data
+- [x] `notifications.ts` — sample notification items
+- [x] `currentUser.ts` — HR user + Employee user mock sessions
 
 ---
 

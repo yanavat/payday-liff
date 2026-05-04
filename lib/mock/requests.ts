@@ -174,7 +174,7 @@ export const requests: EWARequest[] = [
     employeeId: 'EMP-0001',
     amount: 2500,
     reason: 'education',
-    status: 'hr_on_behalf' as any,
+    status: 'approved',
     requestedAt: '2025-05-13T15:00:00',
     approvedAt: '2025-05-13T15:01:00',
     approvedBy: 'สิริวรรณ บัวคำ',
