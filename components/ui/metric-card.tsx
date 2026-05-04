@@ -1,16 +1,16 @@
-import type { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { TrendBadge } from './trend-badge'
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import { TrendBadge } from "./trend-badge";
 
 interface MetricCardProps {
-  label: string
-  value: string
-  sub?: string
-  trend?: number
-  trendLabel?: string
-  icon?: ReactNode
-  variant?: 'default' | 'hero'
-  className?: string
+  label: string;
+  value: string;
+  sub?: string;
+  trend?: number;
+  trendLabel?: string;
+  icon?: ReactNode;
+  variant?: "default" | "hero";
+  className?: string;
 }
 
 export function MetricCard({
@@ -20,21 +20,23 @@ export function MetricCard({
   trend,
   trendLabel,
   icon,
-  variant = 'default',
+  variant = "default",
   className,
 }: MetricCardProps) {
   return (
     <section
       className={cn(
-        'relative overflow-hidden rounded-lg border border-border bg-white p-5 shadow-card',
-        variant === 'hero' && 'rounded-xl border-0 bg-primary-bg px-6 py-5',
+        "relative overflow-hidden rounded-lg border border-border bg-white p-5 shadow-card transition-all duration-200 hover:shadow-hover",
+        variant === "hero" && "rounded-xl border-0 bg-primary-bg px-6 py-5",
         className,
       )}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-label text-text-muted">{label}</p>
-          <p className="mt-2 text-[28px] font-bold leading-tight text-text-primary">{value}</p>
+          <p className="mt-2 text-[28px] font-bold leading-tight text-text-primary">
+            {value}
+          </p>
           {sub && <p className="mt-1 text-caption text-text-muted">{sub}</p>}
         </div>
         {icon && (
@@ -43,16 +45,16 @@ export function MetricCard({
           </div>
         )}
       </div>
-      {typeof trend === 'number' && (
+      {typeof trend === "number" && (
         <div className="mt-4">
           <TrendBadge value={trend} label={trendLabel} />
         </div>
       )}
-      {variant === 'hero' && icon && (
+      {variant === "hero" && icon && (
         <div className="pointer-events-none absolute -bottom-4 -right-4 text-primary opacity-10 [&_svg]:h-20 [&_svg]:w-20">
           {icon}
         </div>
       )}
     </section>
-  )
+  );
 }

@@ -154,7 +154,7 @@ export function EmployeeHomePage() {
                 <Link
                   key={request.id}
                   href="/employee/history"
-                  className="flex items-center gap-3 rounded-lg border border-border bg-white p-3 shadow-card"
+                  className="flex items-center gap-3 rounded-lg border border-border bg-white p-3 shadow-card transition-shadow duration-200 hover:shadow-hover"
                 >
                   <div className="w-11 text-center">
                     <div className="font-sans text-[20px] font-bold leading-none text-primary">

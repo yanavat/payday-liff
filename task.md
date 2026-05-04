@@ -258,16 +258,16 @@
 
 ## Phase 6 — Polish & Demo Prep
 
-- [ ] Smooth page transitions (fade / slide)
-- [ ] Sidebar expand/collapse animation (200ms)
-- [ ] Drawer slide-in animation (250ms)
-- [ ] Pending badge pulse animation
-- [ ] Toast slide-in from top-right
-- [ ] Hover states on all interactive elements
-- [ ] Responsive — tablet view (1024px sidebar icon-only)
-- [ ] Dark mode (stretch goal)
-- [ ] Prototype flow: Login → Dashboard → Request → Approve → Toast
-- [ ] Demo script for stakeholder walkthrough
+- [x] Smooth page transitions (fade / slide)
+- [x] Sidebar expand/collapse animation (200ms)
+- [x] Drawer slide-in animation (250ms) + exit animation
+- [x] Pending badge pulse animation
+- [x] Toast slide-in from top-right + exit animation
+- [x] Hover states on all interactive elements
+- [x] Responsive — tablet view (1024px sidebar icon-only)
+- [~] Dark mode (stretch goal — basic variable bridge ready)
+- [x] Prototype flow: Login → Dashboard → Request → Approve → Toast
+- [x] Demo script for stakeholder walkthrough
 
 ---
 
@@ -308,6 +308,6 @@
 | 3 · HR Side       | 58          | 58      | 100%     |
 | 4 · Employee Side | 37          | 37      | 100%     |
 | 5 · UX & A11y     | 9           | 9       | 100%     |
-| 6 · Polish        | 10          | 0       | 0%       |
+| 6 · Polish        | 10          | 9       | 90%      |
 | 7 · Deploy        | 7           | 0       | 0%       |
-| **Total**         | **156**     | **139** | **89%**  |
+| **Total**         | **156**     | **148** | **95%**  |
