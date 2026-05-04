@@ -80,92 +80,92 @@
 
 ### Layout
 
-- [ ] HR root layout — sidebar + topbar shell
-- [ ] `<HRSidebar />` — nav items + active state + CTA card
-- [ ] `<HRTopbar />` — title + breadcrumb + search + bell + avatar
-- [ ] `<HRLayout />` — 3-column wrapper (sidebar + main + right panel)
+- [x] HR root layout — sidebar + topbar shell
+- [x] `<HRSidebar />` — nav items + active state + CTA card
+- [x] `<HRTopbar />` — title + breadcrumb + search + bell + avatar
+- [x] `<HRLayout />` — 3-column wrapper (sidebar + main + right panel)
 
 ### Screen 1 — Dashboard
 
-- [ ] 4 metric cards row (pending / approved / disbursed / enrolled)
-- [ ] Recent EWA requests table (5 rows preview)
-- [ ] Payroll cycle progress widget (monthly + weekly dual bar)
-- [ ] Donut chart — request status breakdown
-- [ ] Right panel — upcoming dates list
+- [x] 4 metric cards row (pending / approved / disbursed / enrolled)
+- [x] Recent EWA requests table (5 rows preview)
+- [x] Payroll cycle progress widget (monthly + weekly dual bar)
+- [x] Donut chart — request status breakdown
+- [x] Right panel — upcoming dates list
 
 ### Screen 2 — EWA Request List
 
-- [ ] Search input
-- [ ] Department dropdown filter
-- [ ] Pay cycle filter (All / Monthly / Weekly)
-- [ ] Status tab filter (ทั้งหมด / รออนุมัติ / อนุมัติแล้ว / ปฏิเสธ)
-- [ ] Date range picker
-- [ ] Bulk select + "Approve Selected" button
-- [ ] Full data table (8 columns)
-- [ ] Row click → open Request Detail Drawer
-- [ ] Pagination (20 rows/page)
+- [x] Search input
+- [x] Department dropdown filter
+- [x] Pay cycle filter (All / Monthly / Weekly)
+- [x] Status tab filter (ทั้งหมด / รออนุมัติ / อนุมัติแล้ว / ปฏิเสธ)
+- [x] Date range picker
+- [x] Bulk select + "Approve Selected" button
+- [x] Full data table (8 columns)
+- [x] Row click → open Request Detail Drawer
+- [x] Pagination (20 rows/page)
 
 ### Screen 3 — Request Detail Drawer
 
-- [ ] Employee header (avatar + name + ID + department)
-- [ ] Pay period progress bar (monthly: X/31 days, weekly: X/5 days)
-- [ ] Financial breakdown card (earned / previous / max / requested / remaining)
-- [ ] Request history timeline (last 3 months or weeks)
-- [ ] Employee note display
-- [ ] HR internal note textarea
-- [ ] Approve / Reject action buttons
-- [ ] Confirmation modal on action
-- [ ] Success toast after approve/reject
+- [x] Employee header (avatar + name + ID + department)
+- [x] Pay period progress bar (monthly: X/31 days, weekly: X/5 days)
+- [x] Financial breakdown card (earned / previous / max / requested / remaining)
+- [x] Request history timeline (last 3 months or weeks)
+- [x] Employee note display
+- [x] HR internal note textarea
+- [x] Approve / Reject action buttons
+- [x] Confirmation modal on action
+- [x] Success toast after approve/reject
 
 ### Screen 4 — Accountant Report
 
-- [ ] Date range selector (This Month / Last Month / Custom)
-- [ ] Monthly / Weekly view toggle
-- [ ] 5 metric cards
-- [ ] Bar chart — daily disbursement (30 bars)
-- [ ] Bar chart — weekly view (52 weeks)
-- [ ] Department breakdown table
-- [ ] Reconciliation section (Processing / Settled / Failed)
-- [ ] Retry button for failed transfers
-- [ ] Export CSV / PDF buttons
+- [x] Date range selector (This Month / Last Month / Custom)
+- [x] Monthly / Weekly view toggle
+- [x] 5 metric cards
+- [x] Bar chart — daily disbursement (30 bars)
+- [x] Bar chart — weekly view (52 weeks)
+- [x] Department breakdown table
+- [x] Reconciliation section (Processing / Settled / Failed)
+- [x] Retry button for failed transfers
+- [x] Export CSV / PDF buttons
 
 ### Screen 5 — Settings
 
-- [ ] Tabs (ทั่วไป / นโยบาย EWA / การแจ้งเตือน / จัดการผู้ใช้)
-- [ ] EWA Policy sub-tabs (รายเดือน / รายสัปดาห์)
-- [ ] Max % slider (0–70%, default 50%)
-- [ ] Max requests/period number input
-- [ ] Minimum amount input (฿ prefix)
-- [ ] Auto-approval toggle + threshold input
-- [ ] Approval chain radio (single / two-step)
-- [ ] Weekly payday selector (Mon–Fri dropdown)
-- [ ] EWA cutoff days input
-- [ ] Blackout dates multi-picker + chips
-- [ ] Notification toggles (email / LINE per event)
-- [ ] Save button with success toast
+- [x] Tabs (ทั่วไป / นโยบาย EWA / การแจ้งเตือน / จัดการผู้ใช้)
+- [x] EWA Policy sub-tabs (รายเดือน / รายสัปดาห์)
+- [x] Max % slider (0–70%, default 50%)
+- [x] Max requests/period number input
+- [x] Minimum amount input (฿ prefix)
+- [x] Auto-approval toggle + threshold input
+- [x] Approval chain radio (single / two-step)
+- [x] Weekly payday selector (Mon–Fri dropdown)
+- [x] EWA cutoff days input
+- [x] Blackout dates multi-picker + chips
+- [x] Notification toggles (email / LINE per event)
+- [x] Save button with success toast
 
 ### Screen 6 — Employee List (HR View)
 
-- [ ] Search by name or ID
-- [ ] Department dropdown filter
-- [ ] Pay type filter (Monthly / Weekly)
-- [ ] Employee table (7 columns)
-- [ ] Status badge per employee (มีสิทธิ์ / ใช้ครบ / ถูกระงับ)
-- [ ] "ยื่นคำขอแทน" button per row → navigate to Screen 7
+- [x] Search by name or ID
+- [x] Department dropdown filter
+- [x] Pay type filter (Monthly / Weekly)
+- [x] Employee table (7 columns)
+- [x] Status badge per employee (มีสิทธิ์ / ใช้ครบ / ถูกระงับ)
+- [x] "ยื่นคำขอแทน" button per row → navigate to Screen 7
 
 ### Screen 7 — HR Request Form (On Behalf)
 
-- [ ] Amber banner "HR กำลังยื่นคำขอแทน [ชื่อพนักงาน]"
-- [ ] Employee info card (read-only)
-- [ ] Available balance highlight card
-- [ ] Quick amount buttons (฿1,000 / ฿2,000 / ฿3,000)
-- [ ] Custom amount input with real-time validation
-- [ ] Employee reason chips
-- [ ] HR note textarea (required)
-- [ ] Bank account confirmation (read-only, masked)
-- [ ] Submit button (no PIN — uses HR session)
-- [ ] Success screen + audit log reference
-- [ ] Cancel link → back to employee list
+- [x] Amber banner "HR กำลังยื่นคำขอแทน [ชื่อพนักงาน]"
+- [x] Employee info card (read-only)
+- [x] Available balance highlight card
+- [x] Quick amount buttons (฿1,000 / ฿2,000 / ฿3,000)
+- [x] Custom amount input with real-time validation
+- [x] Employee reason chips
+- [x] HR note textarea (required)
+- [x] Bank account confirmation (read-only, masked)
+- [x] Submit button (no PIN — uses HR session)
+- [x] Success screen + audit log reference
+- [x] Cancel link → back to employee list
 
 ---
 

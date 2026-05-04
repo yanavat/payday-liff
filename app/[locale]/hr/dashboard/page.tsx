@@ -1,14 +1,5 @@
-import { useTranslations } from 'next-intl'
+import { DashboardPageContent } from '@/components/hr/dashboard-page'
 
 export default function DashboardPage() {
-  return (
-    <div>
-      <h1 className="text-page-title font-semibold text-text-primary mb-6">
-        แดชบอร์ด {/* Phase 3: replace with useTranslations */}
-      </h1>
-      <p className="text-text-secondary text-body">
-        Phase 3 — Dashboard content will be built here.
-      </p>
-    </div>
-  )
+  return <DashboardPageContent />
 }
