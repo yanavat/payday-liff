@@ -2,6 +2,7 @@
 
 import { Bell, HelpCircle, Search, Settings } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
+import { DarkModeToggle } from "@/components/ui/dark-mode-toggle";
 import { hrUser } from "@/lib/mock";
 
 interface HRTopbarProps {
@@ -54,6 +55,7 @@ export function HRTopbar({
         >
           <Settings className="h-5 w-5" strokeWidth={1.8} aria-hidden />
         </button>
+        <DarkModeToggle />
         <Avatar initials={initials} size="md" color="teal" />
       </div>
     </header>
