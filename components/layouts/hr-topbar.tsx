@@ -1,17 +1,68 @@
 "use client";
 
-import { Bell, HelpCircle, Search, Settings } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Bell, HelpCircle, Settings } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { DarkModeToggle } from "@/components/ui/dark-mode-toggle";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { hrUser } from "@/lib/mock";
 
-interface HRTopbarProps {
-  searchPlaceholder?: string;
+const SEGMENT_LABELS: Record<string, string> = {
+  hr: "แดชบอร์ด",
+  dashboard: "แดชบอร์ด",
+  requests: "คำขอ EWA",
+  reports: "รายงาน",
+  settings: "ตั้งค่า",
+  employees: "พนักงาน",
+  request: "ยื่นคำขอแทน",
+};
+
+function HRBreadcrumb() {
+  const pathname = usePathname();
+  // Strip locale prefix: /th/hr/requests → ["hr", "requests"]
+  const segments = pathname.split("/").filter(Boolean).slice(1);
+
+  const crumbs = segments.map((seg, i) => ({
+    label: SEGMENT_LABELS[seg] ?? seg,
+    href: "/" + pathname.split("/").filter(Boolean).slice(0, i + 2).join("/"),
+    isLast: i === segments.length - 1,
+  }));
+
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        {crumbs.map((crumb, i) => (
+          <BreadcrumbItem key={crumb.href}>
+            {crumb.isLast ? (
+              <BreadcrumbPage className="font-semibold text-text-primary">
+                {crumb.label}
+              </BreadcrumbPage>
+            ) : (
+              <>
+                <BreadcrumbLink
+                  href={crumb.href}
+                  className="text-text-muted hover:text-text-primary"
+                >
+                  {crumb.label}
+                </BreadcrumbLink>
+                <BreadcrumbSeparator />
+              </>
+            )}
+          </BreadcrumbItem>
+        ))}
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
 }
 
-export function HRTopbar({
-  searchPlaceholder = "ค้นหาคำร้องขอ...",
-}: HRTopbarProps) {
+export function HRTopbar() {
   const initials = hrUser.name
     .split(" ")
     .map((part) => part[0])
@@ -20,17 +71,7 @@ export function HRTopbar({
 
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-bg-canvas px-6">
-      <div className="relative w-full max-w-[200px] md:max-w-[280px] lg:w-64">
-        <Search
-          className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted"
-          aria-hidden
-        />
-        <input
-          type="search"
-          placeholder={searchPlaceholder}
-          className="h-[34px] w-full rounded-md border border-border bg-bg-secondary pl-9 pr-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
-        />
-      </div>
+      <HRBreadcrumb />
 
       <div className="flex items-center gap-4">
         <button
