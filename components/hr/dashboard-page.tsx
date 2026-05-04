@@ -75,7 +75,7 @@ export function DashboardPageContent() {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           label="คำขอรออนุมัติ"
           value={String(statusCounts.pending)}
@@ -106,7 +106,7 @@ export function DashboardPageContent() {
         />
       </div>
 
-      <div className="grid grid-cols-[1fr_280px] gap-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_280px]">
         <section className="overflow-hidden rounded-lg border border-border bg-white shadow-card transition-shadow duration-200 hover:shadow-hover">
           <div className="border-b border-border px-5 py-3.5">
             <SectionHeader

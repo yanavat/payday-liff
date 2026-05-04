@@ -1,24 +1,29 @@
-'use client'
+"use client";
 
-import { Bell, HelpCircle, Search, Settings } from 'lucide-react'
-import { Avatar } from '@/components/ui/avatar'
-import { hrUser } from '@/lib/mock'
+import { Bell, HelpCircle, Search, Settings } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { hrUser } from "@/lib/mock";
 
 interface HRTopbarProps {
-  searchPlaceholder?: string
+  searchPlaceholder?: string;
 }
 
-export function HRTopbar({ searchPlaceholder = 'ค้นหาคำร้องขอ...' }: HRTopbarProps) {
+export function HRTopbar({
+  searchPlaceholder = "ค้นหาคำร้องขอ...",
+}: HRTopbarProps) {
   const initials = hrUser.name
-    .split(' ')
+    .split(" ")
     .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
+    .join("")
+    .slice(0, 2);
 
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-6">
-      <div className="relative w-64">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+      <div className="relative w-full max-w-[200px] md:max-w-[280px] lg:w-64">
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
+          aria-hidden
+        />
         <input
           type="search"
           placeholder={searchPlaceholder}
@@ -52,5 +57,5 @@ export function HRTopbar({ searchPlaceholder = 'ค้นหาคำร้อ�
         <Avatar initials={initials} size="md" color="teal" />
       </div>
     </header>
-  )
+  );
 }

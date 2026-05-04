@@ -265,6 +265,7 @@
 - [x] Toast slide-in from top-right + exit animation
 - [x] Hover states on all interactive elements
 - [x] Responsive — tablet view (1024px sidebar icon-only)
+- [x] Responsive — HR content pages (dashboard/report/settings/employee/request grids)
 - [~] Dark mode (stretch goal — basic variable bridge ready)
 - [x] Prototype flow: Login → Dashboard → Request → Approve → Toast
 - [x] Demo script for stakeholder walkthrough

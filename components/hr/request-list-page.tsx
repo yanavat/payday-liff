@@ -163,7 +163,7 @@ export function RequestListPage() {
 
   return (
     <div className="max-w-[1152px] space-y-6">
-      <header className="flex items-end justify-between gap-4">
+      <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
             คำร้องขอ EWA
@@ -182,7 +182,7 @@ export function RequestListPage() {
       </header>
 
       <section className="rounded-xl border border-border bg-white p-[17px] shadow-card">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-start">
           <div className="space-y-3">
             <FilterRow label="สถานะ:">
               {statusTabs.slice(0, 4).map((tab) => (
@@ -208,7 +208,7 @@ export function RequestListPage() {
             </FilterRow>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <label className="relative block">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted"
