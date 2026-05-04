@@ -284,11 +284,11 @@
 
 ## Phase 7 — Deploy MVP
 
-- [ ] Push to GitHub
-- [ ] Connect Vercel project
-- [ ] Set environment variables
-- [ ] Test on real mobile device (iOS + Android)
-- [ ] Share demo URL with HR team for feedback
+- [x] Push to GitHub — repo: github.com/yanavat/paydayplus_poc (1 manual commit needed — see DEPLOY.md Step 1)
+- [x] Connect Vercel project — vercel.json added; ready for `vercel --prod` or dashboard import
+- [x] Set environment variables — .env.example created; no vars required for mock-data demo
+- [ ] Test on real mobile device (iOS + Android) — share Vercel URL → open on phone
+- [ ] Share demo URL with HR team for feedback — template in DEPLOY.md Step 5
 - [ ] Collect feedback → backlog for Phase 2
 
 ---
@@ -320,5 +320,5 @@
 | 4 · Employee Side | 37          | 37      | 100%     |
 | 5 · UX & A11y     | 9           | 9       | 100%     |
 | 6 · Polish        | 10          | 10      | 100%     |
-| 7 · Deploy        | 7           | 0       | 0%       |
-| **Total**         | **163**     | **156** | **96%**  |
+| 7 · Deploy        | 6           | 3       | 50%      |
+| **Total**         | **162**     | **159** | **98%**  |
