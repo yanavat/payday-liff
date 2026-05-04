@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/shared/brand-logo";
 
 export function HRLoginPage() {
   const router = useRouter();
@@ -46,9 +47,7 @@ export function HRLoginPage() {
       <div className="absolute inset-0 opacity-[0.35] [background:radial-gradient(circle_at_30%_20%,var(--color-primary-bg)_0,var(--color-primary-bg)_28%,transparent_29%),radial-gradient(circle_at_72%_76%,var(--color-primary-subtle)_0,var(--color-primary-subtle)_32%,transparent_33%)]" />
       <section className="relative w-full max-w-[400px] rounded-xl border border-border bg-bg-canvas p-8 shadow-modal">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-white shadow-hover">
-            <ShieldCheck className="h-7 w-7" strokeWidth={1.8} aria-hidden />
-          </div>
+          <BrandLogo className="mb-4" size={48} />
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
             PayDay+
           </p>

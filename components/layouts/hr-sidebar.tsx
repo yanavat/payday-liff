@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/shared/brand-logo";
 
 const mainNav = [
   { href: "/hr/dashboard", label: "แดชบอร์ด", icon: Gauge },
@@ -55,9 +56,10 @@ export function HRSidebar() {
         )}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-base font-bold text-white">
+          {/* <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-base font-bold text-white">
             E
-          </div>
+          </div> */}
+          <BrandLogo className="mb-4" size={32} />
           <div
             className={cn(
               "min-w-0 overflow-hidden transition-all duration-200",
