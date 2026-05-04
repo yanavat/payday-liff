@@ -44,7 +44,7 @@ export function HRSidebar() {
   return (
     <aside
       className={cn(
-        "flex h-screen shrink-0 flex-col border-r border-slate-200 bg-slate-50 py-4 transition-all duration-200 ease-in-out",
+        "flex h-screen shrink-0 flex-col border-r border-border bg-bg-sidebar py-4 transition-all duration-200 ease-in-out",
         collapsed ? "w-[72px] px-2" : "w-[200px] px-0",
       )}
     >
@@ -67,7 +67,7 @@ export function HRSidebar() {
             <div className="text-[18px] font-bold leading-[22.5px] text-emerald-600">
               EWA Pro
             </div>
-            <div className="truncate text-[10px] leading-[15px] text-slate-500">
+            <div className="truncate text-[10px] leading-[15px] text-text-muted">
               แผงควบคุมผู้ดูแลระบบ HR
             </div>
           </div>
@@ -76,7 +76,7 @@ export function HRSidebar() {
           <button
             type="button"
             onClick={() => setCollapsed(true)}
-            className="ml-auto flex h-6 w-6 items-center justify-center rounded text-slate-400 transition hover:bg-slate-200 hover:text-slate-600"
+            className="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-muted transition hover:bg-bg-secondary hover:text-text-secondary"
             aria-label="Collapse sidebar"
             title="Collapse sidebar"
           >
@@ -87,7 +87,7 @@ export function HRSidebar() {
           <button
             type="button"
             onClick={() => setCollapsed(false)}
-            className="absolute right-[-10px] top-5 flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-card transition hover:text-primary-dark"
+            className="absolute right-[-10px] top-5 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-bg-canvas text-text-secondary shadow-card transition hover:text-primary-dark"
             aria-label="Expand sidebar"
             title="Expand sidebar"
           >
@@ -117,7 +117,7 @@ export function HRSidebar() {
                 collapsed && "justify-center px-0",
                 active
                   ? "bg-emerald-500 text-white shadow-card"
-                  : "text-slate-600 hover:bg-primary-bg hover:text-primary-dark",
+                  : "text-text-secondary hover:bg-primary-bg hover:text-primary-dark",
               )}
             >
               <Icon
@@ -140,7 +140,7 @@ export function HRSidebar() {
 
       <div
         className={cn(
-          "border-t border-slate-200 pt-[18px]",
+          "border-t border-border pt-[18px]",
           collapsed ? "px-2" : "px-3",
         )}
       >
@@ -153,7 +153,7 @@ export function HRSidebar() {
               href={item.href}
               title={collapsed ? item.label : undefined}
               className={cn(
-                "flex h-[38px] items-center gap-3 rounded-md px-3 text-sm font-medium text-slate-600 transition hover:bg-primary-bg hover:text-primary-dark",
+                "flex h-[38px] items-center gap-3 rounded-md px-3 text-sm font-medium text-text-secondary transition hover:bg-primary-bg hover:text-primary-dark",
                 collapsed && "justify-center px-0",
               )}
             >
