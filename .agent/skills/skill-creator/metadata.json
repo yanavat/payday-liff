@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "organization": "Anthropic",
+  "date": "January 2026",
+  "abstract": "Comprehensive guide for creating effective skills that extend Claude's capabilities with specialized knowledge, workflows, or tool integrations. Covers skill anatomy, progressive disclosure design patterns, the complete 6-step creation process (understanding, planning, initializing, editing, packaging, iteration), and best practices for organizing bundled resources (scripts, references, assets). Includes practical design patterns for domain-specific organization and conditional content loading.",
+  "references": [
+    "https://github.com/anthropics/claude-code"
+  ]
+}

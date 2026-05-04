@@ -1,0 +1,120 @@
+{
+  "common": {
+    "appName": "PayDay+",
+    "appTagline": "လစာကြိုထုတ်စနစ်",
+    "loading": "ခဏစောင့်ပါ...",
+    "save": "သိမ်းဆည်း",
+    "cancel": "မလုပ်တော့",
+    "confirm": "အတည်ပြု",
+    "back": "နောက်သို့",
+    "next": "ဆက်လက်",
+    "submit": "တင်သွင်း",
+    "search": "ရှာဖွေ",
+    "filter": "စစ်ထုတ်",
+    "export": "ထုတ်ယူ",
+    "approve": "ခွင့်ပြု",
+    "reject": "ငြင်းပယ်",
+    "retry": "ထပ်စမ်း",
+    "logout": "ထွက်မည်",
+    "viewAll": "အားလုံးကြည့် →",
+    "noData": "ဒေတာမရှိ",
+    "error": "အမှားဖြစ်သွားသည်",
+    "success": "အောင်မြင်သည်"
+  },
+  "nav": {
+    "dashboard": "ဒက်ဆ်ဘုတ်",
+    "requests": "တောင်းဆိုမှုများ",
+    "employees": "ဝန်ထမ်းများ",
+    "reports": "အစီရင်ခံစာ",
+    "settings": "ဆက်တင်",
+    "home": "ပင်မ",
+    "history": "မှတ်တမ်း",
+    "profile": "ပရိုဖိုင်"
+  },
+  "status": {
+    "pending": "စောင့်ဆိုင်းဆဲ",
+    "approved": "ခွင့်ပြုပြီး",
+    "rejected": "ငြင်းပယ်ပြီး",
+    "disbursed": "လွှဲပြောင်းပြီး",
+    "all": "အားလုံး"
+  },
+  "payCycle": {
+    "monthly": "လစဉ်",
+    "weekly": "အပတ်စဉ်"
+  },
+  "workType": {
+    "remote": "အဝေးမှ",
+    "onsite": "ရုံးတွင်",
+    "hybrid": "ရောစပ်"
+  },
+  "login": {
+    "title": "ဝင်ရောက်မည်",
+    "employeeId": "ဝန်ထမ်း ID",
+    "employeeIdPlaceholder": "ဝန်ထမ်း ID ထည့်ပါ",
+    "pin": "PIN (၄ လုံး)",
+    "loginButton": "ဝင်ရောက်မည်",
+    "forgotPin": "PIN မေ့သွားသည်?",
+    "scanQr": "QR Code စကင်ဖတ်မည်",
+    "wrongPin": "PIN မမှန်ကန်ပါ။ {attempts} ကြိမ် ကျန်သည်",
+    "locked": "အကောင့်ပိတ်ထားသည်။ ၃၀ မိနစ်စောင့်ပါ",
+    "language": "ဘာသာစကား"
+  },
+  "home": {
+    "greeting": "မင်္ဂလာပါ, {name}",
+    "heroTitle": "ထုတ်ယူနိုင်သောငွေ",
+    "requestCta": "ငွေကြိုထုတ်တောင်းဆိုမည်",
+    "payPeriod": "လစာကာလ",
+    "cutoffWarning": "နောက်ဆုံးနေ့ {days} ရက်ကျန်သည်",
+    "paydayCountdown": "လစာနေ့ {days} ရက်ကျန်သည်",
+    "recentRequests": "မကြာသေးမီတောင်းဆိုမှုများ",
+    "viewAllHistory": "မှတ်တမ်းအားလုံးကြည့် →"
+  },
+  "requestWizard": {
+    "step1": "ပမာဏရွေးချယ်",
+    "step2": "အတည်ပြု",
+    "step3": "ပြီးမြောက်",
+    "availableBalance": "ထုတ်ယူနိုင်သောငွေ",
+    "customAmount": "ပမာဏသတ်မှတ်",
+    "amountError": "ပမာဏကန့်သတ်ကျော်သည်",
+    "reason": "အကြောင်းအရင်း",
+    "reasons": {
+      "medical": "ဆေးကုသစရိတ်",
+      "education": "ပညာရေး",
+      "emergency": "အရေးပေါ်",
+      "utility": "အများသုံးစရိတ်",
+      "other": "အခြား"
+    },
+    "summaryCard": "အနှစ်ချုပ်",
+    "deductionWarning": "{date} တွင် နုတ်ယူမည်",
+    "enterPin": "PIN ဖြင့်အတည်ပြု",
+    "editBack": "← ပြင်မည်",
+    "successTitle": "တောင်းဆိုမှုပြီးမြောက်သည်!",
+    "referenceNumber": "ကိုးကားနံပါတ်",
+    "backToHome": "ပင်မသို့ပြန်",
+    "shareReceipt": "ဘောင်ချာမျှဝေ"
+  },
+  "history": {
+    "title": "တောင်းဆိုမှုမှတ်တမ်း",
+    "thisMonth": "ဤလ",
+    "lastMonth": "ပြီးခဲ့သောလ",
+    "total": "စုစုပေါင်း",
+    "requestedDate": "တောင်းဆိုသောနေ့",
+    "approvedDate": "ခွင့်ပြုသောနေ့",
+    "transferDate": "လွှဲပြောင်းသောနေ့",
+    "approvedBy": "ခွင့်ပြုသူ"
+  },
+  "profile": {
+    "title": "ပရိုဖိုင်",
+    "bankAccount": "ဘဏ်အကောင့်",
+    "ewaLimit": "EWA ကန့်သတ်",
+    "maxPercent": "အများဆုံး",
+    "used": "သုံးသွားပြီး",
+    "remaining": "ကျန်ရှိ",
+    "notifications": "အကြောင်းကြားချက်",
+    "notifyApproved": "ခွင့်ပြုသောအခါ",
+    "notifyPayday": "လစာနေ့",
+    "notifyLine": "LINE မှတဆင့်",
+    "language": "ဘာသာစကား",
+    "logout": "ထွက်မည်"
+  }
+}

@@ -1,0 +1,327 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   EWA PAYDAY+ — Design Tokens
+   Extracted from design.md (TeamHub HR Dashboard)
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* ── Primary Colors ────────────────────────────── */
+    --color-primary:         #2DBD8F;
+    --color-primary-dark:    #1E9E74;
+    --color-primary-light:   #A8E6CF;
+    --color-primary-bg:      #E8F5F0;
+    --color-primary-subtle:  #F2FAF6;
+
+    /* ── Text Colors ───────────────────────────────── */
+    --color-text-primary:    #1A1D1B;
+    --color-text-secondary:  #6B7280;
+    --color-text-muted:      #9CA3AF;
+    --color-text-link:       #2DBD8F;
+
+    /* ── Background / Surface ──────────────────────── */
+    --color-bg-page:         #E4EDEA;
+    --color-bg-canvas:       #FFFFFF;
+    --color-bg-sidebar:      #FFFFFF;
+    --color-bg-secondary:    #F9FAFB;
+    --color-bg-tag:          #E8F5F0;
+
+    /* ── Border ────────────────────────────────────── */
+    --color-border:          #E5E7EB;
+    --color-border-light:    #F3F4F6;
+
+    /* ── Status / Semantic ─────────────────────────── */
+    --color-badge-positive-bg:   #D1FAE5;
+    --color-badge-positive-text: #065F46;
+    --color-badge-neutral-bg:    #F3F4F6;
+    --color-badge-neutral-text:  #374151;
+
+    /* ── Work Type Tags ────────────────────────────── */
+    --color-tag-remote-bg:   #CCFBF1;
+    --color-tag-remote-text: #115E59;
+    --color-tag-onsite-bg:   #1A1D1B;
+    --color-tag-onsite-text: #FFFFFF;
+    --color-tag-hybrid-bg:   #2DBD8F;
+    --color-tag-hybrid-text: #FFFFFF;
+
+    /* ── EWA Request Status ────────────────────────── */
+    --color-status-pending-bg:    #FEF3C7;
+    --color-status-pending-text:  #92400E;
+    --color-status-approved-bg:   #D1FAE5;
+    --color-status-approved-text: #065F46;
+    --color-status-rejected-bg:   #FEE2E2;
+    --color-status-rejected-text: #991B1B;
+    --color-status-disbursed-bg:  #DBEAFE;
+    --color-status-disbursed-text:#1E40AF;
+
+    /* ── Typography ────────────────────────────────── */
+    --font-sans:  'Inter', 'DM Sans', system-ui, sans-serif;
+    --font-thai:  'Noto Sans Thai', 'Inter', system-ui, sans-serif;
+
+    --text-page-title:    22px;
+    --text-section-title: 14px;
+    --text-stat-hero:     36px;
+    --text-stat-value:    24px;
+    --text-body:          14px;
+    --text-label:         12px;
+    --text-caption:       12px;
+    --text-badge:         11px;
+
+    /* Thai line-height bump (+0.2 over Latin) */
+    --lh-body-latin:  1.6;
+    --lh-body-thai:   1.8;
+
+    /* ── Spacing Scale ─────────────────────────────── */
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:  12px;
+    --space-4:  16px;
+    --space-5:  20px;
+    --space-6:  24px;
+    --space-8:  32px;
+    --space-10: 40px;
+
+    /* ── Border Radius ─────────────────────────────── */
+    --radius-sm:   6px;
+    --radius-md:   8px;
+    --radius-lg:  12px;
+    --radius-xl:  16px;
+    --radius-full: 9999px;
+
+    /* ── Shadows ───────────────────────────────────── */
+    --shadow-card:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-modal: 0 8px 32px rgba(0,0,0,0.12);
+
+    /* ── Layout ────────────────────────────────────── */
+    --sidebar-width:       200px;
+    --right-panel-width:   280px;
+    --topbar-height:        56px;
+    --page-padding:         20px;
+    --card-gap:             12px;
+    --table-row-height:     52px;
+
+    /* ── Card Padding ──────────────────────────────── */
+    --card-pad-default:  16px 20px;
+    --card-pad-compact:  12px 16px;
+    --card-pad-hero:     20px 24px;
+
+    /* shadcn/ui CSS variable bridge */
+    --background:    0 0% 100%;
+    --foreground:    0 0% 10%;
+    --card:          0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover:       0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary:       158 62% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary:     0 0% 96%;
+    --secondary-foreground: 0 0% 23%;
+    --muted:         0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent:        158 62% 46%;
+    --accent-foreground: 0 0% 100%;
+    --destructive:   0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border:        220 13% 91%;
+    --input:         220 13% 91%;
+    --ring:          158 62% 46%;
+    --radius:        0.5rem;
+  }
+
+  /* ── Thai language adjustments ─────────────────── */
+  :lang(th),
+  html[lang="th"] {
+    font-family: var(--font-thai);
+    line-height: var(--lh-body-thai);
+    /* Thai minimum font size */
+    font-size: max(14px, 1em);
+  }
+
+  /* Employee mobile screens — min 16px Thai */
+  .employee-screen :lang(th),
+  .employee-screen html[lang="th"] {
+    font-size: max(16px, 1em);
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-text-primary);
+  }
+
+  body {
+    background-color: var(--color-bg-page);
+    color: var(--color-text-primary);
+    font-size: var(--text-body);
+    line-height: var(--lh-body-latin);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ============================================================
+   Utility classes for the design system
+   ============================================================ */
+
+@layer components {
+
+  /* ── Cards ─────────────────────────────────────── */
+  .card {
+    background: var(--color-bg-canvas);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: var(--card-pad-default);
+  }
+
+  .card-compact {
+    padding: var(--card-pad-compact);
+  }
+
+  .card-hero {
+    background: var(--color-primary-bg);
+    border-radius: var(--radius-xl);
+    padding: var(--card-pad-hero);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* ── Status Badges ─────────────────────────────── */
+  .badge-pending {
+    background: var(--color-status-pending-bg);
+    color: var(--color-status-pending-text);
+  }
+  .badge-approved {
+    background: var(--color-status-approved-bg);
+    color: var(--color-status-approved-text);
+  }
+  .badge-rejected {
+    background: var(--color-status-rejected-bg);
+    color: var(--color-status-rejected-text);
+  }
+  .badge-disbursed {
+    background: var(--color-status-disbursed-bg);
+    color: var(--color-status-disbursed-text);
+  }
+
+  /* ── Work Type Tags ────────────────────────────── */
+  .tag-remote {
+    background: var(--color-tag-remote-bg);
+    color: var(--color-tag-remote-text);
+  }
+  .tag-onsite {
+    background: var(--color-tag-onsite-bg);
+    color: var(--color-tag-onsite-text);
+  }
+  .tag-hybrid {
+    background: var(--color-tag-hybrid-bg);
+    color: var(--color-tag-hybrid-text);
+  }
+
+  /* ── Common badge/pill base ────────────────────── */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-badge);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* ── HR Layout ─────────────────────────────────── */
+  .hr-layout {
+    display: flex;
+    height: 100vh;
+    background: var(--color-bg-page);
+  }
+
+  .hr-sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    background: var(--color-bg-sidebar);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .hr-main {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .hr-topbar {
+    height: var(--topbar-height);
+    background: var(--color-bg-canvas);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 var(--page-padding);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .hr-content {
+    flex: 1;
+    padding: var(--page-padding);
+    overflow: auto;
+  }
+
+  /* ── Employee (Mobile) Layout ───────────────────── */
+  .employee-screen {
+    max-width: 390px;
+    min-height: 100dvh;
+    background: var(--color-bg-page);
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .employee-bottom-tab {
+    position: sticky;
+    bottom: 0;
+    background: var(--color-bg-canvas);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 64px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* ── Focus ring (WCAG AA) ──────────────────────── */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    --tw-ring-color: var(--color-primary);
+  }
+
+  /* ── Skeleton loader ───────────────────────────── */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-bg-secondary) 25%,
+      var(--color-border-light) 50%,
+      var(--color-bg-secondary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+}
