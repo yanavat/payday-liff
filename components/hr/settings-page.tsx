@@ -23,7 +23,7 @@ export function SettingsPageContent() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("policy");
   const [policyTab, setPolicyTab] = useState("monthly");
-  const [maxPercent, setMaxPercent] = useState(50);
+  const [maxPercent, setMaxPercent] = useState(100);
   const [autoApproval, setAutoApproval] = useState(true);
   const [blackoutDates, setBlackoutDates] = useState([
     "2025-05-28",
@@ -85,7 +85,7 @@ export function SettingsPageContent() {
               <input
                 type="range"
                 min={0}
-                max={70}
+                max={100}
                 step={5}
                 value={maxPercent}
                 onChange={(event) => {
@@ -158,9 +158,9 @@ export function SettingsPageContent() {
 
           <SettingsPanel title="วันที่ไม่อนุญาต EWA">
             <div className="flex flex-wrap gap-2">
-              {blackoutDates.map((date) => (
+              {blackoutDates.map((date, index) => (
                 <span
-                  key={date}
+                  key={date + index}
                   className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-1 text-sm"
                 >
                   {date}

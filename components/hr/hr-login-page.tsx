@@ -7,7 +7,6 @@ import {
   Loader2,
   LockKeyhole,
   Mail,
-  ShieldCheck,
 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";

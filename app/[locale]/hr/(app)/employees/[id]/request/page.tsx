@@ -1,5 +1,11 @@
 import { OnBehalfRequestPage } from '@/components/hr/on-behalf-request-page'
 
-export default function EmployeeRequestPage({ params }: { params: { id: string } }) {
-  return <OnBehalfRequestPage employeeId={params.id} />
+export default async function EmployeeRequestPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+
+  return <OnBehalfRequestPage employeeId={id} />
 }

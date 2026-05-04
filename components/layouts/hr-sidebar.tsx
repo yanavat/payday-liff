@@ -6,7 +6,6 @@ import {
   ChevronRight,
   FileText,
   Gauge,
-  Headphones,
   LogOut,
   Settings,
   Users,

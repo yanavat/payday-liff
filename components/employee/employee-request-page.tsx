@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, Share2, WalletCards } from "lucide-react";
+import { Check, Share2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { PINPad } from "@/components/ui/pin-pad";
 import { QuickAmountButton } from "@/components/ui/quick-amount-button";

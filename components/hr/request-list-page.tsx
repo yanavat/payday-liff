@@ -97,19 +97,6 @@ export function RequestListPage() {
   const selectedCount = selectedIds.length;
   const visibleRows = rows.slice(0, 20);
 
-  const counts = useMemo(() => {
-    return statusTabs.reduce<Record<StatusFilter, number>>(
-      (acc, tab) => {
-        acc[tab.value] =
-          tab.value === "all"
-            ? items.length
-            : items.filter((item) => item.status === tab.value).length;
-        return acc;
-      },
-      { all: 0, pending: 0, approved: 0, rejected: 0, disbursed: 0 },
-    );
-  }, [items]);
-
   function toggleAllVisible(checked: boolean) {
     setSelectedIds(checked ? visibleRows.map((row) => row.request.id) : []);
   }

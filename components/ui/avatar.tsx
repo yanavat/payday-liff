@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -47,7 +48,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold leading-none',
+        'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold leading-none',
         sizeClasses[size],
         !src && colorClasses[resolvedColor],
         className,
@@ -55,7 +56,7 @@ export function Avatar({
       aria-label={alt ?? normalized}
     >
       {src ? (
-        <img src={src} alt={alt ?? normalized} className="h-full w-full object-cover" />
+        <Image src={src} alt={alt ?? normalized} fill sizes="64px" className="object-cover" />
       ) : (
         <span>{normalized}</span>
       )}

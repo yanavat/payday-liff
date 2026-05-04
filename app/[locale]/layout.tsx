@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { Noto_Sans_Thai } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -8,19 +6,6 @@ import { routing } from "@/i18n/routing";
 import { ToastProvider } from "@/components/ui/toast";
 import { PageTransition } from "@/components/ui/page-transition";
 import "../globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const notoSansThai = Noto_Sans_Thai({
-  subsets: ["thai"],
-  variable: "--font-thai",
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -32,14 +17,14 @@ export const metadata: Metadata = {
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 export default async function LocaleLayout({
   children,
   params,
 }: LocaleLayoutProps) {
-  const { locale } = params;
+  const { locale } = await params;
 
   // Validate locale
   if (!routing.locales.includes(locale as "th" | "en" | "my")) {
@@ -49,11 +34,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html
-      lang={locale}
-      className={`${inter.variable} ${notoSansThai.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang={locale} suppressHydrationWarning>
       <body>
         <script
           dangerouslySetInnerHTML={{
