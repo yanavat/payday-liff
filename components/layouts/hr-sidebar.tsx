@@ -65,7 +65,7 @@ export function HRSidebar() {
             )}
           >
             <div className="text-[18px] font-bold leading-[22.5px] text-emerald-600">
-              EWA Pro
+              PayDay+
             </div>
             <div className="truncate text-[10px] leading-[15px] text-text-muted">
               แผงควบคุมผู้ดูแลระบบ HR
