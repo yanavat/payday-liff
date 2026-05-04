@@ -163,15 +163,15 @@ function ToggleRow({
         onClick={() => onChange(!checked)}
         className={
           checked
-            ? "relative h-12 w-14 rounded-full bg-primary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
-            : "relative h-12 w-14 rounded-full bg-border transition focus:outline-none focus:ring-2 focus:ring-primary/30"
+            ? "relative h-8 w-14 rounded-full bg-primary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
+            : "relative h-8 w-14 rounded-full bg-border transition focus:outline-none focus:ring-2 focus:ring-primary/30"
         }
       >
         <span
           className={
             checked
-              ? "absolute right-1 top-3 h-6 w-6 rounded-full bg-white shadow-card transition"
-              : "absolute left-1 top-3 h-6 w-6 rounded-full bg-white shadow-card transition"
+              ? "absolute right-1 top-1 h-6 w-6 rounded-full bg-white shadow-card transition"
+              : "absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow-card transition"
           }
         />
       </button>
