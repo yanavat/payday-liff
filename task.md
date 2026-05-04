@@ -266,7 +266,7 @@
 - [x] Hover states on all interactive elements
 - [x] Responsive — tablet view (1024px sidebar icon-only)
 - [x] Responsive — HR content pages (dashboard/report/settings/employee/request grids)
-- [~] Dark mode (stretch goal — basic variable bridge ready)
+- [x] Dark mode (HR side only — teal-tinted dark slate palette)
 - [x] Prototype flow: Login → Dashboard → Request → Approve → Toast
 - [x] Demo script for stakeholder walkthrough
 
@@ -309,6 +309,6 @@
 | 3 · HR Side       | 58          | 58      | 100%     |
 | 4 · Employee Side | 37          | 37      | 100%     |
 | 5 · UX & A11y     | 9           | 9       | 100%     |
-| 6 · Polish        | 10          | 9       | 90%      |
+| 6 · Polish        | 10          | 10      | 100%     |
 | 7 · Deploy        | 7           | 0       | 0%       |
-| **Total**         | **156**     | **148** | **95%**  |
+| **Total**         | **156**     | **149** | **96%**  |
