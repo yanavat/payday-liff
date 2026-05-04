@@ -19,7 +19,7 @@ export function HRTopbar({
     .slice(0, 2);
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-6">
+    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-bg-canvas px-6">
       <div className="relative w-full max-w-[200px] md:max-w-[280px] lg:w-64">
         <Search
           className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
@@ -39,7 +39,7 @@ export function HRTopbar({
           aria-label="Notifications"
         >
           <Bell className="h-5 w-5" strokeWidth={1.8} aria-hidden />
-          <span className="absolute right-1.5 top-1 h-2 w-2 rounded-full border border-white bg-red-500" />
+          <span className="absolute right-1.5 top-1 h-2 w-2 rounded-full border border-bg-canvas bg-red-500" />
         </button>
         <button
           type="button"

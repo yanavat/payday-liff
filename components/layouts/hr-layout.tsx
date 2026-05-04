@@ -1,14 +1,20 @@
-import type { ReactNode } from 'react'
-import { HRSidebar } from './hr-sidebar'
-import { HRTopbar } from './hr-topbar'
+"use client";
+
+import type { ReactNode } from "react";
+import { HRSidebar } from "./hr-sidebar";
+import { HRTopbar } from "./hr-topbar";
+import { useDarkMode } from "@/lib/hooks/use-dark-mode";
+import { cn } from "@/lib/utils";
 
 interface HRLayoutShellProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function HRLayoutShell({ children }: HRLayoutShellProps) {
+  const [isDark] = useDarkMode();
+
   return (
-    <div className="flex min-h-screen bg-bg-page text-text-primary">
+    <div className={cn("flex min-h-screen bg-bg-page text-text-primary", isDark && "dark")}>
       <HRSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <HRTopbar />
@@ -17,5 +23,5 @@ export function HRLayoutShell({ children }: HRLayoutShellProps) {
         </main>
       </div>
     </div>
-  )
+  );
 }
