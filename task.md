@@ -78,6 +78,16 @@
 
 ## Phase 3 — HR Side (Desktop)
 
+### Screen 0 — HR Login
+
+- [x] Full-screen centered card
+- [x] Email input
+- [x] Password input
+- [x] "ลืมรหัสผ่าน?" link
+- [x] Primary full-width login button
+- [x] Loading state
+- [x] Invalid credentials error state
+
 ### Layout
 
 - [x] HR root layout — sidebar + topbar shell
@@ -306,9 +316,9 @@
 | 0 · Setup         | 9           | 9       | 100%     |
 | 1 · Design System | 19          | 19      | 100%     |
 | 2 · Mock Data     | 7           | 7       | 100%     |
-| 3 · HR Side       | 58          | 58      | 100%     |
+| 3 · HR Side       | 65          | 65      | 100%     |
 | 4 · Employee Side | 37          | 37      | 100%     |
 | 5 · UX & A11y     | 9           | 9       | 100%     |
 | 6 · Polish        | 10          | 10      | 100%     |
 | 7 · Deploy        | 7           | 0       | 0%       |
-| **Total**         | **156**     | **149** | **96%**  |
+| **Total**         | **163**     | **156** | **96%**  |

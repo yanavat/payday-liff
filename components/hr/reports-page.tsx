@@ -51,7 +51,7 @@ export function ReportsPageContent() {
             รายงาน EWA
           </h1>
           <p className="mt-1 text-[13px] text-text-secondary">
-            หน้าหลัก / รายงาน
+            รายงานการใช้งาน EWA ของบริษัท
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -273,7 +273,9 @@ function ToggleButton({
       onClick={onClick}
       className={cn(
         "h-8 rounded-sm px-4 text-sm font-medium",
-        active ? "bg-bg-canvas text-text-primary shadow-card" : "text-text-muted",
+        active
+          ? "bg-bg-canvas text-text-primary shadow-card"
+          : "text-text-muted",
       )}
     >
       {children}

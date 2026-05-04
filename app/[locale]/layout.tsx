@@ -52,21 +52,22 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       className={`${inter.variable} ${notoSansThai.variable}`}
+      suppressHydrationWarning
     >
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              try {
-                if (localStorage.getItem('payday-dark-mode') === 'true' && location.pathname.includes('/hr/')) {
-                  document.documentElement.classList.add('dark');
-                }
-              } catch(e) {}
-            })();
-          `,
-        }}
-      />
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  if (localStorage.getItem('payday-dark-mode') === 'true' && location.pathname.includes('/hr/')) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
         <NextIntlClientProvider messages={messages}>
           <ToastProvider>
             <PageTransition>{children}</PageTransition>
