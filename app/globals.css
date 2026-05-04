@@ -134,6 +134,49 @@
     --radius:        0.5rem;
   }
 
+  /* ── Dark Mode — HR only (applied to .hr-layout wrapper) ── */
+  .dark {
+    /* Backgrounds */
+    --color-bg-page:         #0F1A16;
+    --color-bg-canvas:       #1A2820;
+    --color-bg-sidebar:      #141F1A;
+    --color-bg-secondary:    #162218;
+    --color-bg-tag:          #1A2820;
+
+    /* Text */
+    --color-text-primary:    #F0FDF4;
+    --color-text-secondary:  #9CA3AF;
+    --color-text-muted:      #6B7280;
+    --color-text-link:       #2DBD8F;
+
+    /* Borders */
+    --color-border:          #2A3D34;
+    --color-border-light:    #1E2E26;
+
+    /* Primary tints */
+    --color-primary-bg:      #1A2820;
+    --color-primary-subtle:  #141F1A;
+
+    /* Shadows (deeper on dark) */
+    --shadow-card:  0 1px 3px rgba(0,0,0,0.30), 0 1px 2px rgba(0,0,0,0.20);
+    --shadow-hover: 0 4px 12px rgba(0,0,0,0.40);
+    --shadow-modal: 0 8px 32px rgba(0,0,0,0.50);
+
+    /* shadcn/ui bridge variables */
+    --background:             23 26% 10%;
+    --foreground:             140 60% 97%;
+    --card:                   150 22% 15%;
+    --card-foreground:        140 60% 97%;
+    --popover:                150 22% 15%;
+    --popover-foreground:     140 60% 97%;
+    --secondary:              150 15% 18%;
+    --secondary-foreground:   140 60% 97%;
+    --muted:                  150 15% 18%;
+    --muted-foreground:       150 10% 60%;
+    --border:                 150 20% 22%;
+    --input:                  150 20% 22%;
+  }
+
   /* ── Thai language adjustments ─────────────────── */
   :lang(th),
   html[lang="th"] {
