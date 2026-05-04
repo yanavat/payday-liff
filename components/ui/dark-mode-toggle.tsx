@@ -1,16 +1,16 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useDarkMode } from "@/lib/hooks/use-dark-mode";
+import { useDarkMode } from "@/lib/context/dark-mode-context";
 
 export function DarkModeToggle() {
-  const [isDark, toggle] = useDarkMode();
+  const { isDark, toggle } = useDarkMode();
 
   return (
     <button
       type="button"
       onClick={toggle}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+      className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
       aria-label="เปิด/ปิดโหมดสีเข้ม"
       aria-pressed={isDark}
     >
