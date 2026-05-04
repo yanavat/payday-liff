@@ -244,15 +244,15 @@
 
 ## Phase 5 — UX & Accessibility
 
-- [ ] Minimum font size 16px on all employee screens
-- [ ] Touch targets minimum 48px height on all buttons
-- [ ] Error messages in plain Thai (no technical terms)
-- [ ] Offline state — banner when no internet
-- [ ] Loading skeleton screens (not spinners)
-- [ ] Empty states for all list screens
-- [ ] Form validation messages (friendly Thai)
-- [ ] Focus rings on all interactive elements (WCAG AA)
-- [ ] ARIA labels on icon-only buttons
+- [x] Minimum font size 16px on all employee screens
+- [x] Touch targets minimum 48px height on all buttons
+- [x] Error messages in plain Thai (no technical terms)
+- [x] Offline state — banner when no internet
+- [x] Loading skeleton screens (not spinners)
+- [x] Empty states for all list screens
+- [x] Form validation messages (friendly Thai)
+- [x] Focus rings on all interactive elements (WCAG AA)
+- [x] ARIA labels on icon-only buttons
 
 ---
 
@@ -300,14 +300,14 @@
 
 ## Progress Summary
 
-| Phase             | Total Tasks | Done  | Progress |
-| ----------------- | ----------- | ----- | -------- |
-| 0 · Setup         | 9           | 9     | 100%     |
-| 1 · Design System | 19          | 19    | 100%     |
-| 2 · Mock Data     | 7           | 7     | 100%     |
-| 3 · HR Side       | 58          | 58    | 100%     |
-| 4 · Employee Side | 37          | 37    | 100%     |
-| 5 · UX & A11y     | 9           | 0     | 0%       |
-| 6 · Polish        | 10          | 0     | 0%       |
-| 7 · Deploy        | 7           | 0     | 0%       |
-| **Total**         | **156**     | **130** | **83%**   |
+| Phase             | Total Tasks | Done    | Progress |
+| ----------------- | ----------- | ------- | -------- |
+| 0 · Setup         | 9           | 9       | 100%     |
+| 1 · Design System | 19          | 19      | 100%     |
+| 2 · Mock Data     | 7           | 7       | 100%     |
+| 3 · HR Side       | 58          | 58      | 100%     |
+| 4 · Employee Side | 37          | 37      | 100%     |
+| 5 · UX & A11y     | 9           | 9       | 100%     |
+| 6 · Polish        | 10          | 0       | 0%       |
+| 7 · Deploy        | 7           | 0       | 0%       |
+| **Total**         | **156**     | **139** | **89%**  |
