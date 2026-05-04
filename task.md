@@ -173,72 +173,72 @@
 
 ### Layout
 
-- [ ] Employee root layout — bottom tab bar
-- [ ] `<BottomTabBar />` — 4 tabs (หน้าหลัก / ยื่นคำขอ / ประวัติ / โปรไฟล์)
-- [ ] Active tab: teal icon + label, others gray
+- [x] Employee root layout — bottom tab bar
+- [x] `<BottomTabBar />` — 4 tabs (หน้าหลัก / ยื่นคำขอ / ประวัติ / โปรไฟล์)
+- [x] Active tab: teal icon + label, others gray
 
 ### E-Screen 1 — Login
 
-- [ ] Logo + app name
-- [ ] Employee ID numeric input (large)
-- [ ] 4-dot PIN pad (ATM style)
-- [ ] "เข้าสู่ระบบ" button (52px height, full width)
-- [ ] "ลืม PIN?" link
-- [ ] QR Code scan button (kiosk option)
-- [ ] Language toggle (TH / EN / MM)
-- [ ] Error state: wrong PIN with attempt counter
-- [ ] Lockout state: locked 30 min after 5 wrong attempts
+- [x] Logo + app name
+- [x] Employee ID numeric input (large)
+- [x] 4-dot PIN pad (ATM style)
+- [x] "เข้าสู่ระบบ" button (52px height, full width)
+- [x] "ลืม PIN?" link
+- [x] QR Code scan button (kiosk option)
+- [x] Language toggle (TH / EN / MM)
+- [x] Error state: wrong PIN with attempt counter
+- [x] Lockout state: locked 30 min after 5 wrong attempts
 
 ### E-Screen 2 — Home
 
-- [ ] Greeting header "สวัสดี, [ชื่อ] 👋"
-- [ ] Hero balance card (teal bg, large amount, breakdown)
-- [ ] "ยื่นคำขอเบิก" CTA button
-- [ ] Pay period progress bar
-- [ ] EWA cutoff warning badge (amber)
-- [ ] Payday countdown
-- [ ] Recent requests card list (last 3)
-- [ ] "ดูประวัติทั้งหมด →" link
+- [x] Greeting header "สวัสดี, [ชื่อ] 👋"
+- [x] Hero balance card (teal bg, large amount, breakdown)
+- [x] "ยื่นคำขอเบิก" CTA button
+- [x] Pay period progress bar
+- [x] EWA cutoff warning badge (amber)
+- [x] Payday countdown
+- [x] Recent requests card list (last 3)
+- [x] "ดูประวัติทั้งหมด →" link
 
 ### E-Screen 3 — Request Form (3-Step Wizard)
 
-- [ ] Step indicator (1 / 2 / 3)
+- [x] Step indicator (1 / 2 / 3)
 - **Step 1 — เลือกจำนวน**
-  - [ ] Available balance display (read-only)
-  - [ ] Quick amount buttons (฿1,000 / ฿2,000 / ฿3,000)
-  - [ ] Custom amount input with ฿ prefix
-  - [ ] Real-time validation (red if over limit)
-  - [ ] Reason chips (5 options)
-  - [ ] "ถัดไป →" button (disabled if no amount)
+  - [x] Available balance display (read-only)
+  - [x] Quick amount buttons (฿1,000 / ฿2,000 / ฿3,000)
+  - [x] Custom amount input with ฿ prefix
+  - [x] Real-time validation (red if over limit)
+  - [x] Reason chips (5 options)
+  - [x] "ถัดไป →" button (disabled if no amount)
 - **Step 2 — ยืนยัน**
-  - [ ] Summary card (name / ID / amount / reason / bank / date)
-  - [ ] Amber warning banner "จะถูกหักวันที่ XX"
-  - [ ] 4-dot PIN confirmation pad
-  - [ ] "ยืนยัน" button
-  - [ ] "← แก้ไข" link
+  - [x] Summary card (name / ID / amount / reason / bank / date)
+  - [x] Amber warning banner "จะถูกหักวันที่ XX"
+  - [x] 4-dot PIN confirmation pad
+  - [x] "ยืนยัน" button
+  - [x] "← แก้ไข" link
 - **Step 3 — สำเร็จ**
-  - [ ] Animated checkmark (teal circle)
-  - [ ] Reference number card
-  - [ ] "กลับหน้าหลัก" button
-  - [ ] "แชร์ใบรับคำขอ" outlined button
+  - [x] Animated checkmark (teal circle)
+  - [x] Reference number card
+  - [x] "กลับหน้าหลัก" button
+  - [x] "แชร์ใบรับคำขอ" outlined button
 
 ### E-Screen 4 — History
 
-- [ ] Summary strip (horizontal scroll — this month / last month / total)
-- [ ] Status tab filter
-- [ ] Request card list (date / amount / status / reference)
-- [ ] Accordion expand on tap — full detail inline
-- [ ] Expanded detail (requested / approved / transferred dates + approver)
-- [ ] Pagination or infinite scroll
+- [x] Summary strip (horizontal scroll — this month / last month / total)
+- [x] Status tab filter
+- [x] Request card list (date / amount / status / reference)
+- [x] Accordion expand on tap — full detail inline
+- [x] Expanded detail (requested / approved / transferred dates + approver)
+- [x] Pagination or infinite scroll
 
 ### E-Screen 5 — Profile
 
-- [ ] Avatar + name + ID + department + pay type badge
-- [ ] Bank account card (masked, read-only)
-- [ ] EWA limit card (max % / quota used / remaining) with progress bar
-- [ ] Notification toggles (approved / payday / LINE)
-- [ ] Language selector
-- [ ] "ออกจากระบบ" button (red text)
+- [x] Avatar + name + ID + department + pay type badge
+- [x] Bank account card (masked, read-only)
+- [x] EWA limit card (max % / quota used / remaining) with progress bar
+- [x] Notification toggles (approved / payday / LINE)
+- [x] Language selector
+- [x] "ออกจากระบบ" button (red text)
 
 ---
 
@@ -302,12 +302,12 @@
 
 | Phase             | Total Tasks | Done  | Progress |
 | ----------------- | ----------- | ----- | -------- |
-| 0 · Setup         | 9           | 0     | 0%       |
-| 1 · Design System | 19          | 0     | 0%       |
-| 2 · Mock Data     | 7           | 0     | 0%       |
-| 3 · HR Side       | 58          | 0     | 0%       |
-| 4 · Employee Side | 37          | 0     | 0%       |
+| 0 · Setup         | 9           | 9     | 100%     |
+| 1 · Design System | 19          | 19    | 100%     |
+| 2 · Mock Data     | 7           | 7     | 100%     |
+| 3 · HR Side       | 58          | 58    | 100%     |
+| 4 · Employee Side | 37          | 37    | 100%     |
 | 5 · UX & A11y     | 9           | 0     | 0%       |
 | 6 · Polish        | 10          | 0     | 0%       |
 | 7 · Deploy        | 7           | 0     | 0%       |
-| **Total**         | **156**     | **0** | **0%**   |
+| **Total**         | **156**     | **130** | **83%**   |
