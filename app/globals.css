@@ -58,8 +58,10 @@
     --color-status-disbursed-text:#1E40AF;
 
     /* ── Typography ────────────────────────────────── */
-    --font-sans:  'Inter', 'DM Sans', system-ui, sans-serif;
-    --font-thai:  'Noto Sans Thai', 'Inter', system-ui, sans-serif;
+    /* --font-sans and --font-thai are set by next/font/google via the
+       className on <html> in layout.tsx. Do NOT redefine them here —
+       overriding them breaks the self-hosted font on local dev and
+       causes fallback fonts to appear instead of Noto Sans Thai. */
 
     --text-page-title:    22px;
     --text-section-title: 14px;
@@ -135,7 +137,7 @@
   /* ── Thai language adjustments ─────────────────── */
   :lang(th),
   html[lang="th"] {
-    font-family: var(--font-thai);
+    font-family: var(--font-thai), 'Noto Sans Thai', system-ui, sans-serif;
     line-height: var(--lh-body-thai);
     /* Thai minimum font size */
     font-size: max(14px, 1em);
@@ -153,7 +155,7 @@
   }
 
   html {
-    font-family: var(--font-sans);
+    font-family: var(--font-sans), 'Inter', system-ui, sans-serif;
     color: var(--color-text-primary);
   }
 
