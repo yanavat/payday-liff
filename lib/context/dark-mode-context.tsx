@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import type { ReactNode } from "react";
 
 const STORAGE_KEY = "payday-dark-mode";
@@ -16,10 +22,14 @@ const DarkModeContext = createContext<DarkModeContextValue>({
 });
 
 export function DarkModeProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem(STORAGE_KEY) === "true";
-  });
+  const [isDark, setIsDark] = useState<boolean>(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === "true") {
+      setIsDark(true);
+    }
+  }, []);
 
   const toggle = useCallback(() => {
     setIsDark((prev) => {
