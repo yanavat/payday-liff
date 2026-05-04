@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Banknote, CheckCircle2, Clock3, Users } from "lucide-react";
 import { MetricCard } from "@/components/ui/metric-card";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -112,12 +113,12 @@ export function DashboardPageContent() {
             <SectionHeader
               title="คำขอ EWA ล่าสุด"
               action={
-                <a
+                <Link
                   href="/th/hr/requests"
                   className="text-sm font-medium text-primary hover:text-primary-dark"
                 >
                   ดูทั้งหมด →
-                </a>
+                </Link>
               }
             />
           </div>

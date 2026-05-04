@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertTriangle, CalendarDays, CheckCircle2, Clock, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, XCircle } from 'lucide-react'
 import type { Employee, EWARequest } from '@/types'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
 import { PayCycleBadge } from '@/components/ui/pay-cycle-badge'
