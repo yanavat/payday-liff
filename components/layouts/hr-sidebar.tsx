@@ -24,7 +24,7 @@ const mainNav = [
 ];
 
 const footerNav = [
-  { href: "/hr/support", label: "สนับสนุน", icon: Headphones },
+  // { href: "/hr/support", label: "สนับสนุน", icon: Headphones },
   { href: "/", label: "ออกจากระบบ", icon: LogOut },
 ];
 
