@@ -11,6 +11,7 @@
 ```
 /
 ├── /hr/
+│   ├── /hr/login  HR-0 Hr Login
 │   ├── /hr/dashboard          HR-1  Dashboard
 │   ├── /hr/requests           HR-2  EWA Request List
 │   ├── /hr/requests/[id]      HR-3  Request Detail (Drawer overlay on HR-2)
@@ -46,6 +47,59 @@ Each screen documents:
 ---
 
 # HR SIDE — Desktop (1440px)
+
+---
+
+## HR-0: Login
+
+```
+Route:    /hr/login
+Layout:   Full screen, centered card
+Viewport: 1440px desktop
+Auth:     Public (no auth required)
+```
+
+### Anatomy
+
+#### Login Card
+
+```
+Component: <LoginCard />
+Layout: centered, max-width 400px
+Background: white card with subtle shadow
+Padding: 32px
+
+Title: "เข้าสู่ระบบ HR" (24px, weight 700)
+Subtitle: "ระบบรับคำขอเงินล่วงหน้าพนักงาน" (14px, --color-text-muted)
+
+Form fields:
+  - Email input (required, email type)
+  - Password input (required, password type)
+  - "ลืมรหัสผ่าน?" link (12px, --color-text-muted)
+
+Button:
+  - "เข้าสู่ระบบ" (primary button, full width)
+  - Loading state: spinner + "กำลังเข้าสู่ระบบ..."
+
+Error message:
+  - Red text below button (12px)
+  - Shows on invalid credentials
+```
+
+### Interactions
+
+```
+Form submit    → validate inputs, show loading, call auth API
+"ลืมรหัสผ่าน?" → navigate /hr/forgot-password
+```
+
+### States
+
+```
+Loading:     Button shows spinner, inputs disabled
+Error:       Red error message appears, inputs highlighted
+Success:     Redirect to /hr/dashboard
+```
 
 ---
 
