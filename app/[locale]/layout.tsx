@@ -53,6 +53,19 @@ export default async function LocaleLayout({
       lang={locale}
       className={`${inter.variable} ${notoSansThai.variable}`}
     >
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                if (localStorage.getItem('payday-dark-mode') === 'true' && location.pathname.includes('/hr/')) {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch(e) {}
+            })();
+          `,
+        }}
+      />
       <body>
         <NextIntlClientProvider messages={messages}>
           <ToastProvider>

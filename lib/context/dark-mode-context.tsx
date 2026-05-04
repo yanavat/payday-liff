@@ -31,6 +31,14 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.documentElement.classList.toggle("dark", isDark);
+    return () => {
+      document.documentElement.classList.remove("dark");
+    };
+  }, [isDark]);
+
   const toggle = useCallback(() => {
     setIsDark((prev) => {
       const next = !prev;
