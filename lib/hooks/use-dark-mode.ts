@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 const STORAGE_KEY = "payday-dark-mode";
 
@@ -10,13 +10,13 @@ export function useDarkMode(): [boolean, () => void] {
     return localStorage.getItem(STORAGE_KEY) === "true";
   });
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     setIsDark((prev) => {
       const next = !prev;
       localStorage.setItem(STORAGE_KEY, String(next));
       return next;
     });
-  };
+  }, []);
 
   return [isDark, toggle];
 }
