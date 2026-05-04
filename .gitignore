@@ -39,3 +39,6 @@ next-env.d.ts
 
 # windsurf
 .windsurfrules
+# superpowers
+.superpowers/
+.claude/settings.local.json

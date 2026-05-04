@@ -18,7 +18,7 @@ export function Toggle({
       <button
         type="button"
         onClick={() => onChange(!checked)}
-        className={cn('relative h-[22px] w-10 rounded-full transition', checked ? 'bg-primary' : 'bg-gray-200')}
+        className={cn('relative h-[22px] w-10 rounded-full transition', checked ? 'bg-primary' : 'bg-bg-secondary')}
         aria-pressed={checked}
       >
         <span className={cn('absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition', checked ? 'left-5' : 'left-0.5')} />

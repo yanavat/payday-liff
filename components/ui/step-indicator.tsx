@@ -22,7 +22,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
                 className={cn(
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-semibold',
                   isComplete && 'border-primary bg-primary text-white',
-                  isActive && 'border-primary bg-white text-primary',
+                  isActive && 'border-primary bg-bg-canvas text-primary',
                   !isComplete && !isActive && 'border-border bg-bg-secondary text-text-muted',
                 )}
               >

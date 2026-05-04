@@ -14,7 +14,7 @@ const ewaStatusMap = {
   eligible: { label: "มีสิทธิ์", className: "bg-green-100 text-green-800" },
   limit_reached: {
     label: "ใช้ครบแล้ว",
-    className: "bg-gray-100 text-gray-600",
+    className: "bg-bg-secondary text-text-secondary",
   },
   suspended: { label: "ถูกระงับ", className: "bg-red-100 text-red-800" },
 };
@@ -54,7 +54,7 @@ export function EmployeesPageContent() {
         </p>
       </header>
 
-      <section className="rounded-xl border border-border bg-white p-4 shadow-card">
+      <section className="rounded-xl border border-border bg-bg-canvas p-4 shadow-card">
         <div className="flex flex-wrap items-center gap-3">
           <label className="relative block w-full sm:w-[280px]">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
@@ -98,7 +98,7 @@ export function EmployeesPageContent() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-border bg-white shadow-card">
+      <section className="overflow-hidden rounded-xl border border-border bg-bg-canvas shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[980px] border-collapse">
             <thead>
@@ -186,14 +186,14 @@ export function EmployeesPageContent() {
                       {employee.ewaStatus === "eligible" ? (
                         <Link
                           href={`/hr/employees/${employee.id}/request`}
-                          className="inline-flex h-8 items-center rounded-md border border-border bg-white px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary"
+                          className="inline-flex h-8 items-center rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary"
                         >
                           ยื่นคำขอแทน
                         </Link>
                       ) : (
                         <button
                           disabled
-                          className="h-8 rounded-md border border-border bg-white px-3 text-sm font-medium text-text-muted opacity-50"
+                          className="h-8 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-muted opacity-50"
                         >
                           ยื่นคำขอแทน
                         </button>

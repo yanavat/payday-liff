@@ -51,7 +51,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
   if (submitted) {
     return (
       <div className="mx-auto max-w-[640px] space-y-4">
-        <section className="rounded-xl border border-border bg-white p-8 text-center shadow-card">
+        <section className="rounded-xl border border-border bg-bg-canvas p-8 text-center shadow-card">
           <CheckCircle2 className="mx-auto h-16 w-16 text-primary" />
           <h1 className="mt-4 text-[22px] font-semibold text-text-primary">ส่งคำขอสำเร็จ</h1>
           <p className="mt-1 text-sm text-text-secondary">HR จะตรวจสอบและดำเนินการอนุมัติต่อไป</p>
@@ -83,7 +83,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
         <span>HR กำลังยื่นคำขอแทนพนักงาน — รายการนี้จะบันทึกชื่อ HR ใน Audit Log</span>
       </div>
 
-      <section className="rounded-xl border border-border bg-white p-5 shadow-card">
+      <section className="rounded-xl border border-border bg-bg-canvas p-5 shadow-card">
         <div className="flex items-center gap-3">
           <Avatar initials={employee.nameTh.slice(0, 2)} size="md" />
           <div className="flex-1">
@@ -105,7 +105,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
         </div>
       )}
 
-      <section className="space-y-5 rounded-xl border border-border bg-white p-5 shadow-card">
+      <section className="space-y-5 rounded-xl border border-border bg-bg-canvas p-5 shadow-card">
         <div>
           <h2 className="text-section-title text-text-primary">จำนวนเงินที่ขอเบิก</h2>
           <div className="mt-3 grid grid-cols-3 gap-2">

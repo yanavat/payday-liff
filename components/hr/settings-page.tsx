@@ -285,7 +285,7 @@ function SettingsPanel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-white p-5 shadow-card">
+    <section className="rounded-lg border border-border bg-bg-canvas p-5 shadow-card">
       <h2 className="mb-4 text-section-title text-text-primary">{title}</h2>
       <div className="space-y-4">{children}</div>
     </section>

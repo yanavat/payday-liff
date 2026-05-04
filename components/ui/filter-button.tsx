@@ -42,7 +42,7 @@ export function FilterButton({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-white px-3 text-sm font-medium text-text-primary shadow-card transition hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30"
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-primary shadow-card transition hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30"
         aria-expanded={open}
       >
         <Filter className="h-4 w-4 text-text-muted" aria-hidden />
@@ -50,7 +50,7 @@ export function FilterButton({
         <ChevronDown className="h-4 w-4 text-text-muted" aria-hidden />
       </button>
       {open && (
-        <div className="absolute right-0 z-30 mt-2 min-w-44 overflow-hidden rounded-md border border-border bg-white py-1 shadow-hover">
+        <div className="absolute right-0 z-30 mt-2 min-w-44 overflow-hidden rounded-md border border-border bg-bg-canvas py-1 shadow-hover">
           {options.map((option) => (
             <button
               key={option.value}

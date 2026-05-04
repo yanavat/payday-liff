@@ -26,7 +26,7 @@ export function MetricCard({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-lg border border-border bg-white p-5 shadow-card transition-all duration-200 hover:shadow-hover",
+        "relative overflow-hidden rounded-lg border border-border  p-5 shadow-card transition-all duration-200 hover:shadow-hover",
         variant === "hero" && "rounded-xl border-0 bg-primary-bg px-6 py-5",
         className,
       )}

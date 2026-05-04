@@ -107,7 +107,7 @@ export function DashboardPageContent() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_280px]">
-        <section className="overflow-hidden rounded-lg border border-border bg-white shadow-card transition-shadow duration-200 hover:shadow-hover">
+        <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card transition-shadow duration-200 hover:shadow-hover">
           <div className="border-b border-border px-5 py-3.5">
             <SectionHeader
               title="คำขอ EWA ล่าสุด"
@@ -175,7 +175,7 @@ export function DashboardPageContent() {
         </section>
 
         <aside className="space-y-3">
-          <section className="rounded-lg border border-border bg-white p-4 shadow-card transition-shadow duration-200 hover:shadow-hover">
+          <section className="rounded-lg border border-border bg-bg-canvas p-4 shadow-card transition-shadow duration-200 hover:shadow-hover">
             <h2 className="text-section-title text-text-primary">
               รอบปัจจุบัน
             </h2>
@@ -203,12 +203,12 @@ export function DashboardPageContent() {
             </div>
           </section>
 
-          <section className="rounded-lg border border-border bg-white p-4 shadow-card transition-shadow duration-200 hover:shadow-hover">
+          <section className="rounded-lg border border-border bg-bg-canvas p-4 shadow-card transition-shadow duration-200 hover:shadow-hover">
             <h2 className="text-section-title text-text-primary">
               สถานะคำขอเดือนนี้
             </h2>
             <div className="mx-auto mt-5 flex h-32 w-32 items-center justify-center rounded-full bg-[conic-gradient(#2DBD8F_0_60%,#F59E0B_60%_88%,#EF4444_88%_100%)]">
-              <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-white">
+              <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-bg-canvas">
                 <span className="font-number text-2xl font-bold">
                   {totalForChart}
                 </span>

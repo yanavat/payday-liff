@@ -42,7 +42,7 @@ export function PINPad({
             key={index}
             className={cn(
               'h-3 w-3 rounded-full border border-primary transition',
-              index < value.length ? 'bg-primary' : 'bg-white',
+              index < value.length ? 'bg-primary' : 'bg-bg-canvas',
             )}
           />
         ))}
@@ -57,7 +57,7 @@ export function PINPad({
               type="button"
               disabled={disabled}
               onClick={() => (key === 'delete' ? removeDigit() : pushDigit(key))}
-              className="flex h-14 items-center justify-center rounded-full bg-white text-xl font-semibold text-text-primary shadow-card transition hover:bg-primary-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-14 items-center justify-center rounded-full bg-bg-canvas text-xl font-semibold text-text-primary shadow-card transition hover:bg-primary-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
               aria-label={key === 'delete' ? 'Delete digit' : `Digit ${key}`}
             >
               {key === 'delete' ? <Delete className="h-5 w-5" aria-hidden /> : key}

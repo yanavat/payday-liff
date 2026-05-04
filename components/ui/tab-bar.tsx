@@ -41,7 +41,7 @@ export function TabBar({ tabs, value, onChange, variant = 'pill', className }: T
               'inline-flex h-9 items-center gap-2 whitespace-nowrap px-3 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-primary/30',
               variant === 'pill' &&
                 (active
-                  ? 'rounded-sm border border-border bg-white text-text-primary shadow-card'
+                  ? 'rounded-sm border border-border bg-bg-canvas text-text-primary shadow-card'
                   : 'rounded-sm text-text-muted hover:text-text-primary'),
               variant === 'underline' &&
                 (active

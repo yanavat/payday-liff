@@ -83,7 +83,7 @@ export function RequestDetailDrawer({
                 <button
                   type="button"
                   onClick={onReject}
-                  className="h-11 rounded-md border border-red-300 bg-white text-sm font-semibold text-red-700 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200"
+                  className="h-11 rounded-md border border-red-300 bg-bg-canvas text-sm font-semibold text-red-700 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200"
                 >
                   ปฏิเสธ
                 </button>
@@ -116,7 +116,7 @@ export function RequestDetailDrawer({
             )}
           </div>
 
-          <section className="flex items-start gap-3 rounded-lg border border-border bg-white p-4">
+          <section className="flex items-start gap-3 rounded-lg border border-border bg-bg-canvas p-4">
             <Avatar initials={employee.nameTh.slice(0, 2)} size="lg" />
             <div className="min-w-0 flex-1">
               <h3 className="text-base font-semibold text-text-primary">{employee.nameTh}</h3>
@@ -128,7 +128,7 @@ export function RequestDetailDrawer({
             <PayCycleBadge type={employee.payCycle} />
           </section>
 
-          <section className="rounded-lg border border-border bg-white p-4">
+          <section className="rounded-lg border border-border bg-bg-canvas p-4">
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h3 className="text-section-title text-text-primary">
@@ -155,7 +155,7 @@ export function RequestDetailDrawer({
             <SummaryRow label="คงเหลือรับวันจ่ายเงิน" value={formatTHB(remainingAfterRequest)} />
           </section>
 
-          <section className="rounded-lg border border-border bg-white p-4">
+          <section className="rounded-lg border border-border bg-bg-canvas p-4">
             <h3 className="mb-3 text-section-title text-text-primary">ข้อมูลคำขอ</h3>
             <InfoRow label="วันที่ขอ" value={`${formatBE(request.requestedAt, 'DD/MM/BBBB')} · ${dayjs(request.requestedAt).format('HH:mm')} น.`} />
             <InfoRow label="เหตุผล" value={reasonLabels[request.reason]} />
@@ -167,7 +167,7 @@ export function RequestDetailDrawer({
             )}
           </section>
 
-          <section className="rounded-lg border border-border bg-white p-4">
+          <section className="rounded-lg border border-border bg-bg-canvas p-4">
             <h3 className="mb-3 text-section-title text-text-primary">ประวัติการเบิก</h3>
             <div className="max-h-[200px] space-y-3 overflow-y-auto">
               {history.slice(0, 3).map((item) => (

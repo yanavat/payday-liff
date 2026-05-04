@@ -19,7 +19,7 @@ export function TrendBadge({ value, label, showArrow = true, className }: TrendB
         'inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium leading-none',
         direction === 'positive' && 'bg-green-100 text-green-700',
         direction === 'negative' && 'bg-red-100 text-red-700',
-        direction === 'neutral' && 'bg-gray-100 text-gray-600',
+        direction === 'neutral' && 'bg-bg-secondary text-text-secondary',
         className,
       )}
     >

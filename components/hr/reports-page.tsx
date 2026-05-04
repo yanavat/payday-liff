@@ -55,20 +55,20 @@ export function ReportsPageContent() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <select className="h-9 rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+          <select className="h-9 rounded-md border border-border bg-bg-canvas px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
             <option>เดือนนี้</option>
             <option>เดือนที่แล้ว</option>
             <option>กำหนดเอง</option>
           </select>
           <button
             onClick={() => exportReport("CSV")}
-            className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-white px-3 text-sm font-medium hover:bg-bg-secondary"
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium hover:bg-bg-secondary"
           >
             <Download className="h-4 w-4" /> Export CSV
           </button>
           <button
             onClick={() => exportReport("PDF")}
-            className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-white px-3 text-sm font-medium hover:bg-bg-secondary"
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium hover:bg-bg-secondary"
           >
             <FileText className="h-4 w-4" /> Export PDF
           </button>
@@ -110,7 +110,7 @@ export function ReportsPageContent() {
         <MetricCard label="ค่าธรรมเนียม" value={formatTHBCompact(totalFees)} />
       </div>
 
-      <section className="rounded-lg border border-border bg-white p-5 shadow-card">
+      <section className="rounded-lg border border-border bg-bg-canvas p-5 shadow-card">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-section-title text-text-primary">ยอดเบิกจ่าย</h2>
           <span className="text-caption text-text-muted">
@@ -153,7 +153,7 @@ export function ReportsPageContent() {
       </section>
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_420px]">
-        <section className="overflow-hidden rounded-lg border border-border bg-white shadow-card">
+        <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card">
           <div className="border-b border-border px-5 py-3.5">
             <h2 className="text-section-title text-text-primary">แยกตามแผนก</h2>
           </div>
@@ -204,7 +204,7 @@ export function ReportsPageContent() {
           </table>
         </section>
 
-        <section className="overflow-hidden rounded-lg border border-border bg-white shadow-card">
+        <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card">
           <div className="border-b border-border px-5 py-3.5">
             <h2 className="text-section-title text-text-primary">
               สถานะการโอนเงิน
@@ -244,7 +244,7 @@ export function ReportsPageContent() {
                           message: "กำลังลองโอนเงินอีกครั้ง",
                         });
                       }}
-                      className="mt-3 inline-flex h-8 items-center gap-2 rounded-md border border-red-300 bg-white px-3 text-xs font-medium text-red-700"
+                      className="mt-3 inline-flex h-8 items-center gap-2 rounded-md border border-red-300 bg-bg-canvas px-3 text-xs font-medium text-red-700"
                     >
                       <RefreshCw className="h-3.5 w-3.5" /> ลองใหม่
                     </button>
@@ -273,7 +273,7 @@ function ToggleButton({
       onClick={onClick}
       className={cn(
         "h-8 rounded-sm px-4 text-sm font-medium",
-        active ? "bg-white text-text-primary shadow-card" : "text-text-muted",
+        active ? "bg-bg-canvas text-text-primary shadow-card" : "text-text-muted",
       )}
     >
       {children}

@@ -110,7 +110,7 @@ export function DataTable<TData extends object>({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-border bg-white shadow-card",
+        "overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card",
         className,
       )}
     >
@@ -171,7 +171,7 @@ export function DataTable<TData extends object>({
                 >
                   {selectableColumns.map((_, columnIndex) => (
                     <td key={columnIndex} className="px-4">
-                      <div className="h-3 rounded-full bg-gray-200 animate-pulse" />
+                      <div className="h-3 rounded-full bg-bg-secondary animate-pulse" />
                     </td>
                   ))}
                 </tr>
@@ -215,7 +215,7 @@ export function DataTable<TData extends object>({
               type="button"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-white transition-colors duration-150 hover:border-primary hover:bg-bg-secondary disabled:opacity-40"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-canvas transition-colors duration-150 hover:border-primary hover:bg-bg-secondary disabled:opacity-40"
               aria-label="Previous page"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -227,7 +227,7 @@ export function DataTable<TData extends object>({
               type="button"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-white transition-colors duration-150 hover:border-primary hover:bg-bg-secondary disabled:opacity-40"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-bg-canvas transition-colors duration-150 hover:border-primary hover:bg-bg-secondary disabled:opacity-40"
               aria-label="Next page"
             >
               <ArrowRight className="h-4 w-4" aria-hidden />

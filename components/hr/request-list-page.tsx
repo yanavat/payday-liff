@@ -181,7 +181,7 @@ export function RequestListPage() {
         </button>
       </header>
 
-      <section className="rounded-xl border border-border bg-white p-[17px] shadow-card">
+      <section className="rounded-xl border border-border bg-bg-canvas p-[17px] shadow-card">
         <div className="flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-start">
           <div className="space-y-3">
             <FilterRow label="สถานะ:">
@@ -260,7 +260,7 @@ export function RequestListPage() {
               onClick={() =>
                 updateStatus(selectedIds, "rejected", "ปฏิเสธแบบกลุ่ม")
               }
-              className="h-8 rounded-md border border-red-300 bg-white px-3 text-sm font-medium text-red-700 transition hover:bg-red-50"
+              className="h-8 rounded-md border border-red-300 bg-bg-canvas px-3 text-sm font-medium text-red-700 transition hover:bg-red-50"
             >
               ปฏิเสธที่เลือก
             </button>
@@ -275,7 +275,7 @@ export function RequestListPage() {
         </div>
       )}
 
-      <section className="overflow-hidden rounded-xl border border-border bg-white shadow-card">
+      <section className="overflow-hidden rounded-xl border border-border bg-bg-canvas shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[980px] border-collapse">
             <thead>
@@ -417,7 +417,7 @@ export function RequestListPage() {
           />
         )}
 
-        <div className="flex items-center justify-between border-t border-border bg-white px-4 py-3">
+        <div className="flex items-center justify-between border-t border-border bg-bg-canvas px-4 py-3">
           <p className="text-[11px] text-text-muted">
             แสดง {visibleRows.length ? 1 : 0} ถึง {visibleRows.length} จาก{" "}
             {rows.length} รายการ
@@ -497,7 +497,7 @@ function PillTab({
         "rounded-full border px-[13px] py-[5px] text-xs font-medium leading-[16.8px] transition",
         active
           ? "border-[#006c4f] bg-primary-subtle text-[#006c4f]"
-          : "border-border bg-white text-text-secondary hover:bg-bg-secondary",
+          : "border-border bg-bg-canvas text-text-secondary hover:bg-bg-secondary",
       )}
     >
       {children}
@@ -539,7 +539,7 @@ function PageButton({
         "flex h-8 w-8 items-center justify-center rounded text-xs font-medium transition",
         active
           ? "bg-primary text-white"
-          : "border border-border bg-white text-text-primary hover:bg-bg-secondary",
+          : "border border-border bg-bg-canvas text-text-primary hover:bg-bg-secondary",
         disabled && "opacity-50",
       )}
     >

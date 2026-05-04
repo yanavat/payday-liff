@@ -25,8 +25,8 @@ export function QuickAmountButton({
         "h-12 rounded-md border px-4 text-[16px] font-semibold transition focus:outline-none focus:ring-2 focus:ring-primary/30",
         selected
           ? "border-primary bg-primary text-white"
-          : "border-border bg-white text-text-primary hover:bg-primary-subtle",
-        disabled && "cursor-not-allowed opacity-50 hover:bg-white",
+          : "border-border bg-bg-canvas text-text-primary hover:bg-primary-subtle",
+        disabled && "cursor-not-allowed opacity-50 hover:bg-bg-canvas",
         className,
       )}
     >

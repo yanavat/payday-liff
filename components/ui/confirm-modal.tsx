@@ -47,7 +47,7 @@ export function ConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex animate-backdrop-fade-in items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-[400px] animate-scale-in rounded-lg bg-white p-6 shadow-modal">
+      <div className="w-full max-w-[400px] animate-scale-in rounded-lg bg-bg-canvas p-6 shadow-modal">
         <h2 className="text-base font-semibold text-text-primary">{title}</h2>
         <p className="mt-2 text-sm leading-7 text-text-secondary">{message}</p>
         {hasReasonInput && (
@@ -70,7 +70,7 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onClose}
-            className="h-9 rounded-md border border-border bg-white px-4 text-sm font-medium text-text-primary hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="h-9 rounded-md border border-border bg-bg-canvas px-4 text-sm font-medium text-text-primary hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             {cancelLabel}
           </button>

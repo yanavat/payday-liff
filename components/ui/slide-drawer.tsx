@@ -60,7 +60,7 @@ export function SlideDrawer({
       />
       <aside
         className={cn(
-          "absolute right-0 top-0 flex h-full w-full max-w-[480px] flex-col bg-white shadow-modal transition-transform ease-out [transition-duration:250ms]",
+          "absolute right-0 top-0 flex h-full w-full max-w-[480px] flex-col bg-bg-canvas shadow-modal transition-transform ease-out [transition-duration:250ms]",
           closing ? "translate-x-full" : "translate-x-0",
           className,
         )}
