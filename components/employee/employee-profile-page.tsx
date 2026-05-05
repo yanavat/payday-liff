@@ -10,6 +10,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { Avatar } from "@/components/ui/avatar";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -20,7 +21,6 @@ export function EmployeeProfilePage() {
   const [approval, setApproval] = useState(true);
   const [payday, setPayday] = useState(true);
   const [line, setLine] = useState(true);
-  const [language, setLanguage] = useState("TH");
 
   return (
     <div className="min-h-full bg-bg-page pb-5">
@@ -119,16 +119,7 @@ export function EmployeeProfilePage() {
           >
             {t("profile.language")}
           </label>
-          <select
-            id="language"
-            value={language}
-            onChange={(event) => setLanguage(event.target.value)}
-            className="h-12 w-full rounded-md border border-border bg-bg-secondary px-3 text-[16px] font-medium text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="TH">Thai</option>
-            <option value="EN">English</option>
-            <option value="MM">ဘာသာမြန်မာ</option>
-          </select>
+          <LocaleSwitcher variant="select" />
         </section>
 
         <button

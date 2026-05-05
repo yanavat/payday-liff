@@ -5,6 +5,7 @@ import { QrCode, ShieldCheck } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { PINPad } from "@/components/ui/pin-pad";
+import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { cn } from "@/lib/utils";
 
 const maxAttempts = 5;
@@ -17,7 +18,6 @@ export function EmployeeLoginPage() {
   const [attempts, setAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [language, setLanguage] = useState("TH");
   const [error, setError] = useState("");
 
   const remainingAttempts = Math.max(maxAttempts - attempts, 0);
@@ -50,20 +50,8 @@ export function EmployeeLoginPage() {
   return (
     <div className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden bg-primary-bg px-5 py-8">
       <div className="absolute inset-0 opacity-[0.05] [background-image:linear-gradient(135deg,#1E9E74_12%,transparent_12%,transparent_50%,#1E9E74_50%,#1E9E74_62%,transparent_62%,transparent)] [background-size:28px_28px]" />
-      <div className="absolute right-4 top-4 z-10 flex rounded-full border border-primary/20 bg-white p-1 shadow-card">
-        {["TH", "EN", "MM"].map((item) => (
-          <button
-            key={item}
-            type="button"
-            onClick={() => setLanguage(item)}
-            className={cn(
-              "h-12 min-w-12 rounded-full px-3 text-[16px] font-semibold focus:outline-none focus:ring-2 focus:ring-primary/30",
-              language === item ? "bg-primary text-white" : "text-text-muted",
-            )}
-          >
-            {item}
-          </button>
-        ))}
+      <div className="absolute right-4 top-4 z-10">
+        <LocaleSwitcher />
       </div>
 
       <div className="relative z-10 mb-8 flex flex-col items-center">

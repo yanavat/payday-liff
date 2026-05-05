@@ -6,6 +6,7 @@ import { Bell, HelpCircle, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/ui/avatar";
 import { DarkModeToggle } from "@/components/ui/dark-mode-toggle";
+import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,6 +15,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { hrUser } from "@/lib/mock";
 
 const SEGMENT_KEYS: Record<string, string> = {
@@ -97,6 +105,7 @@ function HRBreadcrumb() {
 }
 
 export function HRTopbar() {
+  const t = useTranslations("common");
   const initials = hrUser.name
     .split(" ")
     .map((part) => part[0])
@@ -123,14 +132,31 @@ export function HRTopbar() {
         >
           <HelpCircle className="h-5 w-5" strokeWidth={1.8} aria-hidden />
         </button>
-        <button
-          type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
-          aria-label="Settings"
-        >
-          <Settings className="h-5 w-5" strokeWidth={1.8} aria-hidden />
-        </button>
-        <DarkModeToggle />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+              aria-label="Settings"
+            >
+              <Settings className="h-5 w-5" strokeWidth={1.8} aria-hidden />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[16rem]">
+            <DropdownMenuLabel>{t("language")}</DropdownMenuLabel>
+            <div className="px-3 py-2">
+              <LocaleSwitcher />
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>{t("appearance")}</DropdownMenuLabel>
+            <div className="flex items-center justify-between px-3 py-2">
+              <span className="text-sm text-text-secondary">
+                {t("darkMode")}
+              </span>
+              <DarkModeToggle />
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Avatar initials={initials} size="md" color="teal" />
       </div>
     </header>

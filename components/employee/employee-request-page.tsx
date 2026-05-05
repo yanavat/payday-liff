@@ -90,6 +90,17 @@ export function EmployeeRequestPage() {
                 />
               ))}
             </div>
+            <button
+              type="button"
+              onClick={() => setAmount(available)}
+              className={
+                amount === available
+                  ? "mt-4 rounded-md bg-primary-bg px-3 py-1.5 text-[14px] font-medium text-primary border border-primary-light"
+                  : "mt-4  rounded-md bg-bg-secondary px-3 py-1.5 text-[14px] font-medium text-text-muted hover:text-text-secondary"
+              }
+            >
+              {t("withdrawAll")} · {formatTHB(available)}
+            </button>
           </div>
 
           <div>
@@ -138,7 +149,7 @@ export function EmployeeRequestPage() {
                   onClick={() => setReason(item.value)}
                   className={
                     reason === item.value
-                      ? "rounded-full bg-primary px-3 py-2 text-[16px] font-medium text-white"
+                      ? "rounded-full bg-primary-bg px-3 py-2 text-[16px] font-medium text-primary border border-primary"
                       : "rounded-full border border-border bg-white px-3 py-2 text-[16px] font-medium text-text-secondary"
                   }
                 >
@@ -167,7 +178,7 @@ export function EmployeeRequestPage() {
             </div>
             <div className="space-y-3 p-4 text-[16px]">
               <SummaryRow
-                label={tc("employeeId")}
+                label={tc("employeeName")}
                 value={currentEmployee.nameTh}
               />
               <SummaryRow label={tc("employeeId")} value={currentEmployee.id} />

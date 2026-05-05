@@ -6,6 +6,7 @@ import { renderWithIntl } from "@/tests/i18n/test-utils";
 // Mock next/navigation
 vi.mock("@/i18n/navigation", () => ({
   useRouter: vi.fn(() => ({ push: vi.fn() })),
+  usePathname: vi.fn(() => "/th/employee/login"),
   Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
 }));
 

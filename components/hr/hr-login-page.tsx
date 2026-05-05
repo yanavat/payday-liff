@@ -6,6 +6,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
+import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 
 export function HRLoginPage() {
   const t = useTranslations("login");
@@ -40,6 +41,9 @@ export function HRLoginPage() {
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg-page px-6 py-10">
       <div className="absolute inset-0 opacity-[0.35] [background:radial-gradient(circle_at_30%_20%,var(--color-primary-bg)_0,var(--color-primary-bg)_28%,transparent_29%),radial-gradient(circle_at_72%_76%,var(--color-primary-subtle)_0,var(--color-primary-subtle)_32%,transparent_33%)]" />
+      <div className="absolute right-4 top-4 z-10">
+        <LocaleSwitcher />
+      </div>
       <section className="relative w-full max-w-[400px] rounded-xl border border-border bg-bg-canvas p-8 shadow-modal">
         <div className="mb-8 text-center">
           <BrandLogo className="mb-4" size={48} />

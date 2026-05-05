@@ -67,7 +67,13 @@ export function EmployeeHistoryPage() {
       </div>
 
       <div className="-mx-4 mb-4 overflow-x-auto px-4">
-        <TabBar tabs={tabs} value={tab} onChange={setTab} className="w-max" />
+        <TabBar
+          tabs={tabs}
+          value={tab}
+          onChange={setTab}
+          className="w-max"
+          variant="pill"
+        />
       </div>
 
       {filtered.length === 0 ? (
@@ -102,24 +108,24 @@ export function EmployeeHistoryPage() {
                 <button
                   type="button"
                   onClick={() => setExpandedId(expanded ? null : request.id)}
-                  className="flex w-full items-center gap-3 p-3 text-left h-16"
+                  className="flex w-full items-center gap-3 p-3 text-left h-20"
                 >
                   <div className="w-11 text-center">
                     <div className="font-sans text-[20px] font-bold leading-none text-primary">
                       {dateParts[0]}
                     </div>
-                    <div className="mt-1 text-[16px] text-text-muted">
+                    <div className="mt-1 text-[12px] text-text-muted">
                       {dateParts[1]}
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[16px] font-medium text-text-primary">
+                    <p className="text-[14px] font-medium text-text-primary">
                       {t("requests.title")}
                     </p>
-                    <p className="truncate font-mono text-[14px] text-text-muted">
+                    <p className="truncate font-mono text-[12px] text-text-muted">
                       {request.referenceNumber}
                     </p>
-                    <p className="truncate text-[16px] text-text-muted">
+                    <p className="truncate text-[12px] font-bold text-text-muted">
                       {t(
                         `requestWizard.reasons.${request.reason}` as keyof typeof t,
                       )}

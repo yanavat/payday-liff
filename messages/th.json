@@ -27,10 +27,16 @@
     "all": "ทั้งหมด",
     "status": "สถานะ",
     "reason": "เหตุผล",
+    "employeeName": "ชื่อพนักงาน",
+    "employeeId": "รหัสพนักงาน",
+    "requestDate": "วันที่ขอ",
     "payCycle": {
       "monthly": "รายเดือน",
       "weekly": "รายสัปดาห์"
-    }
+    },
+    "language": "ภาษา",
+    "appearance": "ธีม",
+    "darkMode": "โหมดมืด"
   },
   "nav": {
     "dashboard": "แดชบอร์ด",
@@ -226,13 +232,16 @@
       "other": "อื่นๆ"
     },
     "summaryCard": "สรุปรายการ",
+    "requestedAmount": "จำนวนที่ขอ",
+    "bankAccount": "บัญชีธนาคาร",
     "deductionWarning": "จะถูกหักวันที่ {date}",
     "enterPin": "ยืนยันด้วย PIN",
-    "editBack": "← แก้ไข",
+    "editBack": "แก้ไข",
     "successTitle": "ยื่นคำขอสำเร็จ!",
     "referenceNumber": "รหัสอ้างอิง",
     "backToHome": "กลับหน้าหลัก",
-    "shareReceipt": "แชร์ใบรับคำขอ"
+    "shareReceipt": "แชร์ใบรับคำขอ",
+    "withdrawAll": "เบิกทั้งหมด"
   },
   "history": {
     "title": "ประวัติการเบิก",

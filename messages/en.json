@@ -27,10 +27,16 @@
     "all": "All",
     "status": "Status",
     "reason": "Reason",
+    "employeeName": "Employee Name",
+    "employeeId": "Employee ID",
+    "requestDate": "Request Date",
     "payCycle": {
       "monthly": "Monthly",
       "weekly": "Weekly"
-    }
+    },
+    "language": "Language",
+    "appearance": "Appearance",
+    "darkMode": "Dark mode"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -226,19 +232,16 @@
       "other": "Other"
     },
     "summaryCard": "Summary",
+    "requestedAmount": "Requested Amount",
+    "bankAccount": "Bank Account",
     "deductionWarning": "Will be deducted on {date}",
     "enterPin": "Confirm with PIN",
-    "editBack": "← Edit",
+    "editBack": "Edit",
     "successTitle": "Request Submitted!",
     "referenceNumber": "Reference Number",
     "backToHome": "Back to Home",
-    "shareReceipt": "Share Receipt"
-  },
-  "history": {
-    "title": "Request History",
-    "thisMonth": "This Month",
-    "lastMonth": "Last Month",
-    "total": "Total",
+    "shareReceipt": "Share Receipt",
+    "withdrawAll": "Withdraw All",
     "requestedDate": "Requested",
     "approvedDate": "Approved",
     "transferDate": "Transferred",
