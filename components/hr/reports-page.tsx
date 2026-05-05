@@ -15,6 +15,7 @@ import {
 } from "@/lib/mock";
 import { formatPercent, formatTHB, formatTHBCompact } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
+import { buildReportPdf, downloadPdf } from "@/lib/pdf/pdf-export";
 
 type ReportView = "monthly" | "weekly";
 
@@ -33,6 +34,19 @@ export function ReportsPageContent() {
   const totalFees = Math.round(monthlySummary.totalApproved * 15);
 
   const exportReport = (type: "CSV" | "PDF") => {
+    if (type === "PDF") {
+      downloadPdf(
+        buildReportPdf({
+          title: tc("title"),
+          periodLabel: tc("thisMonth"),
+          totalDisbursed: monthlySummary.totalDisbursed,
+          totalRequests: monthlySummary.totalRequests,
+          approvalRate: formatPercent(approvalRate),
+        }),
+        "payday-report.pdf",
+      );
+    }
+
     toast({ variant: "success", message: tc("exportSuccess", { type }) });
   };
 

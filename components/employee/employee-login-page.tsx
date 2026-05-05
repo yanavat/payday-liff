@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { PINPad } from "@/components/ui/pin-pad";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { cn } from "@/lib/utils";
+import { authenticateEmployee } from "@/lib/auth/mock-auth";
 
 const maxAttempts = 5;
 
@@ -26,8 +27,11 @@ export function EmployeeLoginPage() {
     if (isLocked || isLoading || !employeeId || nextPin.length < 4) return;
 
     setIsLoading(true);
-    window.setTimeout(() => {
-      if (nextPin === "1234") {
+    window.setTimeout(async () => {
+      const result = await authenticateEmployee(employeeId, nextPin);
+
+      if (result.ok) {
+        window.localStorage.setItem("payday-session", result.token);
         router.push("/employee/home");
         return;
       }
@@ -50,11 +54,11 @@ export function EmployeeLoginPage() {
   return (
     <div className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden bg-primary-bg px-5 py-8">
       <div className="absolute inset-0 opacity-[0.05] [background-image:linear-gradient(135deg,#1E9E74_12%,transparent_12%,transparent_50%,#1E9E74_50%,#1E9E74_62%,transparent_62%,transparent)] [background-size:28px_28px]" />
-      <div className="absolute right-4 top-4 z-10">
+      <div className="absolute right-4 top-4 z-20">
         <LocaleSwitcher />
       </div>
 
-      <div className="relative z-10 mb-8 flex flex-col items-center">
+      <div className="relative z-10 mb-8 mt-12 flex flex-col items-center">
         <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white shadow-hover">
           <ShieldCheck className="h-8 w-8" strokeWidth={1.8} aria-hidden />
         </div>
@@ -125,14 +129,14 @@ export function EmployeeLoginPage() {
           HR: 02-xxx-xxxx
         </p>
 
-        <button
+        {/* <button
           type="button"
           disabled={isLocked}
           className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-md border border-primary bg-white text-[16px] font-semibold text-primary transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
         >
           <QrCode className="h-5 w-5" aria-hidden />
           {t("scanQr")}
-        </button>
+        </button> */}
         {!isLocked && attempts > 0 && (
           <p className="mt-3 text-center text-[16px] text-text-muted">
             {t("wrongPin", { attempts: remainingAttempts })}

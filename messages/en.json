@@ -195,6 +195,7 @@
   },
   "login": {
     "title": "Sign In",
+    "appTagline": "Earned Wage Access Platform",
     "employeeId": "Employee ID",
     "employeeIdPlaceholder": "Enter employee ID",
     "pin": "4-digit PIN",
@@ -248,12 +249,25 @@
     "transferDate": "Transferred",
     "approvedBy": "Approved By"
   },
+  "history": {
+    "title": "Withdrawal History",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "total": "Total",
+    "requestedDate": "Requested",
+    "approvedDate": "Approved",
+    "transferDate": "Transferred",
+    "approvedBy": "Approved By",
+    "exportPaySlip": "Export pay slip PDF"
+  },
   "profile": {
     "title": "Profile",
     "bankAccount": "Bank Account",
     "ewaLimit": "EWA Limit",
     "maxPercent": "Maximum",
+    "percentOfSalary": "{percent}% of salary",
     "used": "Withdrawn",
+    "usedCount": "{used} / {max} this cycle",
     "remaining": "Remaining",
     "notifications": "Notifications",
     "notifyApproved": "Notify on approval",

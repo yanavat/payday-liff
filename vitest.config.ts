@@ -16,6 +16,22 @@ export default defineConfig({
       "**/node_modules/**",
       "**/.npm-cache/**",
     ],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "json"],
+      include: [
+        "app/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "hooks/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}",
+      ],
+      exclude: [
+        "**/*.test.{ts,tsx}",
+        "tests/**",
+        "**/*.d.ts",
+        "next-env.d.ts",
+      ],
+    },
   },
   resolve: {
     alias: {

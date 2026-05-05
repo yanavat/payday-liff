@@ -195,6 +195,7 @@
   },
   "login": {
     "title": "เข้าสู่ระบบ",
+    "appTagline": "ระบบเบิกเงินเดือนล่วงหน้า",
     "employeeId": "รหัสพนักงาน",
     "employeeIdPlaceholder": "กรอกรหัสพนักงาน",
     "pin": "PIN 4 หลัก",
@@ -252,14 +253,17 @@
     "requestedDate": "วันที่ขอ",
     "approvedDate": "วันที่อนุมัติ",
     "transferDate": "วันที่โอน",
-    "approvedBy": "อนุมัติโดย"
+    "approvedBy": "อนุมัติโดย",
+    "exportPaySlip": "ส่งออกสลิป PDF"
   },
   "profile": {
     "title": "โปรไฟล์",
     "bankAccount": "บัญชีธนาคาร",
-    "ewaLimit": "วงเงิน EWA",
+    "ewaLimit": "วงเงิน",
     "maxPercent": "สูงสุด",
+    "percentOfSalary": "{percent}% ของเงินเดือน",
     "used": "เบิกไปแล้ว",
+    "usedCount": "{used} / {max} รอบนี้",
     "remaining": "คงเหลือ",
     "notifications": "การแจ้งเตือน",
     "notifyApproved": "แจ้งเตือนเมื่ออนุมัติ",

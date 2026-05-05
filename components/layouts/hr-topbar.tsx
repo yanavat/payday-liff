@@ -2,8 +2,9 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { Bell, Building2, HelpCircle, Settings } from "lucide-react";
+import { Bell, Building2, HelpCircle, LogOut, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { Avatar } from "@/components/ui/avatar";
 import { DarkModeToggle } from "@/components/ui/dark-mode-toggle";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
@@ -18,10 +19,12 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { signOut } from "@/lib/auth/session";
 import { hrUser, companyName } from "@/lib/mock";
 import { cn } from "@/lib/utils";
 
@@ -133,6 +136,7 @@ TopbarIconButton.displayName = "TopbarIconButton";
 
 export function HRTopbar() {
   const t = useTranslations("common");
+  const router = useRouter();
   const displayCompanyName = companyName.trim();
   const initials = hrUser.name
     .split(" ")
@@ -194,6 +198,14 @@ export function HRTopbar() {
               </span>
               <DarkModeToggle />
             </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={() => signOut("hr", router)}
+              className="text-red-600 focus:text-red-700"
+            >
+              <LogOut className="h-4 w-4" aria-hidden />
+              {t("logout")}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="flex items-center gap-2 rounded-lg bg-bg-canvas py-1 pl-1 pr-3 ">

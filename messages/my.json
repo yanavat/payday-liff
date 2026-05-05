@@ -69,6 +69,7 @@
   },
   "login": {
     "title": "ဝင်ရောက်မည်",
+    "appTagline": "လစာကြိုထုတ်စနစ်",
     "employeeId": "ဝန်ထမ်း ID",
     "employeeIdPlaceholder": "ဝန်ထမ်း ID ထည့်ပါ",
     "pin": "PIN (၄ လုံး)",
@@ -126,7 +127,8 @@
     "requestedDate": "တောင်းဆိုသောနေ့",
     "approvedDate": "ခွင့်ပြုသောနေ့",
     "transferDate": "လွှဲပြောင်းသောနေ့",
-    "approvedBy": "ခွင့်ပြုသူ"
+    "approvedBy": "ခွင့်ပြုသူ",
+    "exportPaySlip": "လစာစလစ် PDF ထုတ်ရန်"
   },
   "dashboard": {
     "title": "ဒက်ဆ်ဘုတ်",
@@ -259,7 +261,9 @@
     "bankAccount": "ဘဏ်အကောင့်",
     "ewaLimit": "EWA ကန့်သတ်",
     "maxPercent": "အများဆုံး",
+    "percentOfSalary": "လစာ {percent}%",
     "used": "ကြိုထုတ်ထားပြီး",
+    "usedCount": "ဒီအကြိမ်တွင် {used} / {max}",
     "remaining": "ကျန်ရှိ",
     "notifications": "အကြောင်းကြားချက်",
     "notifyApproved": "ခွင့်ပြုသောအခါ",

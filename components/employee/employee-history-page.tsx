@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -11,6 +11,7 @@ import { currentEmployee } from "@/lib/mock/currentUser";
 import { getRequestsByEmployee } from "@/lib/mock/requests";
 import { cn } from "@/lib/utils";
 import { formatTHB } from "@/lib/utils/format";
+import { buildPaySlipPdf, downloadPdf } from "@/lib/pdf/pdf-export";
 
 function formatDate(value?: string) {
   if (!value) return "-";
@@ -48,6 +49,13 @@ export function EmployeeHistoryPage() {
     tab === "all"
       ? requests
       : requests.filter((request) => request.status === tab);
+
+  function exportPaySlip(request: (typeof requests)[number]) {
+    downloadPdf(
+      buildPaySlipPdf({ employee: currentEmployee, request }),
+      `pay-slip-${request.referenceNumber}.pdf`,
+    );
+  }
 
   return (
     <div className="min-h-full bg-bg-page px-4 pb-5 pt-4">
@@ -171,6 +179,14 @@ export function EmployeeHistoryPage() {
                       label={t("requestDetail.hrNote")}
                       value={request.hrNote ?? request.employeeNote ?? "-"}
                     />
+                    <button
+                      type="button"
+                      onClick={() => exportPaySlip(request)}
+                      className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-md border border-primary bg-white text-[16px] font-semibold text-primary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    >
+                      <FileText className="h-5 w-5" aria-hidden />
+                      {t("history.exportPaySlip")}
+                    </button>
                   </div>
                 )}
               </article>

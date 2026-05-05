@@ -10,14 +10,17 @@ import {
   WalletCards,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { Avatar } from "@/components/ui/avatar";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { signOut } from "@/lib/auth/session";
 import { currentEmployee } from "@/lib/mock/currentUser";
 
 export function EmployeeProfilePage() {
   const t = useTranslations();
+  const router = useRouter();
   const [approval, setApproval] = useState(true);
   const [payday, setPayday] = useState(true);
   const [line, setLine] = useState(true);
@@ -73,13 +76,13 @@ export function EmployeeProfilePage() {
               {t("profile.maxPercent")}
             </span>
             <span className="font-semibold text-text-primary">
-              50% of salary
+              {t("profile.percentOfSalary", { percent: 100 })}
             </span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[16px]">
             <span className="text-text-secondary">{t("profile.used")}</span>
             <span className="font-semibold text-text-primary">
-              1 / 2 this cycle
+              {t("profile.usedCount", { used: 1, max: 2 })}
             </span>
           </div>
           <ProgressBar value={1} max={2} height="8px" className="mt-3" />
@@ -124,6 +127,7 @@ export function EmployeeProfilePage() {
 
         <button
           type="button"
+          onClick={() => signOut("employee", router)}
           className="flex h-12 w-full items-center justify-center gap-2 rounded-md text-[16px] font-semibold text-red-600 transition focus:outline-none focus:ring-2 focus:ring-red-200"
         >
           <LogOut className="h-5 w-5" aria-hidden />

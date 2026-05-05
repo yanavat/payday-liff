@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
+import { authenticateHR } from "@/lib/auth/mock-auth";
 
 export function HRLoginPage() {
   const t = useTranslations("login");
@@ -24,11 +25,11 @@ export function HRLoginPage() {
     setError("");
     setIsLoading(true);
 
-    window.setTimeout(() => {
-      if (
-        email.toLowerCase().trim() === "hr@paydayplus.co" &&
-        password === "123456"
-      ) {
+    window.setTimeout(async () => {
+      const result = await authenticateHR(email, password);
+
+      if (result.ok) {
+        window.localStorage.setItem("payday-session", result.token);
         router.push("/hr/dashboard");
         return;
       }

@@ -4,10 +4,24 @@ import { ReportsPageContent } from "./reports-page";
 import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
 
 const toastMock = vi.fn();
+const { downloadPdfMock } = vi.hoisted(() => ({
+  downloadPdfMock: vi.fn(),
+}));
 
 vi.mock("@/components/ui/toast", () => ({
   useToast: () => ({ toast: toastMock }),
 }));
+
+vi.mock("@/lib/pdf/pdf-export", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/pdf/pdf-export")>(
+    "@/lib/pdf/pdf-export",
+  );
+
+  return {
+    ...actual,
+    downloadPdf: downloadPdfMock,
+  };
+});
 
 const messages = {
   ...defaultMessages,
@@ -135,6 +149,10 @@ describe("ReportsPageContent", () => {
     const pdfButton = screen.getByRole("button", { name: "Export PDF" });
     fireEvent.click(pdfButton);
 
+    expect(downloadPdfMock).toHaveBeenCalledWith(
+      expect.any(Blob),
+      "payday-report.pdf",
+    );
     expect(toastMock).toHaveBeenCalledWith({
       variant: "success",
       message: "PDF exported",
