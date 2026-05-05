@@ -19,17 +19,29 @@
     "viewAll": "အားလုံးကြည့် →",
     "noData": "ဒေတာမရှိ",
     "error": "အမှားဖြစ်သွားသည်",
-    "success": "အောင်မြင်သည်"
+    "success": "အောင်မြင်သည်",
+    "pending": "စောင့်ဆိုင်းဆဲ",
+    "approved": "ခွင့်ပြုပြီး",
+    "rejected": "ငြင်းပယ်ပြီး",
+    "disbursed": "လွှဲပြောင်းပြီး",
+    "all": "အားလုံး",
+    "status": "အခြေအနေ",
+    "payCycle": {
+      "monthly": "လစဉ်",
+      "weekly": "အပတ်စဉ်"
+    }
   },
   "nav": {
     "dashboard": "ဒက်ဆ်ဘုတ်",
+    "request": "တောင်းဆို",
     "requests": "တောင်းဆိုမှုများ",
     "employees": "ဝန်ထမ်းများ",
     "reports": "အစီရင်ခံစာ",
     "settings": "ဆက်တင်",
     "home": "ပင်မ",
     "history": "မှတ်တမ်း",
-    "profile": "ပရိုဖိုင်"
+    "profile": "ပရိုဖိုင်",
+    "logout": "ထွက်ရန်"
   },
   "status": {
     "pending": "စောင့်ဆိုင်းဆဲ",
@@ -76,6 +88,7 @@
     "availableBalance": "ထုတ်ယူနိုင်သောငွေ",
     "customAmount": "ပမာဏသတ်မှတ်",
     "amountError": "ပမာဏကန့်သတ်ကျော်သည်",
+    "remainingBalance": "ကျန်ရှိပမာဏ",
     "reason": "အကြောင်းအရင်း",
     "reasons": {
       "medical": "ဆေးကုသစရိတ်",
@@ -127,7 +140,8 @@
     "reason": "အကြောင်းအရင်း",
     "requestDate": "တောင်းဆိုသောနေ့",
     "approver": "ခွင့်ပြုသူ",
-    "actions": "လုပ်ဆောင်ချက်များ"
+    "actions": "လုပ်ဆောင်ချက်များ",
+    "payCycle": "လစာကာလ"
   },
   "requestDetail": {
     "title": "တောင်းဆိုမှုအသေးစိတ်",

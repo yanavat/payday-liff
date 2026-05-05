@@ -16,6 +16,15 @@ const defaultMessages = {
     offlineBanner: "No internet connection",
     confirm: "Confirm",
     reason: "Reason",
+    pending: "Pending",
+    approved: "Approved",
+    rejected: "Rejected",
+    disbursed: "Disbursed",
+    all: "All",
+    payCycle: {
+      monthly: "Monthly",
+      weekly: "Weekly",
+    },
   },
   status: {
     pending: "Pending",
@@ -42,6 +51,7 @@ const defaultMessages = {
     selectAmount: "Select Amount",
     customAmount: "Custom Amount",
     amountError: "Amount exceeds limit",
+    remainingBalance: "Remaining balance",
     reason: "Reason",
     reasons: {
       emergency: "Emergency expenses",

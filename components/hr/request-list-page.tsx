@@ -40,8 +40,8 @@ export function RequestListPage() {
 
   const payCycleTabs: Array<{ value: PayCycleFilter; label: string }> = [
     { value: "all", label: tc("all") },
-    { value: "monthly", label: t("payCycle.monthly") },
-    { value: "weekly", label: t("payCycle.weekly") },
+    { value: "monthly", label: t("common.payCycle.monthly") },
+    { value: "weekly", label: t("common.payCycle.weekly") },
   ];
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");

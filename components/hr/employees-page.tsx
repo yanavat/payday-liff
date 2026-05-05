@@ -74,9 +74,14 @@ export function EmployeesPageContent() {
             value={payCycle}
             onChange={setPayCycle}
             options={[
-              ["all", t("payCycle.monthly") + "/" + t("payCycle.weekly")],
-              ["monthly", t("payCycle.monthly")],
-              ["weekly", t("payCycle.weekly")],
+              [
+                "all",
+                t("common.payCycle.monthly") +
+                  "/" +
+                  t("common.payCycle.weekly"),
+              ],
+              ["monthly", t("common.payCycle.monthly")],
+              ["weekly", t("common.payCycle.weekly")],
             ]}
           />
           <FilterSelect

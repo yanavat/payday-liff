@@ -184,12 +184,12 @@ export function DashboardPageContent() {
             </h2>
             <div className="mt-4 space-y-4">
               <CycleProgress
-                label={`${t("payCycle.monthly")} · ${monthlyPayCycle.daysElapsed}`}
+                label={`${t("common.payCycle.monthly")} · ${monthlyPayCycle.daysElapsed}`}
                 value={monthlyPayCycle.daysElapsed}
                 max={monthlyPayCycle.totalDays}
               />
               <CycleProgress
-                label={`${t("payCycle.weekly")} · ${weeklyPayCycle.daysElapsed}`}
+                label={`${t("common.payCycle.weekly")} · ${weeklyPayCycle.daysElapsed}`}
                 value={weeklyPayCycle.daysElapsed}
                 max={weeklyPayCycle.totalDays}
               />

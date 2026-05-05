@@ -19,17 +19,29 @@
     "viewAll": "View all →",
     "noData": "No data",
     "error": "An error occurred",
-    "success": "Success"
+    "success": "Success",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "disbursed": "Disbursed",
+    "all": "All",
+    "status": "Status",
+    "payCycle": {
+      "monthly": "Monthly",
+      "weekly": "Weekly"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
+    "request": "Request",
     "requests": "EWA Requests",
     "employees": "Employees",
     "reports": "Reports",
     "settings": "Settings",
     "home": "Home",
     "history": "History",
-    "profile": "Profile"
+    "profile": "Profile",
+    "logout": "Log out"
   },
   "status": {
     "pending": "Pending",
@@ -71,7 +83,8 @@
     "reason": "Reason",
     "requestDate": "Request Date",
     "approver": "Approver",
-    "actions": "Actions"
+    "actions": "Actions",
+    "payCycle": "Pay Cycle"
   },
   "requestDetail": {
     "title": "Request Detail",
@@ -187,6 +200,7 @@
     "availableBalance": "Available Balance",
     "customAmount": "Custom Amount",
     "amountError": "Amount exceeds your limit",
+    "remainingBalance": "Remaining balance",
     "reason": "Reason",
     "reasons": {
       "medical": "Medical expenses",

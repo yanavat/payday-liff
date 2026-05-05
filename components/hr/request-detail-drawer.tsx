@@ -146,8 +146,8 @@ export function RequestDetailDrawer({
               <div>
                 <h3 className="text-section-title text-text-primary">
                   {employee.payCycle === "monthly"
-                    ? t("payCycle.monthly")
-                    : t("payCycle.weekly")}
+                    ? t("common.payCycle.monthly")
+                    : t("common.payCycle.weekly")}
                 </h3>
                 <p className="text-caption text-text-muted">
                   {progressValue} / {progressMax} days

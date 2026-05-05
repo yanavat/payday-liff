@@ -19,17 +19,33 @@
     "viewAll": "ดูทั้งหมด →",
     "noData": "ไม่มีข้อมูล",
     "error": "เกิดข้อผิดพลาด",
-    "success": "สำเร็จ"
+    "success": "สำเร็จ",
+    "pending": "รออนุมัติ",
+    "approved": "อนุมัติแล้ว",
+    "rejected": "ปฏิเสธ",
+    "disbursed": "โอนแล้ว",
+    "all": "ทั้งหมด",
+    "status": "สถานะ",
+    "payCycle": {
+      "monthly": "รายเดือน",
+      "weekly": "รายสัปดาห์"
+    }
   },
   "nav": {
     "dashboard": "แดชบอร์ด",
+    "request": "เบิกเงิน",
     "requests": "คำขอเบิกเงิน",
     "employees": "พนักงาน",
     "reports": "รายงาน",
     "settings": "ตั้งค่า",
     "home": "หน้าหลัก",
     "history": "ประวัติ",
-    "profile": "โปรไฟล์"
+    "profile": "โปรไฟล์",
+    "logout": "ออกจากระบบ"
+  },
+  "payCycle": {
+    "monthly": "รายเดือน",
+    "weekly": "รายสัปดาห์"
   },
   "status": {
     "pending": "รออนุมัติ",
@@ -37,10 +53,6 @@
     "rejected": "ปฏิเสธ",
     "disbursed": "โอนแล้ว",
     "all": "ทั้งหมด"
-  },
-  "payCycle": {
-    "monthly": "รายเดือน",
-    "weekly": "รายสัปดาห์"
   },
   "workType": {
     "remote": "ทางไกล",
@@ -71,7 +83,8 @@
     "reason": "เหตุผล",
     "requestDate": "วันที่ขอ",
     "approver": "ผู้อนุมัติ",
-    "actions": "การดำเนินการ"
+    "actions": "การดำเนินการ",
+    "payCycle": "รอบจ่าย"
   },
   "requestDetail": {
     "title": "รายละเอียดคำขอ",
@@ -187,6 +200,7 @@
     "availableBalance": "วงเงินที่เบิกได้",
     "customAmount": "จำนวนอื่น",
     "amountError": "จำนวนเกินวงเงินที่กำหนด",
+    "remainingBalance": "คงเหลือหลังเบิก",
     "reason": "เหตุผล",
     "reasons": {
       "medical": "ค่ารักษาพยาบาล",
