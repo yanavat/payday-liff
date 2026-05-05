@@ -107,11 +107,7 @@ export function SettingsPageContent() {
               />
             </label>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <NumberField
-                label={t("maxRequests")}
-                value="2"
-                suffix="/period"
-              />
+              <NumberField label={t("maxRequests")} value="2" suffix="period" />
               <NumberField label={t("minAmount")} value="500" prefix="THB" />
               <NumberField label={t("maxPercent")} value="10000" prefix="THB" />
             </div>

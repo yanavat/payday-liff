@@ -27,7 +27,7 @@ export function TabBar({
     <div
       className={cn(
         "flex items-center gap-1",
-        variant === "pill" && "rounded-md bg-bg-sidebar p-1",
+        variant === "pill" && "rounded-md bg-bg-canvas p-1",
         variant === "underline" && "border-b border-border",
         className,
       )}
@@ -48,7 +48,7 @@ export function TabBar({
               variant === "pill" &&
                 (active
                   ? "rounded-full bg-primary text-white shadow-sm"
-                  : "rounded-full bg-white text-text-muted hover:text-text-primary hover:border-text-muted"),
+                  : "rounded-full bg-primary-bg text-text-muted hover:text-text-primary hover:border-text-muted"),
               variant === "underline" &&
                 (active
                   ? "border-b-2 border-primary text-primary"

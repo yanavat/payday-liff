@@ -340,7 +340,7 @@ export function RequestListPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 text-[13px] text-[#3d4a43]">
+                    <td className="px-4 text-[13px] text-text-secondary">
                       {employee.department}
                     </td>
                     <td className="px-4">
@@ -360,7 +360,7 @@ export function RequestListPage() {
                         {ratio}%
                       </span>
                     </td>
-                    <td className="px-4 text-[13px] text-[#3d4a43]">
+                    <td className="px-4 text-[13px] text-text-secondary">
                       {dayjs(request.requestedAt).format("DD MMM YYYY")}
                     </td>
                     <td className="px-4">

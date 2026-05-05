@@ -183,7 +183,7 @@ export function ReportsPageContent() {
                   key={item.department}
                   className="h-[52px] border-b border-border-light last:border-0"
                 >
-                  <td className="px-4 text-sm font-medium">
+                  <td className="px-4 text-sm font-medium ">
                     {item.department}
                   </td>
                   <td className="px-4 text-right font-number text-sm">
