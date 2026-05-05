@@ -26,6 +26,7 @@
     "disbursed": "Disbursed",
     "all": "All",
     "status": "Status",
+    "reason": "Reason",
     "payCycle": {
       "monthly": "Monthly",
       "weekly": "Weekly"
@@ -41,6 +42,7 @@
     "home": "Home",
     "history": "History",
     "profile": "Profile",
+    "requestOnBehalf": "Request on Behalf",
     "logout": "Log out"
   },
   "status": {
@@ -148,7 +150,21 @@
     "failed": "Failed",
     "exportCsv": "Export CSV",
     "exportPdf": "Export PDF",
-    "retryFailed": "Retry Failed"
+    "retryFailed": "Retry Failed",
+    "totalDisbursed": "Total Disbursed",
+    "total": "Total",
+    "totalAmount": "Total Amount",
+    "totalRequests": "Total Requests",
+    "avgAmount": "Avg Amount",
+    "approvalRate": "Approval Rate",
+    "totalFees": "Total Fees",
+    "disbursement": "Disbursement",
+    "transferStatus": "Transfer Status",
+    "daily30Days": "Daily (30 days)",
+    "weekly52Weeks": "Weekly (52 weeks)",
+    "items": "items",
+    "retryingTransfer": "Retrying transfer",
+    "exportSuccess": "{type} exported"
   },
   "settings": {
     "title": "Settings",

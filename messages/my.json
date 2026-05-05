@@ -26,6 +26,7 @@
     "disbursed": "လွှဲပြောင်းပြီး",
     "all": "အားလုံး",
     "status": "အခြေအနေ",
+    "reason": "အကြောင်းအရင်း",
     "payCycle": {
       "monthly": "လစဉ်",
       "weekly": "အပတ်စဉ်"
@@ -41,6 +42,7 @@
     "home": "ပင်မ",
     "history": "မှတ်တမ်း",
     "profile": "ပရိုဖိုင်",
+    "requestOnBehalf": "အစားထိုးတောင်းဆိုမည်",
     "logout": "ထွက်ရန်"
   },
   "status": {
@@ -205,7 +207,21 @@
     "failed": "မအောင်မြင်ပါ",
     "exportCsv": "CSV ထုတ်ယူ",
     "exportPdf": "PDF ထုတ်ယူ",
-    "retryFailed": "မအောင်မြင်သောများကို ထပ်စမ်း"
+    "retryFailed": "မအောင်မြင်သောများကို ထပ်စမ်း",
+    "totalDisbursed": "စုစုပေါင်းလွှဲပြောင်းပမာဏ",
+    "total": "စုစုပေါင်း",
+    "totalAmount": "စုစုပေါင်းပမာဏ",
+    "totalRequests": "စုစုပေါင်းတောင်းဆိုမှု",
+    "avgAmount": "ပျမ်းမျှပမာဏ",
+    "approvalRate": "ခွင့်ပြုမှု%",
+    "totalFees": "စုစုပေါင်းကြေးပမာဏ",
+    "disbursement": "လွှဲပြောင်းခြင်း",
+    "transferStatus": "လွှဲပြောင်းအခြေအနေ",
+    "daily30Days": "နေ့စဉ် (၃၀ ရက်)",
+    "weekly52Weeks": "အပတ်စဉ် (၅၂ ပတ်)",
+    "items": "ခု",
+    "retryingTransfer": "လွှဲပြောင်းမှုထပ်စမ်းနေသည်",
+    "exportSuccess": "{type} ထုတ်ယူပြီးပါပြီ"
   },
   "settings": {
     "title": "ဆက်တင်",

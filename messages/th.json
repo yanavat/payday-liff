@@ -26,6 +26,7 @@
     "disbursed": "โอนแล้ว",
     "all": "ทั้งหมด",
     "status": "สถานะ",
+    "reason": "เหตุผล",
     "payCycle": {
       "monthly": "รายเดือน",
       "weekly": "รายสัปดาห์"
@@ -41,6 +42,7 @@
     "home": "หน้าหลัก",
     "history": "ประวัติ",
     "profile": "โปรไฟล์",
+    "requestOnBehalf": "ยื่นคำขอแทน",
     "logout": "ออกจากระบบ"
   },
   "payCycle": {
@@ -148,7 +150,21 @@
     "failed": "ล้มเหลว",
     "exportCsv": "ส่งออก CSV",
     "exportPdf": "ส่งออก PDF",
-    "retryFailed": "ลองโอนใหม่"
+    "retryFailed": "ลองโอนใหม่",
+    "totalDisbursed": "ยอดโอนรวม",
+    "total": "รวม",
+    "totalAmount": "จำนวนเงินรวม",
+    "totalRequests": "จำนวนคำขอรวม",
+    "avgAmount": "จำนวนเฉลี่ย",
+    "approvalRate": "อัตราอนุมัติ",
+    "totalFees": "ค่าธรรมเนียมรวม",
+    "disbursement": "การโอนเงิน",
+    "transferStatus": "สถานะการโอน",
+    "daily30Days": "รายวัน (30 วัน)",
+    "weekly52Weeks": "รายสัปดาห์ (52 สัปดาห์)",
+    "items": "รายการ",
+    "retryingTransfer": "กำลังลองโอนใหม่",
+    "exportSuccess": "{type} ถูกส่งออกแล้ว"
   },
   "settings": {
     "title": "ตั้งค่า",

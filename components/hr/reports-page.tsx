@@ -33,7 +33,7 @@ export function ReportsPageContent() {
   const totalFees = Math.round(monthlySummary.totalApproved * 15);
 
   const exportReport = (type: "CSV" | "PDF") => {
-    toast({ variant: "success", message: `${type} exported` });
+    toast({ variant: "success", message: tc("exportSuccess", { type }) });
   };
 
   const totals = useMemo(() => {
@@ -101,7 +101,7 @@ export function ReportsPageContent() {
         <MetricCard
           label={tc("totalRequests")}
           value={`${monthlySummary.totalRequests}`}
-          sub="items"
+          sub={tc("items")}
         />
         <MetricCard
           label={tc("avgAmount")}
@@ -123,7 +123,7 @@ export function ReportsPageContent() {
             {tc("disbursement")}
           </h2>
           <span className="text-caption text-text-muted">
-            {view === "monthly" ? "Daily (30 days)" : "Weekly (52 weeks)"}
+            {view === "monthly" ? tc("daily30Days") : tc("weekly52Weeks")}
           </span>
         </div>
         <div className="flex h-72 items-end gap-2 overflow-x-auto border-b border-border px-2 pb-6">
@@ -140,7 +140,7 @@ export function ReportsPageContent() {
                 className="flex min-w-[24px] flex-col items-center justify-end gap-2"
               >
                 <span className="font-number text-[10px] font-medium text-text-muted">
-                  {item.count}
+                  {item.count ?? 0}
                 </span>
                 <div
                   className={cn(
@@ -148,7 +148,7 @@ export function ReportsPageContent() {
                     highlighted && "bg-primary-dark",
                   )}
                   style={{ height }}
-                  title={`${formatTHB(item.amount)} · ${item.count} items`}
+                  title={`${formatTHB(item.amount)} · ${item.count} ${tc("items")}`}
                 />
                 <span className="text-[10px] text-text-muted">
                   {"date" in item
@@ -252,12 +252,12 @@ export function ReportsPageContent() {
                         );
                         toast({
                           variant: "info",
-                          message: "Retrying transfer",
+                          message: tc("retryingTransfer"),
                         });
                       }}
                       className="mt-3 inline-flex h-8 items-center gap-2 rounded-md border border-red-300 bg-bg-canvas px-3 text-xs font-medium text-red-700"
                     >
-                      <RefreshCw className="h-3.5 w-3.5" /> Retry
+                      <RefreshCw className="h-3.5 w-3.5" /> {tc("retryFailed")}
                     </button>
                   )}
                 </div>
