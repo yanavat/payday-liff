@@ -13,7 +13,9 @@ export function EmployeeShell({ children }: { children: React.ReactNode }) {
     <div className="employee-screen">
       {!isLogin && <OfflineBanner />}
       <main className={cn("flex-1 overflow-auto", !isLogin && "pb-16")}>
-        {children}
+        <div key={pathname} className="animate-page-fade-in">
+          {children}
+        </div>
       </main>
       {!isLogin && <BottomTabBar />}
     </div>

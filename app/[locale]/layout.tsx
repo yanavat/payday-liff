@@ -4,7 +4,6 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { ToastProvider } from "@/components/ui/toast";
-import { PageTransition } from "@/components/ui/page-transition";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -51,7 +50,7 @@ export default async function LocaleLayout({
         />
         <NextIntlClientProvider messages={messages}>
           <ToastProvider>
-            <PageTransition>{children}</PageTransition>
+            {children}
           </ToastProvider>
         </NextIntlClientProvider>
       </body>
