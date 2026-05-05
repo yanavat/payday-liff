@@ -12,23 +12,22 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 
 const mainNav = [
-  { href: "/hr/dashboard", label: "แดชบอร์ด", icon: Gauge },
-  { href: "/hr/requests", label: "คำร้องขอ", icon: FileText },
-  { href: "/hr/reports", label: "รายงาน", icon: BarChart3 },
-  { href: "/hr/employees", label: "พนักงาน", icon: Users },
-  { href: "/hr/settings", label: "การตั้งค่า", icon: Settings },
+  { href: "/hr/dashboard", labelKey: "dashboard", icon: Gauge },
+  { href: "/hr/requests", labelKey: "requests", icon: FileText },
+  { href: "/hr/reports", labelKey: "reports", icon: BarChart3 },
+  { href: "/hr/employees", labelKey: "employees", icon: Users },
+  { href: "/hr/settings", labelKey: "settings", icon: Settings },
 ];
 
-const footerNav = [
-  // { href: "/hr/support", label: "สนับสนุน", icon: Headphones },
-  { href: "/", label: "ออกจากระบบ", icon: LogOut },
-];
+const footerNav = [{ href: "/", labelKey: "logout", icon: LogOut }];
 
 export function HRSidebar() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -69,7 +68,7 @@ export function HRSidebar() {
               PayDay+
             </div>
             <div className="truncate text-[10px] leading-[15px] text-text-muted">
-              แผงควบคุมผู้ดูแลระบบ HR
+              PayDay+ Admin
             </div>
           </div>
         </div>
@@ -112,7 +111,7 @@ export function HRSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              title={collapsed ? item.label : undefined}
+              title={collapsed ? t(item.labelKey as keyof typeof t) : undefined}
               className={cn(
                 "flex h-[38px] items-center gap-3 rounded-md px-3 text-sm font-medium transition",
                 collapsed && "justify-center px-0",
@@ -132,7 +131,7 @@ export function HRSidebar() {
                   collapsed ? "hidden" : "inline",
                 )}
               >
-                {item.label}
+                {t(item.labelKey as keyof typeof t)}
               </span>
             </Link>
           );
@@ -152,7 +151,7 @@ export function HRSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              title={collapsed ? item.label : undefined}
+              title={collapsed ? t(item.labelKey as keyof typeof t) : undefined}
               className={cn(
                 "flex h-[38px] items-center gap-3 rounded-md px-3 text-sm font-medium text-text-secondary transition hover:bg-primary-bg hover:text-primary-dark",
                 collapsed && "justify-center px-0",
@@ -169,7 +168,7 @@ export function HRSidebar() {
                   collapsed ? "hidden" : "inline",
                 )}
               >
-                {item.label}
+                {t(item.labelKey as keyof typeof t)}
               </span>
             </Link>
           );

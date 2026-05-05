@@ -299,13 +299,48 @@
 - [ ] Backend API (Fastify + Prisma + PostgreSQL)
 - [ ] LINE Notify integration
 - [ ] SMS notification (AWS SNS)
-- [ ] Kiosk mode (QR scan login on tablet)
+- [ ] Request withdrawal with LINE (login with LINE account)
 - [ ] Weekly pay cycle logic
 - [ ] HR/Payroll system integration (Provider pattern)
 - [ ] Audit log viewer
 - [ ] PDF export (pay slips, reports)
 - [ ] Myanmar language full translation
 - [ ] Multi-factory support
+
+---
+
+## Language Switching (i18n) — Completed
+
+- [x] Audit all components for hardcoded Thai strings (20 files, ~400 matches)
+- [x] Add missing translation keys to `my.json` (dashboard, requests, requestDetail, employees, hrRequest, reports, settings)
+- [x] Update all Employee components to use `useTranslations()`
+- [x] Update all HR components to use `useTranslations()`
+- [x] Update shared/UI components (StatusBadge, ConfirmModal, BottomTabBar, HRSidebar, HRTopbar)
+- [x] Build and verify zero errors
+
+**Files modified:**
+
+- `/messages/my.json` — added all missing Burmese translation sections
+- `/components/employee/employee-login-page.tsx`
+- `/components/employee/employee-home-page.tsx`
+- `/components/employee/employee-request-page.tsx`
+- `/components/employee/employee-history-page.tsx`
+- `/components/employee/employee-profile-page.tsx`
+- `/components/employee/bottom-tab-bar.tsx`
+- `/components/hr/hr-login-page.tsx`
+- `/components/hr/dashboard-page.tsx`
+- `/components/hr/request-list-page.tsx`
+- `/components/hr/request-detail-drawer.tsx`
+- `/components/hr/employees-page.tsx`
+- `/components/hr/reports-page.tsx`
+- `/components/hr/settings-page.tsx`
+- `/components/hr/on-behalf-request-page.tsx`
+- `/components/layouts/hr-sidebar.tsx`
+- `/components/layouts/hr-topbar.tsx`
+- `/components/ui/status-badge.tsx`
+- `/components/ui/confirm-modal.tsx`
+- `/components/ui/dark-mode-toggle.tsx`
+- `/components/ui/data-table.tsx`
 
 ---
 

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -10,16 +11,9 @@ import { departments, employees, requests } from "@/lib/mock";
 import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 
-const ewaStatusMap = {
-  eligible: { label: "มีสิทธิ์", className: "bg-green-100 text-green-800" },
-  limit_reached: {
-    label: "ใช้ครบแล้ว",
-    className: "bg-bg-secondary text-text-secondary",
-  },
-  suspended: { label: "ถูกระงับ", className: "bg-red-100 text-red-800" },
-};
-
 export function EmployeesPageContent() {
+  const t = useTranslations();
+  const tc = useTranslations("employees");
   const [query, setQuery] = useState("");
   const [department, setDepartment] = useState("all");
   const [payCycle, setPayCycle] = useState("all");
@@ -47,10 +41,10 @@ export function EmployeesPageContent() {
     <div className="max-w-[1152px] space-y-4">
       <header>
         <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
-          พนักงาน
+          {tc("title")}
         </h1>
         <p className="mt-1 text-[13px] text-text-secondary">
-          {enrolled} คน ลงทะเบียน EWA · {notEligible} คนไม่มีสิทธิ์ในขณะนี้
+          {enrolled} enrolled · {notEligible} not eligible
         </p>
       </header>
 
@@ -61,7 +55,7 @@ export function EmployeesPageContent() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="ค้นหาชื่อ หรือรหัสพนักงาน..."
+              placeholder={tc("searchPlaceholder")}
               className="h-9 w-full rounded-md border border-border bg-bg-secondary pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </label>
@@ -69,7 +63,7 @@ export function EmployeesPageContent() {
             value={department}
             onChange={setDepartment}
             options={[
-              ["all", "ทุกแผนก"],
+              ["all", t("requests.allDepartments")],
               ...departments.map(
                 (department) =>
                   [department.nameTh, department.nameTh] as [string, string],
@@ -80,19 +74,19 @@ export function EmployeesPageContent() {
             value={payCycle}
             onChange={setPayCycle}
             options={[
-              ["all", "ทุกประเภท"],
-              ["monthly", "รายเดือน"],
-              ["weekly", "รายสัปดาห์"],
+              ["all", t("payCycle.monthly") + "/" + t("payCycle.weekly")],
+              ["monthly", t("payCycle.monthly")],
+              ["weekly", t("payCycle.weekly")],
             ]}
           />
           <FilterSelect
             value={status}
             onChange={setStatus}
             options={[
-              ["all", "ทุกสถานะ"],
-              ["eligible", "มีสิทธิ์"],
-              ["limit_reached", "ใช้ครบแล้ว"],
-              ["suspended", "ถูกระงับ"],
+              ["all", t("status.all")],
+              ["eligible", t("employees.eligible")],
+              ["limit_reached", t("employees.limitReached")],
+              ["suspended", t("employees.suspended")],
             ]}
           />
         </div>
@@ -103,14 +97,16 @@ export function EmployeesPageContent() {
           <table className="w-full min-w-[980px] border-collapse">
             <thead>
               <tr className="h-10 bg-bg-secondary text-left text-[11px] font-semibold text-text-muted">
-                <th className="px-4">ชื่อ-รหัสพนักงาน</th>
-                <th className="px-4">แผนก</th>
-                <th className="px-4">ประเภทจ่าย</th>
-                <th className="px-4 text-right">เบิกได้สูงสุด</th>
-                <th className="px-4 text-right">เบิกไปแล้ว</th>
-                <th className="px-4">ครั้งที่เหลือ</th>
-                <th className="px-4">สถานะ EWA</th>
-                <th className="px-4 text-right">การดำเนินการ</th>
+                <th className="px-4">{tc("name")}</th>
+                <th className="px-4">{tc("department")}</th>
+                <th className="px-4">{tc("payCycle")}</th>
+                <th className="px-4 text-right">
+                  {t("requestDetail.maxAllowed")}
+                </th>
+                <th className="px-4 text-right">{t("profile.used")}</th>
+                <th className="px-4">{t("profile.remaining")}</th>
+                <th className="px-4">{tc("ewaSatus")}</th>
+                <th className="px-4 text-right">{t("requests.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -188,14 +184,14 @@ export function EmployeesPageContent() {
                           href={`/hr/employees/${employee.id}/request`}
                           className="inline-flex h-8 items-center rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary"
                         >
-                          ยื่นคำขอแทน
+                          {tc("requestOnBehalf")}
                         </Link>
                       ) : (
                         <button
                           disabled
                           className="h-8 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-muted opacity-50"
                         >
-                          ยื่นคำขอแทน
+                          {tc("requestOnBehalf")}
                         </button>
                       )}
                     </td>
@@ -206,10 +202,10 @@ export function EmployeesPageContent() {
           </table>
         </div>
         {rows.length === 0 && (
-          <EmptyState message="ไม่พบพนักงานที่ตรงกับเงื่อนไข" className="m-4" />
+          <EmptyState message={t("common.noData")} className="m-4" />
         )}
         <div className="border-t border-border px-4 py-3 text-caption text-text-muted">
-          แสดง {Math.min(rows.length, 20)} จาก {rows.length} รายการ
+          Showing {Math.min(rows.length, 20)} / {rows.length}
         </div>
       </section>
     </div>
@@ -240,16 +236,30 @@ function FilterSelect({
   );
 }
 
-function EWAStatusBadge({ status }: { status: keyof typeof ewaStatusMap }) {
-  const item = ewaStatusMap[status];
+const ewaStatusClassMap: Record<string, string> = {
+  eligible: "bg-green-100 text-green-800",
+  limit_reached: "bg-bg-secondary text-text-secondary",
+  suspended: "bg-red-100 text-red-800",
+};
+
+function EWAStatusBadge({
+  status,
+}: {
+  status: keyof typeof ewaStatusClassMap;
+}) {
+  const tc = useTranslations("employees");
   return (
     <span
       className={cn(
         "rounded-full px-2.5 py-1 text-badge font-medium",
-        item.className,
+        ewaStatusClassMap[status],
       )}
     >
-      {item.label}
+      {tc(
+        status === "limit_reached"
+          ? "limitReached"
+          : (status as "eligible" | "suspended"),
+      )}
     </span>
   );
 }

@@ -2,25 +2,27 @@
 
 import { ClipboardList, Home, User, WalletCards } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { getRequestsByEmployee } from "@/lib/mock/requests";
 import { currentEmployee } from "@/lib/mock/currentUser";
 
 const tabs = [
-  { label: "หน้าหลัก", href: "/employee/home", icon: Home },
-  { label: "ยื่นคำขอ", href: "/employee/request", icon: WalletCards },
-  { label: "ประวัติ", href: "/employee/history", icon: ClipboardList },
-  { label: "โปรไฟล์", href: "/employee/profile", icon: User },
+  { labelKey: "home", href: "/employee/home", icon: Home },
+  { labelKey: "request", href: "/employee/request", icon: WalletCards },
+  { labelKey: "history", href: "/employee/history", icon: ClipboardList },
+  { labelKey: "profile", href: "/employee/profile", icon: User },
 ] as const;
 
 export function BottomTabBar() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const pendingCount = getRequestsByEmployee(currentEmployee.id).filter(
     (request) => request.status === "pending",
   ).length;
 
   return (
-    <nav className="employee-bottom-tab z-20" aria-label="เมนูพนักงาน">
+    <nav className="employee-bottom-tab z-20" aria-label={t("home")}>
       {tabs.map((tab) => {
         const active = pathname === tab.href;
         const Icon = tab.icon;
@@ -44,7 +46,9 @@ export function BottomTabBar() {
                 </span>
               )}
             </span>
-            <span className="text-[16px]">{tab.label}</span>
+            <span className="text-[16px]">
+              {t(tab.labelKey as keyof typeof t)}
+            </span>
           </Link>
         );
       })}

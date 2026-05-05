@@ -1,44 +1,44 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown, Filter } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown, Filter } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface FilterOption {
-  value: string
-  label: string
+  value: string;
+  label: string;
 }
 
 interface FilterButtonProps {
-  label?: string
-  value?: string
-  options: FilterOption[]
-  onChange: (value: string) => void
-  className?: string
+  label?: string;
+  value?: string;
+  options: FilterOption[];
+  onChange: (value: string) => void;
+  className?: string;
 }
 
 export function FilterButton({
-  label = 'ตัวกรอง',
+  label = "Filter",
   value,
   options,
   onChange,
   className,
 }: FilterButtonProps) {
-  const [open, setOpen] = useState(false)
-  const rootRef = useRef<HTMLDivElement>(null)
-  const selected = options.find((option) => option.value === value)
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const selected = options.find((option) => option.value === value);
 
   useEffect(() => {
     function handleClick(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false)
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
     }
 
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
-    <div ref={rootRef} className={cn('relative inline-block', className)}>
+    <div ref={rootRef} className={cn("relative inline-block", className)}>
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -56,17 +56,19 @@ export function FilterButton({
               key={option.value}
               type="button"
               onClick={() => {
-                onChange(option.value)
-                setOpen(false)
+                onChange(option.value);
+                setOpen(false);
               }}
               className="flex h-10 w-full items-center justify-between gap-3 px-3 text-left text-sm text-text-primary hover:bg-primary-subtle focus:bg-primary-subtle focus:outline-none"
             >
               <span>{option.label}</span>
-              {option.value === value && <Check className="h-4 w-4 text-primary" aria-hidden />}
+              {option.value === value && (
+                <Check className="h-4 w-4 text-primary" aria-hidden />
+              )}
             </button>
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }

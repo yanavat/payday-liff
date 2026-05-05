@@ -3,6 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { Bell, HelpCircle, Settings } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/ui/avatar";
 import { DarkModeToggle } from "@/components/ui/dark-mode-toggle";
 import {
@@ -15,28 +16,29 @@ import {
 } from "@/components/ui/breadcrumb";
 import { hrUser } from "@/lib/mock";
 
-const SEGMENT_LABELS: Record<string, string> = {
-  hr: "แดชบอร์ด",
-  dashboard: "แดชบอร์ด",
-  requests: "คำขอ EWA",
-  reports: "รายงาน",
-  settings: "ตั้งค่า",
-  employees: "พนักงาน",
-  request: "ยื่นคำขอแทน",
+const SEGMENT_KEYS: Record<string, string> = {
+  hr: "dashboard",
+  dashboard: "dashboard",
+  requests: "requests",
+  reports: "reports",
+  settings: "settings",
+  employees: "employees",
+  request: "requestOnBehalf",
 };
 
 function HRBreadcrumb() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const parts = pathname.split("/").filter(Boolean);
   const locale = parts[0]; // "th" | "en" | "my"
   const base = `/${locale}/hr`;
 
   // Skip "hr" root — only show segments from the page level onward,
-  // and filter out dynamic ID params (not in SEGMENT_LABELS) and the
+  // and filter out dynamic ID params (not in SEGMENT_KEYS) and the
   // dashboard segment since it is already represented by the fixed root crumb
   const segments = parts
     .slice(2)
-    .filter((seg) => seg in SEGMENT_LABELS && seg !== "dashboard");
+    .filter((seg) => seg in SEGMENT_KEYS && seg !== "dashboard");
 
   // Build dynamic crumbs for labeled segments
   const dynamicCrumbs = segments.map((seg, i) => {
@@ -45,13 +47,13 @@ function HRBreadcrumb() {
     let labeledCount = 0;
     for (const part of parts.slice(2)) {
       accumulated += `/${part}`;
-      if (part in SEGMENT_LABELS) {
+      if (part in SEGMENT_KEYS) {
         labeledCount++;
         if (labeledCount === i + 1) break;
       }
     }
     return {
-      label: SEGMENT_LABELS[seg],
+      label: t(SEGMENT_KEYS[seg] as keyof typeof t),
       href: accumulated,
       isLast: i === segments.length - 1,
     };
@@ -60,7 +62,7 @@ function HRBreadcrumb() {
   // Prepend fixed Dashboard root crumb
   const crumbs = [
     {
-      label: SEGMENT_LABELS.hr,
+      label: t("dashboard"),
       href: `${base}/dashboard`,
       isLast: dynamicCrumbs.length === 0,
     },

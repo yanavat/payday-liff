@@ -43,7 +43,7 @@ export function DataTable<TData extends object>({
   onSelectChange,
   pageSize = 20,
   totalCount,
-  emptyMessage = "ไม่มีข้อมูล",
+  emptyMessage = "No data",
   className,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -208,7 +208,7 @@ export function DataTable<TData extends object>({
       {pageCount > 1 && (
         <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-caption text-text-muted">
           <span>
-            แสดง {start}-{end} จาก {count} รายการ
+            Showing {start}-{end} of {count}
           </span>
           <div className="flex items-center gap-1">
             <button

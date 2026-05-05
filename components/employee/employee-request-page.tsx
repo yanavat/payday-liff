@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Check, Share2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { PINPad } from "@/components/ui/pin-pad";
 import { QuickAmountButton } from "@/components/ui/quick-amount-button";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -13,11 +14,11 @@ import { formatTHB } from "@/lib/utils/format";
 const available = 3500;
 const quickAmounts = [1000, 2000, 3000];
 const reasonChips = [
-  { value: "emergency", label: "ค่าใช้จ่ายฉุกเฉิน" },
-  { value: "medical", label: "ค่ารักษาพยาบาล" },
-  { value: "education", label: "ค่าเล่าเรียนบุตร" },
-  { value: "utility", label: "ค่าใช้จ่ายในบ้าน" },
-  { value: "other", label: "อื่นๆ" },
+  { value: "emergency" },
+  { value: "medical" },
+  { value: "education" },
+  { value: "utility" },
+  { value: "other" },
 ];
 
 export function EmployeeRequestPage() {
@@ -29,16 +30,19 @@ export function EmployeeRequestPage() {
 
   const amountValid = amount > 0 && amount <= available;
   const remaining = Math.max(available - amount, 0);
+  const t = useTranslations("requestWizard");
+  const tc = useTranslations("common");
+
   const reasonLabel = useMemo(
-    () => reasonChips.find((item) => item.value === reason)?.label ?? "ไม่ระบุ",
-    [reason],
+    () => t(`reasons.${reason}` as keyof typeof t),
+    [reason, t],
   );
 
   function confirmRequest() {
     if (pin.length < 4) return;
     if (pin !== "1234") {
       setPin("");
-      setPinError("PIN ไม่ถูกต้อง กรุณาลองใหม่");
+      setPinError(tc("error"));
       return;
     }
     setStep(3);
@@ -48,15 +52,13 @@ export function EmployeeRequestPage() {
     <div className="min-h-full bg-bg-page px-4 pb-5 pt-4">
       <header className="mb-4">
         <h1 className="text-[22px] font-semibold leading-tight text-text-primary">
-          ยื่นคำขอเบิก
+          {t("step1")}
         </h1>
-        <p className="mt-1 text-[16px] text-text-muted">
-          ทำรายการได้ภายในไม่กี่ขั้นตอน
-        </p>
+        <p className="mt-1 text-[16px] text-text-muted">{tc("next")}</p>
       </header>
 
       <StepIndicator
-        steps={["เลือกจำนวน", "ยืนยัน", "เสร็จสิ้น"]}
+        steps={[t("step1"), t("step2"), t("step3")]}
         currentStep={step}
         className="mb-4"
       />
@@ -65,7 +67,7 @@ export function EmployeeRequestPage() {
         <section className="space-y-4">
           <div className="rounded-xl bg-primary-bg p-4">
             <p className="text-[16px] text-text-secondary">
-              เบิกได้สูงสุดวันนี้
+              {t("availableBalance")}
             </p>
             <p className="mt-1 font-sans text-[28px] font-bold leading-tight text-primary">
               {formatTHB(available)}
@@ -74,7 +76,7 @@ export function EmployeeRequestPage() {
 
           <div>
             <label className="mb-2 block text-[16px] font-semibold text-text-primary">
-              เลือกจำนวนด่วน
+              {t("customAmount")}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {quickAmounts.map((item) => (
@@ -95,11 +97,11 @@ export function EmployeeRequestPage() {
               className="mb-2 block text-[16px] font-semibold text-text-primary"
               htmlFor="custom-amount"
             >
-              หรือพิมพ์จำนวนเอง
+              {t("customAmount")}
             </label>
             <div className="flex h-14 items-center rounded-md border border-border bg-white px-4 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
               <span className="mr-2 text-[18px] font-semibold text-text-muted">
-                ฿
+                THB
               </span>
               <input
                 id="custom-amount"
@@ -119,14 +121,14 @@ export function EmployeeRequestPage() {
               }
             >
               {amountValid
-                ? `คงเหลือเบิกได้: ${formatTHB(remaining)}`
-                : `เกินวงเงิน กรุณาใส่ไม่เกิน ${formatTHB(available)}`}
+                ? `${t("remainingBalance")}: ${formatTHB(remaining)}`
+                : t("amountError")}
             </p>
           </div>
 
           <div>
             <div className="mb-2 text-[16px] font-semibold text-text-primary">
-              เหตุผล (ไม่บังคับ)
+              {t("reason")}
             </div>
             <div className="flex flex-wrap gap-2">
               {reasonChips.map((item) => (
@@ -140,7 +142,7 @@ export function EmployeeRequestPage() {
                       : "rounded-full border border-border bg-white px-3 py-2 text-[16px] font-medium text-text-secondary"
                   }
                 >
-                  {item.label}
+                  {t(`reasons.${item.value}` as keyof typeof t)}
                 </button>
               ))}
             </div>
@@ -152,7 +154,7 @@ export function EmployeeRequestPage() {
             onClick={() => setStep(2)}
             className="flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            ถัดไป →
+            {tc("next")} →
           </button>
         </section>
       )}
@@ -161,32 +163,35 @@ export function EmployeeRequestPage() {
         <section className="space-y-4">
           <div className="rounded-lg border border-border bg-white shadow-card">
             <div className="border-b border-border-light p-4 text-[16px] font-semibold text-text-primary">
-              สรุปคำขอเบิก EWA
+              {t("summaryCard")}
             </div>
             <div className="space-y-3 p-4 text-[16px]">
-              <SummaryRow label="ชื่อพนักงาน" value={currentEmployee.nameTh} />
-              <SummaryRow label="รหัสพนักงาน" value={currentEmployee.id} />
               <SummaryRow
-                label="จำนวนที่ขอ"
+                label={tc("employeeId")}
+                value={currentEmployee.nameTh}
+              />
+              <SummaryRow label={tc("employeeId")} value={currentEmployee.id} />
+              <SummaryRow
+                label={t("requestedAmount")}
                 value={formatTHB(amount)}
                 highlight
               />
-              <SummaryRow label="เหตุผล" value={reasonLabel} />
+              <SummaryRow label={t("reason")} value={reasonLabel} />
               <SummaryRow
-                label="บัญชีรับเงิน"
+                label={t("bankAccount")}
                 value={currentEmployee.bankAccountMasked}
               />
-              <SummaryRow label="ประมาณวันโอน" value="ภายใน 1 วันทำการ" />
+              <SummaryRow label={tc("requestDate")} value="1 day" />
             </div>
           </div>
 
           <div className="rounded-md border-l-4 border-amber-400 bg-amber-50 p-3 text-[16px] text-amber-800">
-            จำนวน {formatTHB(amount)} จะถูกหักออกจากเงินเดือนวันที่ 31 พ.ค. 2568
+            {t("deductionWarning", { date: "31/05/2025" })}
           </div>
 
           <div className="rounded-lg border border-border bg-white p-4 shadow-card">
             <div className="mb-4 text-center text-[16px] font-semibold text-text-primary">
-              ยืนยันตัวตนด้วย PIN 4 หลัก
+              {t("enterPin")}
             </div>
             {pinError && (
               <p className="mb-3 text-center text-[16px] font-medium text-red-600">
@@ -209,14 +214,14 @@ export function EmployeeRequestPage() {
             onClick={confirmRequest}
             className="flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            ยืนยันการขอเบิก
+            {tc("confirm")}
           </button>
           <button
             type="button"
             onClick={() => setStep(1)}
             className="flex h-12 w-full items-center justify-center text-[16px] font-semibold text-text-secondary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
-            ← แก้ไข
+            ← {t("editBack")}
           </button>
         </section>
       )}
@@ -227,34 +232,36 @@ export function EmployeeRequestPage() {
             <Check className="h-10 w-10" strokeWidth={2.4} aria-hidden />
           </div>
           <h2 className="text-[22px] font-bold text-text-primary">
-            ส่งคำขอสำเร็จ!
+            {t("successTitle")}
           </h2>
-          <p className="mt-2 text-[16px] text-text-muted">
-            HR จะตรวจสอบและแจ้งผลภายใน 2 ชั่วโมง
-          </p>
+          <p className="mt-2 text-[16px] text-text-muted">{tc("success")}</p>
 
           <div className="mt-6 w-full rounded-lg bg-primary-bg p-4 text-left text-[16px]">
-            <SummaryRow label="เลขที่อ้างอิง" value="EWA-20250501-041" />
-            <SummaryRow label="จำนวน" value={formatTHB(amount)} highlight />
+            <SummaryRow label={t("referenceNumber")} value="EWA-20250501-041" />
+            <SummaryRow
+              label={t("requestedAmount")}
+              value={formatTHB(amount)}
+              highlight
+            />
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-text-secondary">สถานะ</span>
+              <span className="text-text-secondary">{tc("status")}</span>
               <StatusBadge status="pending" />
             </div>
-            <SummaryRow label="วันที่" value="01/05/2568 · 09:32 น." />
+            <SummaryRow label={tc("requestDate")} value="01/05/2568 · 09:32" />
           </div>
 
           <Link
             href="/employee/home"
             className="mt-6 flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
-            กลับหน้าหลัก
+            {t("backToHome")}
           </Link>
           <button
             type="button"
             className="mt-3 flex h-[52px] w-full items-center justify-center gap-2 rounded-md border border-primary bg-white text-[16px] font-semibold text-primary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             <Share2 className="h-5 w-5" aria-hidden />
-            แชร์ใบรับคำขอ
+            {t("shareReceipt")}
           </button>
         </section>
       )}

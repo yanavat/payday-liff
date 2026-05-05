@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { QrCode, ShieldCheck } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { PINPad } from "@/components/ui/pin-pad";
 import { cn } from "@/lib/utils";
 
 const maxAttempts = 5;
 
 export function EmployeeLoginPage() {
+  const t = useTranslations("login");
   const router = useRouter();
   const [employeeId, setEmployeeId] = useState("EMP-0001");
   const [pin, setPin] = useState("");
@@ -37,11 +39,11 @@ export function EmployeeLoginPage() {
 
       if (nextAttempts >= maxAttempts) {
         setIsLocked(true);
-        setError("บัญชีถูกล็อก — กรุณาลองใหม่ใน 30 นาที");
+        setError(t("locked"));
         return;
       }
 
-      setError(`PIN ไม่ถูกต้อง เหลือ ${maxAttempts - nextAttempts} ครั้ง`);
+      setError(t("wrongPin", { attempts: maxAttempts - nextAttempts }));
     }, 350);
   }
 
@@ -71,15 +73,13 @@ export function EmployeeLoginPage() {
         <h1 className="text-2xl font-bold leading-tight text-primary">
           PayDay+
         </h1>
-        <p className="mt-1 text-[16px] text-text-muted">
-          เบิกเงินเดือนล่วงหน้า ง่าย รวดเร็ว
-        </p>
+        <p className="mt-1 text-[16px] text-text-muted">{t("appTagline")}</p>
       </div>
 
       <section className="relative z-10 rounded-xl bg-white p-6 shadow-modal">
         {isLocked && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-[16px] font-medium text-red-700">
-            บัญชีถูกล็อก — กรุณาลองใหม่ใน 30 นาที
+            {t("locked")}
             <div className="mt-1 font-mono text-[16px]">29:45</div>
           </div>
         )}
@@ -93,7 +93,7 @@ export function EmployeeLoginPage() {
           className="mb-2 block text-[16px] font-semibold text-text-primary"
           htmlFor="employee-id"
         >
-          รหัสพนักงาน
+          {t("employeeId")}
         </label>
         <input
           id="employee-id"
@@ -103,12 +103,12 @@ export function EmployeeLoginPage() {
           disabled={isLocked}
           value={employeeId}
           onChange={(event) => setEmployeeId(event.target.value)}
-          placeholder="กรอกรหัสพนักงาน เช่น EMP-0041"
+          placeholder={t("employeeIdPlaceholder")}
           className="mb-5 h-14 w-full rounded-md border border-border bg-bg-secondary px-4 text-[16px] font-medium text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
         />
 
         <div className="mb-3 text-center text-[16px] font-semibold text-text-primary">
-          PIN 4 หลัก
+          {t("pin")}
         </div>
         <PINPad
           value={pin}
@@ -124,17 +124,17 @@ export function EmployeeLoginPage() {
           onClick={() => submitLogin()}
           className="mt-6 flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[18px] font-semibold text-white shadow-card transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isLoading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+          {isLoading ? t("loading") : t("loginButton")}
         </button>
 
         <button
           type="button"
           className="mt-4 flex h-[48px] w-full items-center justify-center text-[18px] font-medium text-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
-          ลืม PIN?
+          {t("forgotPin")}
         </button>
         <p className="mt-1 text-center text-[16px] text-text-muted">
-          ติดต่อ HR ชั้น 1 โทร. 02-xxx-xxxx
+          HR: 02-xxx-xxxx
         </p>
 
         <button
@@ -143,11 +143,11 @@ export function EmployeeLoginPage() {
           className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-md border border-primary bg-white text-[16px] font-semibold text-primary transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
         >
           <QrCode className="h-5 w-5" aria-hidden />
-          สแกน QR บัตรพนักงาน
+          {t("scanQr")}
         </button>
         {!isLocked && attempts > 0 && (
           <p className="mt-3 text-center text-[16px] text-text-muted">
-            เหลือโอกาสเข้าสู่ระบบ {remainingAttempts} ครั้ง
+            {t("wrongPin", { attempts: remainingAttempts })}
           </p>
         )}
       </section>

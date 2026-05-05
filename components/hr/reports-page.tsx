@@ -5,6 +5,7 @@ import { Download, FileText, RefreshCw } from "lucide-react";
 import { MetricCard } from "@/components/ui/metric-card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useToast } from "@/components/ui/toast";
+import { useTranslations } from "next-intl";
 import {
   dailyDisbursements,
   departmentReports,
@@ -19,6 +20,8 @@ type ReportView = "monthly" | "weekly";
 
 export function ReportsPageContent() {
   const { toast } = useToast();
+  const t = useTranslations();
+  const tc = useTranslations("reports");
   const [view, setView] = useState<ReportView>("monthly");
   const [failedRetried, setFailedRetried] = useState<string[]>([]);
   const chartData =
@@ -30,7 +33,7 @@ export function ReportsPageContent() {
   const totalFees = Math.round(monthlySummary.totalApproved * 15);
 
   const exportReport = (type: "CSV" | "PDF") => {
-    toast({ variant: "success", message: `เตรียมไฟล์ ${type} เรียบร้อยแล้ว` });
+    toast({ variant: "success", message: `${type} exported` });
   };
 
   const totals = useMemo(() => {
@@ -48,29 +51,27 @@ export function ReportsPageContent() {
       <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
-            รายงาน EWA
+            {tc("title")}
           </h1>
-          <p className="mt-1 text-[13px] text-text-secondary">
-            รายงานการใช้งาน EWA ของบริษัท
-          </p>
+          <p className="mt-1 text-[13px] text-text-secondary">{tc("title")}</p>
         </div>
         <div className="flex items-center gap-2">
           <select className="h-9 rounded-md border border-border bg-bg-canvas px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
-            <option>เดือนนี้</option>
-            <option>เดือนที่แล้ว</option>
-            <option>กำหนดเอง</option>
+            <option>{tc("thisMonth")}</option>
+            <option>{tc("lastMonth")}</option>
+            <option>{tc("custom")}</option>
           </select>
           <button
             onClick={() => exportReport("CSV")}
             className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium hover:bg-bg-secondary"
           >
-            <Download className="h-4 w-4" /> Export CSV
+            <Download className="h-4 w-4" /> {tc("exportCsv")}
           </button>
           <button
             onClick={() => exportReport("PDF")}
             className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium hover:bg-bg-secondary"
           >
-            <FileText className="h-4 w-4" /> Export PDF
+            <FileText className="h-4 w-4" /> {tc("exportPdf")}
           </button>
         </div>
       </header>
@@ -81,40 +82,48 @@ export function ReportsPageContent() {
             active={view === "monthly"}
             onClick={() => setView("monthly")}
           >
-            รายเดือน
+            {tc("monthlyView")}
           </ToggleButton>
           <ToggleButton
             active={view === "weekly"}
             onClick={() => setView("weekly")}
           >
-            รายสัปดาห์
+            {tc("weeklyView")}
           </ToggleButton>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <MetricCard
-          label="ยอดเบิกจ่ายทั้งหมด"
+          label={tc("totalDisbursed")}
           value={formatTHBCompact(monthlySummary.totalDisbursed)}
         />
         <MetricCard
-          label="จำนวนคำขอ"
+          label={tc("totalRequests")}
           value={`${monthlySummary.totalRequests}`}
-          sub="รายการ"
+          sub="items"
         />
         <MetricCard
-          label="เฉลี่ยต่อคำขอ"
+          label={tc("avgAmount")}
           value={formatTHBCompact(monthlySummary.avgAmount)}
         />
-        <MetricCard label="อัตราอนุมัติ" value={formatPercent(approvalRate)} />
-        <MetricCard label="ค่าธรรมเนียม" value={formatTHBCompact(totalFees)} />
+        <MetricCard
+          label={tc("approvalRate")}
+          value={formatPercent(approvalRate)}
+        />
+        <MetricCard
+          label={tc("totalFees")}
+          value={formatTHBCompact(totalFees)}
+        />
       </div>
 
       <section className="rounded-lg border border-border bg-bg-canvas p-5 shadow-card">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-section-title text-text-primary">ยอดเบิกจ่าย</h2>
+          <h2 className="text-section-title text-text-primary">
+            {tc("disbursement")}
+          </h2>
           <span className="text-caption text-text-muted">
-            {view === "monthly" ? "รายวัน 30 แท่ง" : "รายสัปดาห์ 52 แท่ง"}
+            {view === "monthly" ? "Daily (30 days)" : "Weekly (52 weeks)"}
           </span>
         </div>
         <div className="flex h-72 items-end gap-2 overflow-x-auto border-b border-border px-2 pb-6">
@@ -139,7 +148,7 @@ export function ReportsPageContent() {
                     highlighted && "bg-primary-dark",
                   )}
                   style={{ height }}
-                  title={`${formatTHB(item.amount)} · ${item.count} รายการ`}
+                  title={`${formatTHB(item.amount)} · ${item.count} items`}
                 />
                 <span className="text-[10px] text-text-muted">
                   {"date" in item
@@ -155,15 +164,17 @@ export function ReportsPageContent() {
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_420px]">
         <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card">
           <div className="border-b border-border px-5 py-3.5">
-            <h2 className="text-section-title text-text-primary">แยกตามแผนก</h2>
+            <h2 className="text-section-title text-text-primary">
+              {tc("departmentBreakdown")}
+            </h2>
           </div>
           <table className="w-full border-collapse">
             <thead>
               <tr className="h-10 bg-bg-secondary text-left text-[11px] font-semibold text-text-muted">
-                <th className="px-4">แผนก</th>
-                <th className="px-4 text-right">จำนวนคำขอ</th>
-                <th className="px-4 text-right">ยอดรวม</th>
-                <th className="px-4 text-right">เฉลี่ย</th>
+                <th className="px-4">{t("employees.department")}</th>
+                <th className="px-4 text-right">{tc("totalRequests")}</th>
+                <th className="px-4 text-right">{tc("totalAmount")}</th>
+                <th className="px-4 text-right">{tc("avgAmount")}</th>
               </tr>
             </thead>
             <tbody>
@@ -187,7 +198,7 @@ export function ReportsPageContent() {
                 </tr>
               ))}
               <tr className="h-[52px] bg-bg-secondary font-semibold">
-                <td className="px-4 text-sm">รวม</td>
+                <td className="px-4 text-sm">{tc("total")}</td>
                 <td className="px-4 text-right font-number text-sm">
                   {totals.totalRequests}
                 </td>
@@ -207,7 +218,7 @@ export function ReportsPageContent() {
         <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card">
           <div className="border-b border-border px-5 py-3.5">
             <h2 className="text-section-title text-text-primary">
-              สถานะการโอนเงิน
+              {tc("transferStatus")}
             </h2>
           </div>
           <div className="divide-y divide-border-light">
@@ -241,12 +252,12 @@ export function ReportsPageContent() {
                         );
                         toast({
                           variant: "info",
-                          message: "กำลังลองโอนเงินอีกครั้ง",
+                          message: "Retrying transfer",
                         });
                       }}
                       className="mt-3 inline-flex h-8 items-center gap-2 rounded-md border border-red-300 bg-bg-canvas px-3 text-xs font-medium text-red-700"
                     >
-                      <RefreshCw className="h-3.5 w-3.5" /> ลองใหม่
+                      <RefreshCw className="h-3.5 w-3.5" /> Retry
                     </button>
                   )}
                 </div>

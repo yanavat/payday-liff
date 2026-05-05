@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TabBar, type TabItem } from "@/components/ui/tab-bar";
@@ -10,22 +11,6 @@ import { currentEmployee } from "@/lib/mock/currentUser";
 import { getRequestsByEmployee } from "@/lib/mock/requests";
 import { cn } from "@/lib/utils";
 import { formatTHB } from "@/lib/utils/format";
-
-const tabs: TabItem[] = [
-  { value: "all", label: "ทั้งหมด" },
-  { value: "pending", label: "รออนุมัติ" },
-  { value: "approved", label: "อนุมัติแล้ว" },
-  { value: "disbursed", label: "โอนแล้ว" },
-  { value: "rejected", label: "ปฏิเสธ" },
-];
-
-const reasonLabels: Record<string, string> = {
-  medical: "ค่ารักษาพยาบาล",
-  education: "ค่าเล่าเรียนบุตร",
-  emergency: "ค่าใช้จ่ายฉุกเฉิน",
-  utility: "ค่าใช้จ่ายในบ้าน",
-  other: "อื่นๆ",
-};
 
 function formatDate(value?: string) {
   if (!value) return "-";
@@ -39,6 +24,14 @@ function formatDate(value?: string) {
 }
 
 export function EmployeeHistoryPage() {
+  const t = useTranslations();
+  const tabs: TabItem[] = [
+    { value: "all", label: t("status.all") },
+    { value: "pending", label: t("status.pending") },
+    { value: "approved", label: t("status.approved") },
+    { value: "disbursed", label: t("status.disbursed") },
+    { value: "rejected", label: t("status.rejected") },
+  ];
   const [tab, setTab] = useState("all");
   const [expandedId, setExpandedId] = useState<string | null>(
     "EWA-2025-000014",
@@ -60,18 +53,16 @@ export function EmployeeHistoryPage() {
     <div className="min-h-full bg-bg-page px-4 pb-5 pt-4">
       <header className="mb-4">
         <h1 className="text-[22px] font-semibold leading-tight text-text-primary">
-          ประวัติการเบิก
+          {t("history.title")}
         </h1>
-        <p className="mt-1 text-[16px] text-text-muted">
-          ตรวจสอบสถานะและรายละเอียดคำขอ
-        </p>
+        <p className="mt-1 text-[16px] text-text-muted">{t("history.total")}</p>
       </header>
 
       <div className="-mx-4 mb-4 overflow-x-auto px-4">
         <div className="flex min-w-max gap-2">
-          <SummaryCard label="รอบนี้" value="฿5,500 · 2 รายการ" />
-          <SummaryCard label="เดือนที่แล้ว" value="฿5,500 · 2 รายการ" />
-          <SummaryCard label="รวมทั้งหมด" value="฿24,000 · 9 รายการ" />
+          <SummaryCard label={t("history.thisMonth")} value="THB 5,500 · 2" />
+          <SummaryCard label={t("history.lastMonth")} value="THB 5,500 · 2" />
+          <SummaryCard label={t("history.total")} value="THB 24,000 · 9" />
         </div>
       </div>
 
@@ -81,14 +72,14 @@ export function EmployeeHistoryPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          message="ไม่มีคำขอในสถานะนี้"
-          description="ลองเปลี่ยนตัวกรอง หรือเริ่มยื่นคำขอใหม่"
+          message={t("common.noData")}
+          description={t("home.requestCta")}
           action={
             <Link
               href="/employee/request"
               className="rounded-md bg-primary px-4 py-2 text-[16px] font-semibold text-white"
             >
-              ยื่นคำขอเลย
+              {t("requestWizard.step1")}
             </Link>
           }
         />
@@ -123,13 +114,15 @@ export function EmployeeHistoryPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[16px] font-medium text-text-primary">
-                      คำขอ EWA
+                      {t("requests.title")}
                     </p>
                     <p className="truncate font-mono text-[14px] text-text-muted">
                       {request.referenceNumber}
                     </p>
                     <p className="truncate text-[16px] text-text-muted">
-                      {reasonLabels[request.reason]}
+                      {t(
+                        `requestWizard.reasons.${request.reason}` as keyof typeof t,
+                      )}
                     </p>
                   </div>
                   <div className="text-right">
@@ -149,27 +142,27 @@ export function EmployeeHistoryPage() {
                 {expanded && (
                   <div className="border-t border-border-light bg-bg-secondary p-4 text-[16px]">
                     <DetailRow
-                      label="วันที่ขอ"
+                      label={t("history.requestedDate")}
                       value={formatDate(request.requestedAt)}
                     />
                     <DetailRow
-                      label="วันที่อนุมัติ"
+                      label={t("history.approvedDate")}
                       value={formatDate(request.approvedAt)}
                     />
                     <DetailRow
-                      label="อนุมัติโดย"
+                      label={t("history.approvedBy")}
                       value={request.approvedBy ?? "-"}
                     />
                     <DetailRow
-                      label="วันที่โอน"
+                      label={t("history.transferDate")}
                       value={formatDate(request.disbursedAt)}
                     />
                     <DetailRow
-                      label="บัญชีที่รับ"
+                      label={t("profile.bankAccount")}
                       value={currentEmployee.bankAccountMasked}
                     />
                     <DetailRow
-                      label="หมายเหตุ HR"
+                      label={t("requestDetail.hrNote")}
                       value={request.hrNote ?? request.employeeNote ?? "-"}
                     />
                   </div>
@@ -181,7 +174,7 @@ export function EmployeeHistoryPage() {
             type="button"
             className="mt-3 flex h-12 w-full items-center justify-center rounded-md border border-border bg-white text-[16px] font-semibold text-text-secondary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
-            โหลดเพิ่ม
+            {t("common.loading")}
           </button>
         </div>
       )}

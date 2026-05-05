@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface ConfirmModalProps {
@@ -23,13 +24,17 @@ export function ConfirmModal({
   onConfirm,
   title,
   message,
-  confirmLabel = "ยืนยัน",
-  cancelLabel = "ยกเลิก",
+  confirmLabel,
+  cancelLabel,
   variant = "primary",
   hasReasonInput = false,
-  reasonLabel = "เหตุผล",
+  reasonLabel,
   isLoading = false,
 }: ConfirmModalProps) {
+  const t = useTranslations("common");
+  const _confirmLabel = confirmLabel || t("confirm");
+  const _cancelLabel = cancelLabel || t("cancel");
+  const _reasonLabel = reasonLabel || t("reason");
   const [reason, setReason] = useState("");
   const reasonValid = !hasReasonInput || reason.trim().length >= 10;
 
@@ -52,7 +57,7 @@ export function ConfirmModal({
         <p className="mt-2 text-sm leading-7 text-text-secondary">{message}</p>
         {hasReasonInput && (
           <label className="mt-4 block">
-            <span className="text-label text-text-muted">{reasonLabel}</span>
+            <span className="text-label text-text-muted">{_reasonLabel}</span>
             <textarea
               value={reason}
               onChange={(event) => setReason(event.target.value)}
@@ -61,7 +66,7 @@ export function ConfirmModal({
             />
             {!reasonValid && (
               <span className="mt-1 block text-caption text-red-600">
-                กรุณาระบุอย่างน้อย 10 ตัวอักษร
+                Min 10 chars
               </span>
             )}
           </label>
@@ -72,7 +77,7 @@ export function ConfirmModal({
             onClick={onClose}
             className="h-9 rounded-md border border-border bg-bg-canvas px-4 text-sm font-medium text-text-primary hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
-            {cancelLabel}
+            {_cancelLabel}
           </button>
           <button
             type="button"
@@ -87,7 +92,7 @@ export function ConfirmModal({
                 : "bg-red-600 hover:bg-red-700",
             )}
           >
-            {isLoading ? "กำลังดำเนินการ..." : confirmLabel}
+            {isLoading ? t("loading") : _confirmLabel}
           </button>
         </div>
       </div>

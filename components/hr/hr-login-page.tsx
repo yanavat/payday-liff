@@ -1,18 +1,14 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  LockKeyhole,
-  Mail,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, LockKeyhole, Mail } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 
 export function HRLoginPage() {
+  const t = useTranslations("login");
   const router = useRouter();
   const [email, setEmail] = useState("hr@paydayplus.co");
   const [password, setPassword] = useState("");
@@ -37,7 +33,7 @@ export function HRLoginPage() {
       }
 
       setIsLoading(false);
-      setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+      setError(t("wrongPin", { attempts: 0 }));
     }, 500);
   }
 
@@ -51,11 +47,9 @@ export function HRLoginPage() {
             PayDay+
           </p>
           <h1 className="mt-2 text-2xl font-bold leading-tight text-text-primary">
-            เข้าสู่ระบบ HR
+            {t("title")}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-text-muted">
-            ระบบรับคำขอเงินล่วงหน้าพนักงาน
-          </p>
+          <p className="mt-2 text-sm leading-6 text-text-muted">PayDay+ HR</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,7 +58,7 @@ export function HRLoginPage() {
               htmlFor="hr-email"
               className="mb-2 block text-sm font-medium text-text-primary"
             >
-              อีเมล
+              Email
             </label>
             <div
               className={cn(
@@ -85,7 +79,7 @@ export function HRLoginPage() {
                 disabled={isLoading}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="name@company.co.th"
+                placeholder="hr@paydayplus.co"
                 className="min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
               />
             </div>
@@ -97,13 +91,13 @@ export function HRLoginPage() {
                 htmlFor="hr-password"
                 className="block text-sm font-medium text-text-primary"
               >
-                รหัสผ่าน
+                Password
               </label>
               <Link
                 href="/hr/forgot-password"
                 className="text-xs font-medium text-text-muted transition hover:text-primary"
               >
-                ลืมรหัสผ่าน?
+                {t("forgotPin")}
               </Link>
             </div>
             <div
@@ -125,7 +119,7 @@ export function HRLoginPage() {
                 disabled={isLoading}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="กรอกรหัสผ่าน"
+                placeholder="******"
                 className="min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
               />
               <button
@@ -133,7 +127,7 @@ export function HRLoginPage() {
                 disabled={isLoading}
                 onClick={() => setShowPassword((value) => !value)}
                 className="ml-2 flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition hover:bg-bg-canvas hover:text-text-primary disabled:cursor-not-allowed"
-                aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
+                aria-label={showPassword ? "Hide" : "Show"}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" aria-hidden />
@@ -152,7 +146,7 @@ export function HRLoginPage() {
             {isLoading && (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
             )}
-            {isLoading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+            {isLoading ? t("loading") : t("loginButton")}
           </button>
 
           {error && (

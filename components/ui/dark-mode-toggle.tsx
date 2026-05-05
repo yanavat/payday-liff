@@ -11,7 +11,7 @@ export function DarkModeToggle() {
       type="button"
       onClick={toggle}
       className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
-      aria-label="เปิด/ปิดโหมดสีเข้ม"
+      aria-label="Toggle dark mode"
       aria-pressed={isDark}
     >
       {isDark ? (

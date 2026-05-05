@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Banknote, CheckCircle2, Clock3, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { MetricCard } from "@/components/ui/metric-card";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -20,12 +21,13 @@ import dayjs from "@/lib/dayjs";
 import { formatTHB, formatTHBCompact } from "@/lib/utils/format";
 
 const statusSegments = [
-  { status: "approved" as const, label: "อนุมัติ", className: "bg-primary" },
-  { status: "pending" as const, label: "รออนุมัติ", className: "bg-amber-400" },
-  { status: "rejected" as const, label: "ปฏิเสธ", className: "bg-red-400" },
+  { status: "approved" as const, className: "bg-primary" },
+  { status: "pending" as const, className: "bg-amber-400" },
+  { status: "rejected" as const, className: "bg-red-400" },
 ];
 
 export function DashboardPageContent() {
+  const t = useTranslations();
   const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<
     "approve" | "reject" | null
@@ -78,31 +80,31 @@ export function DashboardPageContent() {
     <div className="space-y-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
-          label="คำขอรออนุมัติ"
+          label={t("dashboard.pendingRequests")}
           value={String(statusCounts.pending)}
           trend={3}
-          trendLabel="จากเมื่อวาน"
+          trendLabel="from yesterday"
           icon={<Clock3 className="h-[18px] w-[18px]" />}
           variant="hero"
         />
         <MetricCard
-          label="อนุมัติแล้ววันนี้"
+          label={t("dashboard.approvedToday")}
           value={String(statusCounts.approved)}
-          sub={`${formatTHBCompact(disbursedAmount)} รวม`}
+          sub={`${formatTHBCompact(disbursedAmount)} total`}
           trend={8}
-          trendLabel="วันนี้"
+          trendLabel="today"
           icon={<CheckCircle2 className="h-[18px] w-[18px]" />}
         />
         <MetricCard
-          label="เบิกจ่ายเดือนนี้"
+          label={t("dashboard.disbursedMonth")}
           value={formatTHBCompact(disbursedAmount)}
-          sub="จาก ฿500K วงเงิน"
+          sub="from THB 500K"
           icon={<Banknote className="h-[18px] w-[18px]" />}
         />
         <MetricCard
-          label="พนักงานลงทะเบียน"
+          label={t("dashboard.enrolledEmployees")}
           value={String(employees.length)}
-          sub="ข้อมูลตัวอย่าง Phase 2"
+          sub="Phase 2"
           icon={<Users className="h-[18px] w-[18px]" />}
         />
       </div>
@@ -111,13 +113,13 @@ export function DashboardPageContent() {
         <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card transition-shadow duration-200 hover:shadow-hover">
           <div className="border-b border-border px-5 py-3.5">
             <SectionHeader
-              title="คำขอ EWA ล่าสุด"
+              title={t("dashboard.recentRequests")}
               action={
                 <Link
                   href="/th/hr/requests"
                   className="text-sm font-medium text-primary hover:text-primary-dark"
                 >
-                  ดูทั้งหมด →
+                  {t("common.viewAll")}
                 </Link>
               }
             />
@@ -126,11 +128,11 @@ export function DashboardPageContent() {
             <table className="w-full min-w-[720px] border-collapse">
               <thead>
                 <tr className="h-10 border-b border-border bg-bg-secondary text-left text-[11px] font-semibold text-text-muted">
-                  <th className="px-4">ชื่อพนักงาน</th>
-                  <th className="px-4">แผนก</th>
-                  <th className="px-4 text-right">จำนวนเงิน</th>
-                  <th className="px-4">วันที่ขอ</th>
-                  <th className="px-4">สถานะ</th>
+                  <th className="px-4">{t("employees.name")}</th>
+                  <th className="px-4">{t("employees.department")}</th>
+                  <th className="px-4 text-right">{t("requests.amount")}</th>
+                  <th className="px-4">{t("requests.requestDate")}</th>
+                  <th className="px-4">{t("common.status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -178,42 +180,44 @@ export function DashboardPageContent() {
         <aside className="space-y-3">
           <section className="rounded-lg border border-border bg-bg-canvas p-4 shadow-card transition-shadow duration-200 hover:shadow-hover">
             <h2 className="text-section-title text-text-primary">
-              รอบปัจจุบัน
+              {t("dashboard.payrollCycle")}
             </h2>
             <div className="mt-4 space-y-4">
               <CycleProgress
-                label="รายเดือน · พ.ค. 2568"
+                label={`${t("payCycle.monthly")} · ${monthlyPayCycle.daysElapsed}`}
                 value={monthlyPayCycle.daysElapsed}
                 max={monthlyPayCycle.totalDays}
               />
               <CycleProgress
-                label="รายสัปดาห์ · สัปดาห์ที่ 19"
+                label={`${t("payCycle.weekly")} · ${weeklyPayCycle.daysElapsed}`}
                 value={weeklyPayCycle.daysElapsed}
                 max={weeklyPayCycle.totalDays}
               />
             </div>
             <div className="mt-4 space-y-2 text-caption text-text-secondary">
               <DateLine
-                label="วันตัดรอบ EWA (รายสัปดาห์)"
-                value="พรุ่งนี้"
+                label={t("settings.ewaCutoffDays")}
+                value="Tomorrow"
                 highlight
               />
-              <DateLine label="วันจ่ายเงิน (รายสัปดาห์)" value="ศุกร์นี้" />
-              <DateLine label="วันตัดรอบ EWA (รายเดือน)" value="28 พ.ค." />
-              <DateLine label="วันจ่ายเงิน (รายเดือน)" value="31 พ.ค." />
+              <DateLine label={t("settings.weeklyPayday")} value="Friday" />
+              <DateLine label={t("settings.ewaCutoffDays")} value="28 May" />
+              <DateLine label={t("settings.weeklyPayday")} value="31 May" />
             </div>
           </section>
 
           <section className="rounded-lg border border-border bg-bg-canvas p-4 shadow-card transition-shadow duration-200 hover:shadow-hover">
             <h2 className="text-section-title text-text-primary">
-              สถานะคำขอเดือนนี้
+              {t("dashboard.requestBreakdown")}
             </h2>
             <div className="mx-auto mt-5 flex h-32 w-32 items-center justify-center rounded-full bg-[conic-gradient(#2DBD8F_0_60%,#F59E0B_60%_88%,#EF4444_88%_100%)]">
               <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-bg-canvas">
                 <span className="font-number text-2xl font-bold">
                   {totalForChart}
                 </span>
-                <span className="text-[11px] text-text-muted">รายการ</span>
+                <span className="text-[11px] text-text-muted">
+                  {t("requests.title")}
+                </span>
               </div>
             </div>
             <div className="mt-5 space-y-2">
@@ -226,7 +230,7 @@ export function DashboardPageContent() {
                     <span
                       className={`h-2.5 w-2.5 rounded-full ${segment.className}`}
                     />
-                    {segment.label}
+                    {t(`status.${segment.status}`)}
                   </span>
                   <span className="font-number font-semibold text-text-primary">
                     {statusCounts[segment.status]}

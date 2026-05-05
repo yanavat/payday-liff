@@ -2,24 +2,27 @@
 
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { TabBar } from "@/components/ui/tab-bar";
 import { Toggle } from "./settings-toggle";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 
 const mainTabs = [
-  { value: "general", label: "ทั่วไป" },
-  { value: "policy", label: "นโยบาย EWA" },
-  { value: "notifications", label: "การแจ้งเตือน" },
-  { value: "users", label: "จัดการผู้ใช้" },
+  { value: "general", labelKey: "general" },
+  { value: "policy", labelKey: "ewaPolicy" },
+  { value: "notifications", labelKey: "notifications" },
+  { value: "users", labelKey: "userManagement" },
 ];
 
 const policyTabs = [
-  { value: "monthly", label: "รายเดือน" },
-  { value: "weekly", label: "รายสัปดาห์" },
+  { value: "monthly", labelKey: "monthly" },
+  { value: "weekly", labelKey: "weekly" },
 ];
 
 export function SettingsPageContent() {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("policy");
   const [policyTab, setPolicyTab] = useState("monthly");
@@ -31,6 +34,16 @@ export function SettingsPageContent() {
   ]);
   const [dirty, setDirty] = useState(false);
 
+  const mainTabsTranslated = mainTabs.map((tab) => ({
+    value: tab.value,
+    label: t(tab.labelKey as keyof typeof t),
+  }));
+
+  const policyTabsTranslated = policyTabs.map((tab) => ({
+    value: tab.value,
+    label: t(tab.labelKey as keyof typeof t),
+  }));
+
   function markDirty() {
     setDirty(true);
   }
@@ -39,21 +52,19 @@ export function SettingsPageContent() {
     <div className="max-w-[960px] space-y-4 pb-20">
       <header>
         <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
-          ตั้งค่า
+          {t("title")}
         </h1>
-        <p className="mt-1 text-[13px] text-text-secondary">
-          หน้าหลัก / ตั้งค่า
-        </p>
+        <p className="mt-1 text-[13px] text-text-secondary">Settings</p>
       </header>
 
       {dirty && (
         <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          มีการเปลี่ยนแปลงที่ยังไม่บันทึก
+          Unsaved changes
         </div>
       )}
 
       <TabBar
-        tabs={mainTabs}
+        tabs={mainTabsTranslated}
         value={activeTab}
         onChange={(value) => {
           setActiveTab(value);
@@ -65,21 +76,21 @@ export function SettingsPageContent() {
       {activeTab === "policy" && (
         <div className="space-y-4">
           <TabBar
-            tabs={policyTabs}
+            tabs={policyTabsTranslated}
             value={policyTab}
             onChange={(value) => {
               setPolicyTab(value);
               markDirty();
             }}
           />
-          <SettingsPanel title="กฎการเบิกเงิน">
+          <SettingsPanel title={t("ewaPolicy")}>
             <label className="grid gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-text-primary">
-                  % สูงสุดของรายได้
+                  {t("maxPercent")}
                 </span>
                 <span className="font-number text-sm font-semibold text-primary">
-                  {maxPercent}% ของรายได้สะสม
+                  {maxPercent}%
                 </span>
               </div>
               <input
@@ -97,58 +108,58 @@ export function SettingsPageContent() {
             </label>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <NumberField
-                label="จำนวนครั้งสูงสุดต่อรอบ"
+                label={t("maxRequests")}
                 value="2"
-                suffix="ครั้ง/รอบ"
+                suffix="/period"
               />
-              <NumberField label="ยอดขั้นต่ำต่อคำขอ" value="500" prefix="฿" />
-              <NumberField label="ยอดสูงสุดต่อคำขอ" value="10000" prefix="฿" />
+              <NumberField label={t("minAmount")} value="500" prefix="THB" />
+              <NumberField label={t("maxPercent")} value="10000" prefix="THB" />
             </div>
           </SettingsPanel>
 
-          <SettingsPanel title="การอนุมัติ">
+          <SettingsPanel title={tc("approve")}>
             <Toggle
               checked={autoApproval}
               onChange={(checked) => {
                 setAutoApproval(checked);
                 markDirty();
               }}
-              label="อนุมัติอัตโนมัติ"
-              description="ใช้กับคำขอที่อยู่ในเงื่อนไขความเสี่ยงต่ำ"
+              label={t("autoApproval")}
+              description="Low-risk requests only"
             />
             {autoApproval && (
               <NumberField
-                label="อนุมัติอัตโนมัติถ้าน้อยกว่า"
+                label={t("autoApprovalThreshold")}
                 value="3000"
-                prefix="฿"
+                prefix="THB"
               />
             )}
             <div>
               <p className="mb-2 text-sm font-medium text-text-primary">
-                ขั้นตอนการอนุมัติ
+                {t("approvalChain")}
               </p>
               <div className="flex gap-3">
-                <RadioPill checked label="ผู้อนุมัติเดียว" />
-                <RadioPill label="2 ขั้นตอน" />
+                <RadioPill checked label={t("singleApproval")} />
+                <RadioPill label={t("twoStepApproval")} />
               </div>
             </div>
           </SettingsPanel>
 
           {policyTab === "weekly" && (
-            <SettingsPanel title="กฎรายสัปดาห์">
+            <SettingsPanel title={t("weekly")}>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <SelectField
-                  label="วันจ่ายเงิน"
-                  options={["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์"]}
-                  value="ศุกร์"
+                  label={t("weeklyPayday")}
+                  options={["Mon", "Tue", "Wed", "Thu", "Fri"]}
+                  value="Fri"
                 />
                 <SelectField
-                  label="วันตัดรอบ EWA"
-                  options={["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์"]}
-                  value="พฤหัส"
+                  label={t("ewaCutoffDays")}
+                  options={["Mon", "Tue", "Wed", "Thu", "Fri"]}
+                  value="Thu"
                 />
                 <SelectField
-                  label="เวลาตัดรอบ"
+                  label="Cutoff time"
                   options={["16:00", "17:00", "18:00"]}
                   value="18:00"
                 />
@@ -156,7 +167,7 @@ export function SettingsPageContent() {
             </SettingsPanel>
           )}
 
-          <SettingsPanel title="วันที่ไม่อนุญาต EWA">
+          <SettingsPanel title={t("blackoutDates")}>
             <div className="flex flex-wrap gap-2">
               {blackoutDates.map((date, index) => (
                 <span
@@ -184,7 +195,7 @@ export function SettingsPageContent() {
                 }}
                 className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-sm text-primary"
               >
-                <Plus className="h-3.5 w-3.5" /> เพิ่มวัน
+                <Plus className="h-3.5 w-3.5" /> Add date
               </button>
             </div>
           </SettingsPanel>
@@ -192,13 +203,13 @@ export function SettingsPageContent() {
       )}
 
       {activeTab === "notifications" && (
-        <SettingsPanel title="การแจ้งเตือน">
+        <SettingsPanel title={t("notifications")}>
           {[
-            "เมื่อมีคำขอใหม่",
-            "เมื่อคำขอรอนาน > 2 ชม.",
-            "เมื่อคำขออนุมัติ",
-            "เมื่อคำขอถูกปฏิเสธ",
-            "วันจ่ายเงินเดือน",
+            "New request",
+            "Pending > 2 hours",
+            "Request approved",
+            "Request rejected",
+            "Payday",
           ].map((label) => (
             <div
               key={label}
@@ -212,9 +223,9 @@ export function SettingsPageContent() {
             </div>
           ))}
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
-            <NumberField label="LINE Notify Token" value="••••••••••••" />
+            <NumberField label="LINE Token" value="••••••••••••" />
             <button className="mt-6 h-9 rounded-md border border-border px-4 text-sm font-medium">
-              ทดสอบการเชื่อมต่อ
+              Test connection
             </button>
           </div>
         </SettingsPanel>
@@ -224,15 +235,15 @@ export function SettingsPageContent() {
         <SettingsPanel title="HR Users">
           <div className="mb-3 flex justify-end">
             <button className="h-9 rounded-md bg-primary px-4 text-sm font-medium text-white">
-              + เพิ่มผู้ใช้ HR
+              + Add HR User
             </button>
           </div>
           <table className="w-full border-collapse">
             <tbody>
               {[
-                ["สิริวรรณ บัวคำ", "siriwan@factory.co.th", "HR Manager"],
-                ["สุภาพร แก้วกล้า", "finance@factory.co.th", "Accountant"],
-                ["HR Viewer", "viewer@factory.co.th", "Viewer"],
+                ["HR Admin", "hr@factory.co.th", "HR Manager"],
+                ["Finance", "finance@factory.co.th", "Accountant"],
+                ["Viewer", "viewer@factory.co.th", "Viewer"],
               ].map((row) => (
                 <tr
                   key={row[1]}
@@ -243,7 +254,7 @@ export function SettingsPageContent() {
                   <td className="text-sm">{row[2]}</td>
                   <td className="text-right">
                     <button className="text-sm font-medium text-primary">
-                      แก้ไขบทบาท
+                      Edit role
                     </button>
                   </td>
                 </tr>
@@ -254,10 +265,10 @@ export function SettingsPageContent() {
       )}
 
       {activeTab === "general" && (
-        <SettingsPanel title="ทั่วไป">
+        <SettingsPanel title={t("general")}>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <NumberField label="ชื่อบริษัท" value="Factory Co., Ltd." />
-            <NumberField label="รหัสนายจ้าง" value="FAC-2025" />
+            <NumberField label="Company" value="Factory Co., Ltd." />
+            <NumberField label="Employer ID" value="FAC-2025" />
           </div>
         </SettingsPanel>
       )}
@@ -266,11 +277,11 @@ export function SettingsPageContent() {
         <button
           onClick={() => {
             setDirty(false);
-            toast({ variant: "success", message: "บันทึกการตั้งค่าแล้ว" });
+            toast({ variant: "success", message: t("saveSuccess") });
           }}
           className="h-11 rounded-md bg-primary px-6 text-sm font-semibold text-white shadow-hover hover:bg-primary-dark"
         >
-          บันทึกการตั้งค่า
+          {tc("save")}
         </button>
       </div>
     </div>
