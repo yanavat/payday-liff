@@ -259,6 +259,12 @@
   "profile": {
     "title": "ပရိုဖိုင်",
     "bankAccount": "ဘဏ်အကောင့်",
+    "edit": "ပြင်ဆင်မည်",
+    "editBankAccount": "ဘဏ်အကောင့် ပြင်ဆင်မည်",
+    "bankName": "ဘဏ်အမည်",
+    "accountNumber": "အကောင့်နံပါတ်",
+    "accountHolderName": "အကောင့်ပိုင်ရှင်အမည်",
+    "selectBank": "ဘဏ်ရွေးချယ်မည်",
     "ewaLimit": "EWA ကန့်သတ်",
     "maxPercent": "အများဆုံး",
     "percentOfSalary": "လစာ {percent}%",

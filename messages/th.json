@@ -259,6 +259,12 @@
   "profile": {
     "title": "โปรไฟล์",
     "bankAccount": "บัญชีธนาคาร",
+    "edit": "แก้ไข",
+    "editBankAccount": "แก้ไขบัญชีธนาคาร",
+    "bankName": "ชื่อธนาคาร",
+    "accountNumber": "เลขที่บัญชี",
+    "accountHolderName": "ชื่อเจ้าของบัญชี",
+    "selectBank": "เลือกธนาคาร",
     "ewaLimit": "วงเงิน",
     "maxPercent": "สูงสุด",
     "percentOfSalary": "{percent}% ของเงินเดือน",

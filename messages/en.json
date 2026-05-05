@@ -263,6 +263,12 @@
   "profile": {
     "title": "Profile",
     "bankAccount": "Bank Account",
+    "edit": "Edit",
+    "editBankAccount": "Edit Bank Account",
+    "bankName": "Bank Name",
+    "accountNumber": "Account Number",
+    "accountHolderName": "Account Holder Name",
+    "selectBank": "Select bank",
     "ewaLimit": "EWA Limit",
     "maxPercent": "Maximum",
     "percentOfSalary": "{percent}% of salary",
