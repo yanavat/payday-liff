@@ -202,6 +202,7 @@
     "forgotPin": "ลืม PIN?",
     "scanQr": "สแกน QR Code",
     "wrongPin": "PIN ไม่ถูกต้อง เหลืออีก {attempts} ครั้ง",
+    "loading": "กำลังเข้าสู่ระบบ...",
     "locked": "บัญชีถูกล็อก กรุณารอ 30 นาที",
     "language": "ภาษา"
   },
