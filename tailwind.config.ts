@@ -146,6 +146,12 @@ const config: Config = {
           from: { transform: "translateX(100%)", opacity: "0" },
           to: { transform: "translateX(0)", opacity: "1" },
         },
+        "pop-in": {
+          "0%": { opacity: "0", transform: "scale(0.3)" },
+          "60%": { opacity: "1", transform: "scale(1.08)" },
+          "80%": { transform: "scale(0.97)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -158,6 +164,7 @@ const config: Config = {
         "scale-in": "scale-in 0.2s ease-out",
         "pulse-badge": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "toast-in": "toast-in 0.3s ease-out",
+        "pop-in": "pop-in 0.5s ease-out forwards",
       },
     },
   },
