@@ -26,9 +26,9 @@ export function TabBar({
   return (
     <div
       className={cn(
-        "flex items-center gap-1",
-        variant === "pill" && "rounded-md bg-bg-canvas p-1",
-        variant === "underline" && "border-b border-border",
+        "flex items-center",
+        variant === "pill" && "gap-0.5 rounded-full bg-bg-secondary p-1",
+        variant === "underline" && "gap-1 border-b border-border",
         className,
       )}
       role="tablist"
@@ -44,11 +44,11 @@ export function TabBar({
             aria-selected={active}
             onClick={() => onChange(tab.value)}
             className={cn(
-              "inline-flex h-9 items-center gap-2 whitespace-nowrap px-3 text-sm font-medium transition ",
+              "inline-flex h-8 items-center gap-1.5 whitespace-nowrap px-3 text-[13px] font-medium transition-all",
               variant === "pill" &&
                 (active
                   ? "rounded-full bg-primary text-white shadow-sm"
-                  : "rounded-full bg-primary-bg text-text-muted hover:text-text-primary hover:border-text-muted"),
+                  : "rounded-full text-text-muted hover:text-text-primary"),
               variant === "underline" &&
                 (active
                   ? "border-b-2 border-primary text-primary"

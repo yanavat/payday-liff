@@ -66,11 +66,11 @@ export function EmployeeHistoryPage() {
         <p className="mt-1 text-[16px] text-text-muted">{t("history.total")}</p>
       </header>
 
-      <div className="-mx-4 mb-4 overflow-x-auto px-4">
-        <div className="flex min-w-max gap-2">
-          <SummaryCard label={t("history.thisMonth")} value="THB 5,500 · 2" />
-          <SummaryCard label={t("history.lastMonth")} value="THB 5,500 · 2" />
-          <SummaryCard label={t("history.total")} value="THB 24,000 · 9" />
+      <div className="mb-4 rounded-xl border border-border bg-white shadow-card">
+        <div className="flex divide-x divide-border">
+          <SummaryCell label={t("history.thisMonth")} value="฿5,500" sub="2 ครั้ง" />
+          <SummaryCell label={t("history.lastMonth")} value="฿5,500" sub="2 ครั้ง" />
+          <SummaryCell label={t("history.total")} value="฿24,000" sub="9 ครั้ง" />
         </div>
       </div>
 
@@ -204,13 +204,12 @@ export function EmployeeHistoryPage() {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: string }) {
+function SummaryCell({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="min-w-[120px] rounded-lg border border-border bg-white p-3 shadow-card">
-      <p className="text-[16px] text-text-muted">{label}</p>
-      <p className="mt-1 whitespace-nowrap font-sans text-[16px] font-bold text-text-primary">
-        {value}
-      </p>
+    <div className="flex flex-1 flex-col items-center py-3 px-2 text-center">
+      <p className="text-[11px] text-text-muted leading-tight">{label}</p>
+      <p className="mt-1 font-sans text-[15px] font-bold text-primary leading-tight">{value}</p>
+      <p className="text-[11px] text-text-muted">{sub}</p>
     </div>
   );
 }
