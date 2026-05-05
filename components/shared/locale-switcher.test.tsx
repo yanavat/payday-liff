@@ -22,25 +22,42 @@ describe("LocaleSwitcher", () => {
     it("renders three locale buttons", () => {
       render(<LocaleSwitcher />);
 
-      expect(screen.getByRole("button", { name: "TH" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "EN" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "MM" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Switch language to Thai" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Switch language to English" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Switch language to Myanmar" }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("ไทย")).toBeInTheDocument();
+      expect(screen.getByText("EN")).toBeInTheDocument();
+      expect(screen.getByText("မြန်မာ")).toBeInTheDocument();
     });
 
     it("highlights the active locale button", () => {
       render(<LocaleSwitcher />);
 
-      const active = screen.getByRole("button", { name: "TH" });
-      expect(active).toHaveClass("bg-primary");
+      const active = screen.getByRole("button", {
+        name: "Switch language to Thai",
+      });
+      expect(active).toHaveAttribute("aria-pressed", "true");
+      expect(active).toHaveClass("bg-primary/85");
 
-      const inactive = screen.getByRole("button", { name: "EN" });
-      expect(inactive).not.toHaveClass("bg-primary");
+      const inactive = screen.getByRole("button", {
+        name: "Switch language to English",
+      });
+      expect(inactive).toHaveAttribute("aria-pressed", "false");
+      expect(inactive).not.toHaveClass("bg-bg-canvas");
     });
 
     it("calls router.replace when switching to a different locale", () => {
       render(<LocaleSwitcher />);
 
-      fireEvent.click(screen.getByRole("button", { name: "EN" }));
+      fireEvent.click(
+        screen.getByRole("button", { name: "Switch language to English" }),
+      );
 
       expect(replaceMock).toHaveBeenCalledTimes(1);
       expect(replaceMock).toHaveBeenCalledWith("/th/employee/profile", {
@@ -51,7 +68,9 @@ describe("LocaleSwitcher", () => {
     it("does nothing when clicking the already active locale", () => {
       render(<LocaleSwitcher />);
 
-      fireEvent.click(screen.getByRole("button", { name: "TH" }));
+      fireEvent.click(
+        screen.getByRole("button", { name: "Switch language to Thai" }),
+      );
 
       expect(replaceMock).not.toHaveBeenCalled();
     });
@@ -61,7 +80,9 @@ describe("LocaleSwitcher", () => {
     it("renders a select with three options", () => {
       render(<LocaleSwitcher variant="select" />);
 
-      const select = screen.getByRole("combobox") as HTMLSelectElement;
+      const select = screen.getByRole("combobox", {
+        name: "Language",
+      }) as HTMLSelectElement;
       expect(select).toBeInTheDocument();
       expect(select.value).toBe("th");
 
@@ -75,7 +96,7 @@ describe("LocaleSwitcher", () => {
     it("calls router.replace when selecting a different locale", () => {
       render(<LocaleSwitcher variant="select" />);
 
-      const select = screen.getByRole("combobox");
+      const select = screen.getByRole("combobox", { name: "Language" });
       fireEvent.change(select, { target: { value: "my" } });
 
       expect(replaceMock).toHaveBeenCalledTimes(1);
@@ -87,7 +108,7 @@ describe("LocaleSwitcher", () => {
     it("does nothing when selecting the already active locale", () => {
       render(<LocaleSwitcher variant="select" />);
 
-      const select = screen.getByRole("combobox");
+      const select = screen.getByRole("combobox", { name: "Language" });
       fireEvent.change(select, { target: { value: "th" } });
 
       expect(replaceMock).not.toHaveBeenCalled();

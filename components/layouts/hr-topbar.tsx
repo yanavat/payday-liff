@@ -2,7 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { Bell, HelpCircle, Settings } from "lucide-react";
+import { Bell, Building2, HelpCircle, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/ui/avatar";
 import { DarkModeToggle } from "@/components/ui/dark-mode-toggle";
@@ -22,7 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { hrUser } from "@/lib/mock";
+import { hrUser, companyName } from "@/lib/mock";
+import { cn } from "@/lib/utils";
 
 const SEGMENT_KEYS: Record<string, string> = {
   hr: "dashboard",
@@ -79,18 +80,18 @@ function HRBreadcrumb() {
 
   return (
     <Breadcrumb>
-      <BreadcrumbList>
+      <BreadcrumbList className="gap-1.5 text-xs sm:gap-2">
         {crumbs.map((crumb, index) => (
           <React.Fragment key={`${crumb.href}-${index}`}>
-            <BreadcrumbItem>
+            <BreadcrumbItem className="min-w-0">
               {crumb.isLast ? (
-                <BreadcrumbPage className="font-semibold text-text-primary">
+                <BreadcrumbPage className="max-w-[28ch] truncate text-sm font-semibold text-text-primary">
                   {crumb.label}
                 </BreadcrumbPage>
               ) : (
                 <BreadcrumbLink
                   href={crumb.href}
-                  className="text-text-muted hover:text-text-primary"
+                  className="max-w-[18ch] truncate text-text-muted hover:text-text-primary"
                 >
                   {crumb.label}
                 </BreadcrumbLink>
@@ -104,8 +105,35 @@ function HRBreadcrumb() {
   );
 }
 
+const roleLabels: Record<typeof hrUser.role, string> = {
+  hr_manager: "HR Manager",
+  hr_officer: "HR Officer",
+  accountant: "Accountant",
+};
+
+const TopbarIconButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { label: string }
+>(({ children, className, label, ...props }, ref) => (
+  <button
+    ref={ref}
+    type="button"
+    className={cn(
+      "relative flex h-9 w-9 items-center justify-center rounded-md text-text-secondary transition hover:bg-primary-subtle hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30",
+      className,
+    )}
+    aria-label={label}
+    title={label}
+    {...props}
+  >
+    {children}
+  </button>
+));
+TopbarIconButton.displayName = "TopbarIconButton";
+
 export function HRTopbar() {
   const t = useTranslations("common");
+  const displayCompanyName = companyName.trim();
   const initials = hrUser.name
     .split(" ")
     .map((part) => part[0])
@@ -113,51 +141,78 @@ export function HRTopbar() {
     .slice(0, 2);
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-bg-canvas px-6">
-      <HRBreadcrumb />
+    <header className="sticky top-0 z-20 flex h-[72px] shrink-0 items-center justify-between gap-4 border-b border-border [background-color:color-mix(in_srgb,var(--color-bg-canvas)_95%,transparent)] px-5 shadow-[0_1px_0_rgba(15,23,42,0.02)] backdrop-blur supports-[backdrop-filter]:[background-color:color-mix(in_srgb,var(--color-bg-canvas)_85%,transparent)] lg:px-6">
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-primary-subtle text-primary-dark">
+          <Building2 className="h-5 w-5" strokeWidth={1.8} aria-hidden />
+        </div>
+        <div className="min-w-0">
+          <HRBreadcrumb />
+          <div className="mt-1 flex min-w-0 items-center gap-2">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+            <span className="truncate text-caption text-text-muted">
+              {displayCompanyName}
+            </span>
+          </div>
+        </div>
+      </div>
 
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          className="relative flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" strokeWidth={1.8} aria-hidden />
-          <span className="absolute right-1.5 top-1 h-2 w-2 rounded-full border border-bg-canvas bg-red-500" />
-        </button>
-        <button
-          type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
-          aria-label="Help"
-        >
-          <HelpCircle className="h-5 w-5" strokeWidth={1.8} aria-hidden />
-        </button>
+      <div className="flex shrink-0 items-center gap-3">
+        <div className="hidden items-center gap-1 rounded-lg   sm:flex">
+          <TopbarIconButton label="Notifications">
+            <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full border border-bg-secondary bg-red-500" />
+          </TopbarIconButton>
+          <TopbarIconButton label="Help">
+            <HelpCircle
+              className="h-[18px] w-[18px]"
+              strokeWidth={1.8}
+              aria-hidden
+            />
+          </TopbarIconButton>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-bg-secondary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
-              aria-label="Settings"
-            >
+            <TopbarIconButton label="Settings">
               <Settings className="h-5 w-5" strokeWidth={1.8} aria-hidden />
-            </button>
+            </TopbarIconButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[16rem]">
-            <DropdownMenuLabel>{t("language")}</DropdownMenuLabel>
-            <div className="px-3 py-2">
+          <DropdownMenuContent align="end" className="min-w-[16rem] p-2">
+            <DropdownMenuLabel className="px-2 font-semibold">
+              {t("language")}
+            </DropdownMenuLabel>
+            <div className="px-1 py-2">
               <LocaleSwitcher />
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel>{t("appearance")}</DropdownMenuLabel>
-            <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-sm text-text-secondary">
+            <DropdownMenuLabel className="px-2 font-semibold">
+              {t("appearance")}
+            </DropdownMenuLabel>
+            <div className="flex items-center justify-between rounded-md bg-bg-secondary px-3 py-2">
+              <span className="text-sm font-medium text-text-secondary">
                 {t("darkMode")}
               </span>
               <DarkModeToggle />
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Avatar initials={initials} size="md" color="teal" />
+        <div className="flex items-center gap-2 rounded-lg bg-bg-canvas py-1 pl-1 pr-3 ">
+          <Avatar
+            initials={initials}
+            src={hrUser.avatarUrl}
+            alt={hrUser.name}
+            size="md"
+            color="teal"
+          />
+          <div className="hidden min-w-0 leading-none md:block">
+            <div className="max-w-[140px] truncate text-sm font-semibold text-text-primary">
+              {hrUser.name}
+            </div>
+            <div className="mt-1 text-[11px] leading-none text-text-muted">
+              {roleLabels[hrUser.role]}
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );

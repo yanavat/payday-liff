@@ -3,9 +3,11 @@ import { screen, fireEvent } from "@testing-library/react";
 import { EmployeeLoginPage } from "./employee-login-page";
 import { renderWithIntl } from "@/tests/i18n/test-utils";
 
+const replaceMock = vi.fn();
+
 // Mock next/navigation
 vi.mock("@/i18n/navigation", () => ({
-  useRouter: vi.fn(() => ({ push: vi.fn() })),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: replaceMock })),
   usePathname: vi.fn(() => "/th/employee/login"),
   Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
 }));
@@ -49,19 +51,28 @@ describe("EmployeeLoginPage", () => {
   it("shows language switcher buttons", () => {
     renderWithIntl(<EmployeeLoginPage />);
 
-    expect(screen.getByRole("button", { name: "TH" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "EN" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "MM" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Switch language to Thai" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Switch language to English" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Switch language to Myanmar" }),
+    ).toBeInTheDocument();
   });
 
   it("allows switching language", () => {
     renderWithIntl(<EmployeeLoginPage />);
 
-    const enBtn = screen.getByRole("button", { name: "EN" });
-    fireEvent.click(enBtn);
+    const thaiButton = screen.getByRole("button", {
+      name: "Switch language to Thai",
+    });
+    fireEvent.click(thaiButton);
 
-    // Language button should become active (bg-primary class)
-    expect(enBtn).toHaveClass("bg-primary");
+    expect(replaceMock).toHaveBeenCalledWith("/th/employee/login", {
+      locale: "th",
+    });
   });
 
   it("shows employee ID input with placeholder", () => {

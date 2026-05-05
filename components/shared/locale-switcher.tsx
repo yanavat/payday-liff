@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter, usePathname } from "@/i18n/navigation";
+import { ChevronDown } from "lucide-react";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 
 const LOCALES = [
-  { code: "th", label: "TH" },
-  { code: "en", label: "EN" },
-  { code: "my", label: "MM" },
+  { code: "th", label: "ไทย", name: "Thai" },
+  { code: "en", label: "EN", name: "English" },
+  { code: "my", label: "မြန်မာ", name: "Myanmar" },
 ];
 
 const LOCALE_NAMES: Record<string, string> = {
@@ -36,45 +37,58 @@ export function LocaleSwitcher({
 
   if (variant === "select") {
     return (
-      <select
-        value={locale}
-        onChange={(event) => handleChange(event.target.value)}
-        className={cn(
-          "h-12 w-full rounded-md border border-border bg-bg-secondary px-3 text-[16px] font-medium text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
-          className,
-        )}
-      >
-        {LOCALES.map((item) => (
-          <option key={item.code} value={item.code}>
-            {LOCALE_NAMES[item.code]}
-          </option>
-        ))}
-      </select>
+      <div className={cn("relative w-full", className)}>
+        <select
+          value={locale}
+          onChange={(event) => handleChange(event.target.value)}
+          aria-label="Language"
+          className="h-11 w-full appearance-none rounded-md bg-bg-secondary px-3 pr-10 text-[16px] font-medium text-text-primary outline-none transition hover:border-primary/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          {LOCALES.map((item) => (
+            <option key={item.code} value={item.code}>
+              {LOCALE_NAMES[item.code]}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
+          strokeWidth={1.8}
+          aria-hidden
+        />
+      </div>
     );
   }
 
   return (
     <div
+      role="group"
+      aria-label="Language"
       className={cn(
-        "flex rounded-full border border-border bg-bg-secondary p-1",
+        "grid grid-cols-3 gap-1 rounded-lg  bg-bg-secondary p-1 ",
         className,
       )}
     >
-      {LOCALES.map((item) => (
-        <button
-          key={item.code}
-          type="button"
-          onClick={() => handleChange(item.code)}
-          className={cn(
-            "h-8 min-w-8 rounded-full px-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/30 transition",
-            locale === item.code
-              ? "bg-primary text-white"
-              : "text-text-muted hover:text-text-primary",
-          )}
-        >
-          {item.label}
-        </button>
-      ))}
+      {LOCALES.map((item) => {
+        const isActive = locale === item.code;
+
+        return (
+          <button
+            key={item.code}
+            type="button"
+            onClick={() => handleChange(item.code)}
+            aria-label={`Switch language to ${item.name}`}
+            aria-pressed={isActive}
+            className={cn(
+              "flex h-9 min-w-0 items-center justify-center rounded-md px-2 text-center text-xs font-semibold leading-none transition focus:outline-none focus:ring-2 focus:ring-primary/30",
+              isActive
+                ? "bg-primary/85 text-canvas shadow-card"
+                : "text-text-muted hover:bg-bg-canvas hover:text-text-primary",
+            )}
+          >
+            <span className="truncate">{item.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

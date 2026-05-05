@@ -1,6 +1,9 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
+const colorVar = (name: string) =>
+  `rgb(from var(${name}) r g b / <alpha-value>)`;
+
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -22,52 +25,52 @@ const config: Config = {
       },
       colors: {
         primary: {
-          DEFAULT: "var(--color-primary)",
-          dark: "var(--color-primary-dark)",
-          light: "var(--color-primary-light)",
-          bg: "var(--color-primary-bg)",
-          subtle: "var(--color-primary-subtle)",
+          DEFAULT: colorVar("--color-primary"),
+          dark: colorVar("--color-primary-dark"),
+          light: colorVar("--color-primary-light"),
+          bg: colorVar("--color-primary-bg"),
+          subtle: colorVar("--color-primary-subtle"),
         },
         text: {
-          primary: "var(--color-text-primary)",
-          secondary: "var(--color-text-secondary)",
-          muted: "var(--color-text-muted)",
-          link: "var(--color-text-link)",
+          primary: colorVar("--color-text-primary"),
+          secondary: colorVar("--color-text-secondary"),
+          muted: colorVar("--color-text-muted"),
+          link: colorVar("--color-text-link"),
         },
         bg: {
-          page: "var(--color-bg-page)",
-          canvas: "var(--color-bg-canvas)",
-          sidebar: "var(--color-bg-sidebar)",
-          secondary: "var(--color-bg-secondary)",
-          tag: "var(--color-bg-tag)",
+          page: colorVar("--color-bg-page"),
+          canvas: colorVar("--color-bg-canvas"),
+          sidebar: colorVar("--color-bg-sidebar"),
+          secondary: colorVar("--color-bg-secondary"),
+          tag: colorVar("--color-bg-tag"),
         },
         border: {
-          DEFAULT: "var(--color-border)",
-          light: "var(--color-border-light)",
+          DEFAULT: colorVar("--color-border"),
+          light: colorVar("--color-border-light"),
         },
         badge: {
-          "positive-bg": "var(--color-badge-positive-bg)",
-          "positive-text": "var(--color-badge-positive-text)",
-          "neutral-bg": "var(--color-badge-neutral-bg)",
-          "neutral-text": "var(--color-badge-neutral-text)",
+          "positive-bg": colorVar("--color-badge-positive-bg"),
+          "positive-text": colorVar("--color-badge-positive-text"),
+          "neutral-bg": colorVar("--color-badge-neutral-bg"),
+          "neutral-text": colorVar("--color-badge-neutral-text"),
         },
         tag: {
-          "remote-bg": "var(--color-tag-remote-bg)",
-          "remote-text": "var(--color-tag-remote-text)",
-          "onsite-bg": "var(--color-tag-onsite-bg)",
-          "onsite-text": "var(--color-tag-onsite-text)",
-          "hybrid-bg": "var(--color-tag-hybrid-bg)",
-          "hybrid-text": "var(--color-tag-hybrid-text)",
+          "remote-bg": colorVar("--color-tag-remote-bg"),
+          "remote-text": colorVar("--color-tag-remote-text"),
+          "onsite-bg": colorVar("--color-tag-onsite-bg"),
+          "onsite-text": colorVar("--color-tag-onsite-text"),
+          "hybrid-bg": colorVar("--color-tag-hybrid-bg"),
+          "hybrid-text": colorVar("--color-tag-hybrid-text"),
         },
         status: {
-          "pending-bg": "var(--color-status-pending-bg)",
-          "pending-text": "var(--color-status-pending-text)",
-          "approved-bg": "var(--color-status-approved-bg)",
-          "approved-text": "var(--color-status-approved-text)",
-          "rejected-bg": "var(--color-status-rejected-bg)",
-          "rejected-text": "var(--color-status-rejected-text)",
-          "disbursed-bg": "var(--color-status-disbursed-bg)",
-          "disbursed-text": "var(--color-status-disbursed-text)",
+          "pending-bg": colorVar("--color-status-pending-bg"),
+          "pending-text": colorVar("--color-status-pending-text"),
+          "approved-bg": colorVar("--color-status-approved-bg"),
+          "approved-text": colorVar("--color-status-approved-text"),
+          "rejected-bg": colorVar("--color-status-rejected-bg"),
+          "rejected-text": colorVar("--color-status-rejected-text"),
+          "disbursed-bg": colorVar("--color-status-disbursed-bg"),
+          "disbursed-text": colorVar("--color-status-disbursed-text"),
         },
       },
       borderRadius: {
