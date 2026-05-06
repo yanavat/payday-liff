@@ -170,4 +170,54 @@ describe("ReportsPageContent", () => {
       message: "Retrying transfer",
     });
   });
+
+  it("renders metric cards with icons", () => {
+    renderWithIntl(<ReportsPageContent />, { messages });
+
+    // Each MetricCard has an icon container with a green bg
+    const iconContainers = document
+      .querySelectorAll(".bg-primary.text-white");
+    expect(iconContainers.length).toBe(5);
+  });
+
+  it("shows x-axis date labels in monthly view", () => {
+    renderWithIntl(<ReportsPageContent />, { messages });
+
+    // Day 1 label should appear as "1 May" (from 2025-05-01 mock data)
+    expect(screen.getByText("1 May")).toBeInTheDocument();
+    expect(screen.getByText("5 May")).toBeInTheDocument();
+    expect(screen.getByText("10 May")).toBeInTheDocument();
+    expect(screen.getByText("30 May")).toBeInTheDocument();
+  });
+
+  it("shows fixed tooltip with full date on bar hover and hides on leave", () => {
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      left: 100, top: 200, right: 120, bottom: 300,
+      width: 20, height: 100, x: 100, y: 200, toJSON: () => {},
+    });
+
+    renderWithIntl(<ReportsPageContent />, { messages });
+
+    const columns = document.querySelectorAll(".cursor-pointer");
+    expect(columns.length).toBeGreaterThan(0);
+
+    fireEvent.mouseEnter(columns[0]);
+
+    // Tooltip shows the full date including year — unique to the tooltip
+    expect(screen.getByText("1 May 2025")).toBeInTheDocument();
+
+    fireEvent.mouseLeave(columns[0]);
+
+    expect(screen.queryByText("1 May 2025")).not.toBeInTheDocument();
+
+    vi.restoreAllMocks();
+  });
+
+  it("shows week labels in weekly view", () => {
+    renderWithIntl(<ReportsPageContent />, { messages });
+
+    fireEvent.click(screen.getByRole("button", { name: "Weekly" }));
+
+    expect(screen.getByText("W1")).toBeInTheDocument();
+  });
 });
