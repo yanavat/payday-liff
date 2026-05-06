@@ -35,6 +35,7 @@ const defaultMessages = {
     approved: "Approved",
     rejected: "Rejected",
     disbursed: "Disbursed",
+    all: "All",
   },
   login: {
     title: "Employee Login",
