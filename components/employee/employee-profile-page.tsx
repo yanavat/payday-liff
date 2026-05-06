@@ -72,7 +72,7 @@ export function EmployeeProfilePage() {
   return (
     <div className="min-h-full bg-bg-page pb-5">
       <main className="space-y-3 px-4 pt-4">
-        <div className="rounded-2xl bg-gradient-to-b from-[#a8e6cf] to-[#1e9e74] px-4 py-8 text-center shadow-hover">
+        <section className="rounded-xl bg-gradient-to-br from-primary to-primary-dark p-5 text-white shadow-hover">
           <Avatar
             initials={currentEmployee.nameTh}
             size="xl"
@@ -85,13 +85,13 @@ export function EmployeeProfilePage() {
           <p className="mt-1 text-[15px] text-white/80">
             {currentEmployee.id} · {currentEmployee.department}
           </p>
-          <div className="mt-3 flex justify-center">
+          <div className="mt-3 flex ">
             <PayCycleBadge
               type={currentEmployee.payCycle}
               className="border-white/30 bg-white/20 text-white"
             />
           </div>
-        </div>
+        </section>
         <section className="rounded-lg border border-border bg-white p-4 shadow-card">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">

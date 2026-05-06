@@ -66,11 +66,23 @@ export function EmployeeHistoryPage() {
         <p className="mt-1 text-[16px] text-text-muted">{t("history.total")}</p>
       </header>
 
-      <div className="mb-4 rounded-xl border border-border bg-white shadow-card">
+      <div className="mb-4 rounded-xl bg-gradient-to-br from-primary to-primary-dark p-5 text-white shadow-hover">
         <div className="flex divide-x divide-border">
-          <SummaryCell label={t("history.thisMonth")} value="฿5,500" sub="2 ครั้ง" />
-          <SummaryCell label={t("history.lastMonth")} value="฿5,500" sub="2 ครั้ง" />
-          <SummaryCell label={t("history.total")} value="฿24,000" sub="9 ครั้ง" />
+          <SummaryCell
+            label={t("history.thisMonth")}
+            value="฿5,500"
+            sub="2 ครั้ง"
+          />
+          <SummaryCell
+            label={t("history.lastMonth")}
+            value="฿5,500"
+            sub="2 ครั้ง"
+          />
+          <SummaryCell
+            label={t("history.total")}
+            value="฿24,000"
+            sub="9 ครั้ง"
+          />
         </div>
       </div>
 
@@ -212,12 +224,24 @@ export function EmployeeHistoryPage() {
   );
 }
 
-function SummaryCell({ label, value, sub }: { label: string; value: string; sub: string }) {
+function SummaryCell({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+}) {
   return (
     <div className="flex flex-1 flex-col items-center py-3 px-2 text-center">
-      <p className="text-[11px] text-text-muted leading-tight">{label}</p>
-      <p className="mt-1 font-sans text-[15px] font-bold text-primary leading-tight">{value}</p>
-      <p className="text-[11px] text-text-muted">{sub}</p>
+      <p className="text-[12px] text-text-muted-foreground leading-tight">
+        {label}
+      </p>
+      <p className="mt-1 font-sans text-[15px] font-bold text-primary-text leading-tight">
+        {value}
+      </p>
+      <p className="text-[12px] text-text-muted-foreground">{sub}</p>
     </div>
   );
 }
