@@ -38,6 +38,8 @@ const defaultMessages = {
   },
   login: {
     title: "Employee Login",
+    hrTitle: "HR Sign In",
+    hrSubtitle: "Employee Advance Request System",
     subtitle: "Enter PIN",
     employeeId: "Employee ID",
     employeeIdPlaceholder: "Enter ID",
