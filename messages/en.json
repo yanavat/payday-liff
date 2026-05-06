@@ -235,6 +235,8 @@
     },
     "summaryCard": "Summary",
     "requestedAmount": "Requested Amount",
+    "transferFee": "Transfer Fee",
+    "netTransferAmount": "Net Transfer Amount",
     "bankAccount": "Bank Account",
     "deductionWarning": "Will be deducted on {date}",
     "enterPin": "Confirm with PIN",
@@ -258,6 +260,8 @@
     "approvedDate": "Approved",
     "transferDate": "Transferred",
     "approvedBy": "Approved By",
+    "transferFee": "Transfer Fee",
+    "netTransferAmount": "Net Transfer Amount",
     "exportPaySlip": "Export pay slip PDF"
   },
   "profile": {

@@ -1,7 +1,16 @@
 import type { EWARequest } from '@/types'
+import { DEFAULT_TRANSFER_FEE_THB, getNetTransferAmount } from '@/lib/utils/fees'
+
+function withTransferFee(request: Omit<EWARequest, 'transferFee' | 'netTransferAmount'>): EWARequest {
+  return {
+    ...request,
+    transferFee: DEFAULT_TRANSFER_FEE_THB,
+    netTransferAmount: getNetTransferAmount(request.amount),
+  }
+}
 
 export const requests: EWARequest[] = [
-  {
+  withTransferFee({
     id: 'EWA-2025-000001',
     employeeId: 'EMP-0001',
     amount: 3000,
@@ -12,8 +21,8 @@ export const requests: EWARequest[] = [
     isOnBehalf: false,
     referenceNumber: 'REF-20250514-000001',
     employeeNote: 'ค่ารักษาพยาบาลฉุกเฉิน',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000002',
     employeeId: 'EMP-0002',
     amount: 5000,
@@ -26,8 +35,8 @@ export const requests: EWARequest[] = [
     isOnBehalf: false,
     referenceNumber: 'REF-20250513-000002',
     employeeNote: 'ค่าเล่าเรียนลูก',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000003',
     employeeId: 'EMP-0003',
     amount: 1500,
@@ -40,8 +49,8 @@ export const requests: EWARequest[] = [
     payCycle: 'weekly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250510-000003',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000004',
     employeeId: 'EMP-0005',
     amount: 2000,
@@ -54,8 +63,8 @@ export const requests: EWARequest[] = [
     isOnBehalf: false,
     referenceNumber: 'REF-20250512-000004',
     hrNote: 'เกินวงเงินที่กำหนด',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000005',
     employeeId: 'EMP-0007',
     amount: 1000,
@@ -65,8 +74,8 @@ export const requests: EWARequest[] = [
     payCycle: 'weekly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250514-000005',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000006',
     employeeId: 'EMP-0008',
     amount: 8000,
@@ -79,8 +88,8 @@ export const requests: EWARequest[] = [
     isOnBehalf: false,
     referenceNumber: 'REF-20250513-000006',
     employeeNote: 'ผ่าตัดฉุกเฉิน',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000007',
     employeeId: 'EMP-0009',
     amount: 1500,
@@ -93,8 +102,8 @@ export const requests: EWARequest[] = [
     payCycle: 'weekly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250508-000007',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000008',
     employeeId: 'EMP-0010',
     amount: 6000,
@@ -104,8 +113,8 @@ export const requests: EWARequest[] = [
     payCycle: 'monthly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250514-000008',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000009',
     employeeId: 'EMP-0012',
     amount: 3000,
@@ -117,8 +126,8 @@ export const requests: EWARequest[] = [
     payCycle: 'monthly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250511-000009',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000010',
     employeeId: 'EMP-0013',
     amount: 1000,
@@ -131,8 +140,8 @@ export const requests: EWARequest[] = [
     payCycle: 'weekly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250507-000010',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000011',
     employeeId: 'EMP-0014',
     amount: 7000,
@@ -142,8 +151,8 @@ export const requests: EWARequest[] = [
     payCycle: 'monthly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250514-000011',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000012',
     employeeId: 'EMP-0015',
     amount: 1500,
@@ -155,8 +164,8 @@ export const requests: EWARequest[] = [
     payCycle: 'weekly',
     isOnBehalf: false,
     referenceNumber: 'REF-20250513-000012',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000013',
     employeeId: 'EMP-0016',
     amount: 4000,
@@ -168,8 +177,8 @@ export const requests: EWARequest[] = [
     isOnBehalf: false,
     referenceNumber: 'REF-20250510-000013',
     hrNote: 'เอกสารไม่ครบ',
-  },
-  {
+  }),
+  withTransferFee({
     id: 'EWA-2025-000014',
     employeeId: 'EMP-0001',
     amount: 2500,
@@ -183,22 +192,24 @@ export const requests: EWARequest[] = [
     onBehalfBy: 'สิริวรรณ บัวคำ',
     referenceNumber: 'REF-20250513-000014',
     hrNote: 'ยื่นแทนเนื่องจากพนักงานไม่มีโทรศัพท์',
-  },
+  }),
   // Additional 16 requests to reach 30 total
-  ...Array.from({ length: 16 }, (_, i) => ({
-    id: `EWA-2025-${String(15 + i).padStart(6, '0')}`,
-    employeeId: `EMP-${String((i % 20) + 1).padStart(4, '0')}`,
-    amount: [1000, 1500, 2000, 2500, 3000, 4000, 5000][i % 7],
-    reason: (['medical', 'education', 'emergency', 'utility', 'other'] as const)[i % 5],
-    status: (['pending', 'approved', 'disbursed', 'rejected'] as const)[i % 4],
-    requestedAt: `2025-05-${String(1 + (i % 13)).padStart(2, '0')}T${String(8 + (i % 8)).padStart(2, '0')}:00:00`,
-    approvedAt: i % 4 !== 0 ? `2025-05-${String(1 + (i % 13)).padStart(2, '0')}T${String(10 + (i % 8)).padStart(2, '0')}:00:00` : undefined,
-    disbursedAt: i % 4 === 2 ? `2025-05-${String(2 + (i % 13)).padStart(2, '0')}T09:00:00` : undefined,
-    approvedBy: i % 4 !== 0 ? 'สิริวรรณ บัวคำ' : undefined,
-    payCycle: (i % 3 === 0 ? 'weekly' : 'monthly') as 'monthly' | 'weekly',
-    isOnBehalf: false,
-    referenceNumber: `REF-202505${String(i % 14 + 1).padStart(2, '0')}-${String(15 + i).padStart(6, '0')}`,
-  })),
+  ...Array.from({ length: 16 }, (_, i) =>
+    withTransferFee({
+      id: `EWA-2025-${String(15 + i).padStart(6, '0')}`,
+      employeeId: `EMP-${String((i % 20) + 1).padStart(4, '0')}`,
+      amount: [1000, 1500, 2000, 2500, 3000, 4000, 5000][i % 7],
+      reason: (['medical', 'education', 'emergency', 'utility', 'other'] as const)[i % 5],
+      status: (['pending', 'approved', 'disbursed', 'rejected'] as const)[i % 4],
+      requestedAt: `2025-05-${String(1 + (i % 13)).padStart(2, '0')}T${String(8 + (i % 8)).padStart(2, '0')}:00:00`,
+      approvedAt: i % 4 !== 0 ? `2025-05-${String(1 + (i % 13)).padStart(2, '0')}T${String(10 + (i % 8)).padStart(2, '0')}:00:00` : undefined,
+      disbursedAt: i % 4 === 2 ? `2025-05-${String(2 + (i % 13)).padStart(2, '0')}T09:00:00` : undefined,
+      approvedBy: i % 4 !== 0 ? 'สิริวรรณ บัวคำ' : undefined,
+      payCycle: (i % 3 === 0 ? 'weekly' : 'monthly') as 'monthly' | 'weekly',
+      isOnBehalf: false,
+      referenceNumber: `REF-202505${String(i % 14 + 1).padStart(2, '0')}-${String(15 + i).padStart(6, '0')}`,
+    }),
+  ),
 ]
 
 // Helper: get requests by employee

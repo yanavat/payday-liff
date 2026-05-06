@@ -33,6 +33,8 @@ export function buildPaySlipPdf({ employee, request }: PaySlipPdfInput) {
     `Department: ${employee.department}`,
     `Reference: ${request.referenceNumber}`,
     `Amount: ${formatTHB(request.amount)}`,
+    `Transfer fee: ${formatTHB(request.transferFee)}`,
+    `Net transfer: ${formatTHB(request.netTransferAmount)}`,
     `Status: ${request.status}`,
     `Requested: ${formatDate(request.requestedAt)}`,
     `Approved: ${formatDate(request.approvedAt)}`,

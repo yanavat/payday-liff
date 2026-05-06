@@ -109,6 +109,8 @@
     },
     "summaryCard": "အနှစ်ချုပ်",
     "requestedAmount": "တောင်းဆိုထားသောပမာဏ",
+    "transferFee": "လွှဲပြောင်းခ",
+    "netTransferAmount": "အမှန်တကယ်လွှဲပြောင်းမည့်ပမာဏ",
     "bankAccount": "ဘဏ်အကောင့်",
     "deductionWarning": "{date} တွင် နုတ်ယူမည်",
     "enterPin": "PIN ဖြင့်အတည်ပြု",
@@ -128,6 +130,8 @@
     "approvedDate": "ခွင့်ပြုသောနေ့",
     "transferDate": "လွှဲပြောင်းသောနေ့",
     "approvedBy": "ခွင့်ပြုသူ",
+    "transferFee": "လွှဲပြောင်းခ",
+    "netTransferAmount": "အမှန်တကယ်လွှဲပြောင်းမည့်ပမာဏ",
     "exportPaySlip": "လစာစလစ် PDF ထုတ်ရန်"
   },
   "dashboard": {

@@ -11,6 +11,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { currentEmployee } from "@/lib/mock/currentUser";
 import { formatTHB } from "@/lib/utils/format";
+import { DEFAULT_TRANSFER_FEE_THB, getNetTransferAmount } from "@/lib/utils/fees";
 
 const available = 3500;
 const quickAmounts = [1000, 2000, 3000];
@@ -31,6 +32,8 @@ export function EmployeeRequestPage() {
 
   const amountValid = amount > 0 && amount <= available;
   const remaining = Math.max(available - amount, 0);
+  const transferFee = DEFAULT_TRANSFER_FEE_THB;
+  const netTransferAmount = getNetTransferAmount(amount, transferFee);
   const t = useTranslations("requestWizard");
   const tc = useTranslations("common");
 
@@ -213,6 +216,15 @@ export function EmployeeRequestPage() {
                 value={formatTHB(amount)}
                 highlight
               />
+              <SummaryRow
+                label={t("transferFee")}
+                value={formatTHB(transferFee)}
+              />
+              <SummaryRow
+                label={t("netTransferAmount")}
+                value={formatTHB(netTransferAmount)}
+                highlight
+              />
               <SummaryRow label={t("reason")} value={reasonLabel} />
               <SummaryRow
                 label={t("bankAccount")}
@@ -293,6 +305,15 @@ export function EmployeeRequestPage() {
             <SummaryRow
               label={t("requestedAmount")}
               value={formatTHB(amount)}
+              highlight
+            />
+            <SummaryRow
+              label={t("transferFee")}
+              value={formatTHB(transferFee)}
+            />
+            <SummaryRow
+              label={t("netTransferAmount")}
+              value={formatTHB(netTransferAmount)}
               highlight
             />
             <div className="mt-3 flex items-center justify-between">

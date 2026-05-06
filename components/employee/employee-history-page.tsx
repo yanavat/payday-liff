@@ -176,6 +176,14 @@ export function EmployeeHistoryPage() {
                       value={currentEmployee.bankAccountMasked}
                     />
                     <DetailRow
+                      label={t("history.transferFee")}
+                      value={formatTHB(request.transferFee)}
+                    />
+                    <DetailRow
+                      label={t("history.netTransferAmount")}
+                      value={formatTHB(request.netTransferAmount)}
+                    />
+                    <DetailRow
                       label={t("requestDetail.hrNote")}
                       value={request.hrNote ?? request.employeeNote ?? "-"}
                     />

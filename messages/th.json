@@ -235,6 +235,8 @@
     },
     "summaryCard": "สรุปรายการ",
     "requestedAmount": "จำนวนที่ขอ",
+    "transferFee": "ค่าธรรมเนียมการโอน",
+    "netTransferAmount": "ยอดโอนสุทธิ",
     "bankAccount": "บัญชีธนาคาร",
     "deductionWarning": "จะถูกหักวันที่ {date}",
     "enterPin": "ยืนยันด้วย PIN",
@@ -254,6 +256,8 @@
     "approvedDate": "วันที่อนุมัติ",
     "transferDate": "วันที่โอน",
     "approvedBy": "อนุมัติโดย",
+    "transferFee": "ค่าธรรมเนียมการโอน",
+    "netTransferAmount": "ยอดโอนสุทธิ",
     "exportPaySlip": "ส่งออกสลิป PDF"
   },
   "profile": {

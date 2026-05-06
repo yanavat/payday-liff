@@ -36,6 +36,8 @@ const messages = {
     transferDate: "Transferred",
     approvedBy: "Approved By",
     exportPaySlip: "Export pay slip PDF",
+    transferFee: "Transfer Fee",
+    netTransferAmount: "Net Transfer Amount",
   },
   requests: {
     title: "EWA Request",
@@ -60,5 +62,14 @@ describe("EmployeeHistoryPage", () => {
       expect.any(Blob),
       "pay-slip-REF-20250513-000014.pdf",
     );
+  });
+
+  it("shows transfer fee and net transfer amount for an expanded history item", () => {
+    renderWithIntl(<EmployeeHistoryPage />, { messages });
+
+    expect(screen.getByText("Transfer Fee")).toBeInTheDocument();
+    expect(screen.getByText("Net Transfer Amount")).toBeInTheDocument();
+    expect(screen.getByText("฿15")).toBeInTheDocument();
+    expect(screen.getByText("฿2,485")).toBeInTheDocument();
   });
 });

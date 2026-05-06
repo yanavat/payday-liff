@@ -28,7 +28,7 @@ export function BottomTabBar() {
           const active = pathname === tab.href;
           const Icon = tab.icon;
           const showBadge =
-            tab.href === "/employee/request" && pendingCount > 0;
+            tab.href === "/employee/history" && pendingCount > 0;
 
           return (
             <Link

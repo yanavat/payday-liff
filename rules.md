@@ -30,32 +30,40 @@ amount >= ฿500 (minimum)
 amount <= maxWithdrawable
 amount must be whole number (no satang)
 
-## R5: Cutoff Rules
+## R5: Transfer Fee
+
+Default transfer fee = ฿15 per EWA transaction
+Employee pays the transfer fee
+netTransferAmount = requestedAmount - transferFee
+Show transferFee and netTransferAmount before the employee confirms a request
+Show transferFee and netTransferAmount in employee request history
+
+## R6: Cutoff Rules
 
 Monthly: no EWA requests after 25th of month
 Weekly: no EWA requests after Thursday 18:00
 
 If blackout date → show: "ไม่สามารถยื่นคำขอได้ในวันนี้"
 
-## R6: Auto-Approval
+## R7: Auto-Approval
 
 If enabled AND amount < threshold (e.g., ฿3,000):
 status = "approved" immediately
 Else:
 status = "pending" → wait for HR
 
-## R7: PIN Security
+## R8: PIN Security
 
 Wrong PIN 5 times → lock 30 minutes
 Show remaining attempts: "เหลือ X ครั้ง"
 
-## R8: HR On-Behalf Rules
+## R9: HR On-Behalf Rules
 
 HR must provide reason for on-behalf request
 No PIN required (HR session auth)
 Audit log records HR name
 
-## R9: Status Flow
+## R10: Status Flow
 
 pending → approved → disbursed
 pending → rejected (terminal)

@@ -84,6 +84,8 @@ const messages = {
     },
     summaryCard: "Summary",
     requestedAmount: "Requested Amount",
+    transferFee: "Transfer Fee",
+    netTransferAmount: "Net Transfer Amount",
     bankAccount: "Bank Account",
     deductionWarning: "Will be deducted on {date}",
     enterPin: "Confirm with PIN",
@@ -169,6 +171,13 @@ describe("EmployeeRequestPage — step 2", () => {
     expect(screen.getByText("฿3,000")).toBeInTheDocument();
   });
 
+  it("shows the employee-paid transfer fee before confirmation", () => {
+    expect(screen.getByText("Transfer Fee")).toBeInTheDocument();
+    expect(screen.getByText("Net Transfer Amount")).toBeInTheDocument();
+    expect(screen.getByText("฿15")).toBeInTheDocument();
+    expect(screen.getByText("฿2,985")).toBeInTheDocument();
+  });
+
   it("shows deduction warning", () => {
     expect(screen.getByText(/Will be deducted on/i)).toBeInTheDocument();
   });
@@ -215,6 +224,13 @@ describe("EmployeeRequestPage — step 3 (success)", () => {
     expect(screen.getByText("Reference Number")).toBeInTheDocument();
     expect(screen.getByText("EWA-20250501-041")).toBeInTheDocument();
     expect(screen.getByText("฿3,000")).toBeInTheDocument();
+  });
+
+  it("shows transfer fee and net amount on the success receipt", () => {
+    expect(screen.getByText("Transfer Fee")).toBeInTheDocument();
+    expect(screen.getByText("Net Transfer Amount")).toBeInTheDocument();
+    expect(screen.getByText("฿15")).toBeInTheDocument();
+    expect(screen.getByText("฿2,985")).toBeInTheDocument();
   });
 
   it("shows back to home link pointing to employee home", () => {

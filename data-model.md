@@ -160,6 +160,8 @@ export interface EWARequest {
 
   // Financial
   requestedAmount: number      // amount employee wants
+  transferFee: number          // default 15 THB, paid by employee
+  netTransferAmount: number    // requestedAmount - transferFee
   earnedToDate: number         // at time of request
   maxWithdrawable: number      // at time of request
   previousEWAThisPeriod: number  // before this request
@@ -887,6 +889,8 @@ export const mockCurrentEmployee = mockEmployees[0] // EMP-0041
 ```typescript
 // src/lib/mock-data/requests.ts
 
+const DEFAULT_TRANSFER_FEE_THB = 15
+
 export const mockRequests: EWARequest[] = [
   {
     id: 'EWA-20250501-041',
@@ -900,6 +904,8 @@ export const mockRequests: EWARequest[] = [
     periodStart: '2025-05-01',
     periodEnd: '2025-05-31',
     requestedAmount: 3000,
+    transferFee: DEFAULT_TRANSFER_FEE_THB,
+    netTransferAmount: 2985,
     earnedToDate: 14727,
     maxWithdrawable: 7363,
     previousEWAThisPeriod: 0,
@@ -1078,6 +1084,7 @@ export const mockRequests: EWARequest[] = [
     const amounts = [1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
     const reasons = ['ค่าใช้จ่ายฉุกเฉิน','ค่ารักษาพยาบาล','ค่าเล่าเรียนบุตร','ค่าใช้จ่ายในบ้าน','อื่นๆ']
     const amount = amounts[i % amounts.length]
+    const transferFee = DEFAULT_TRANSFER_FEE_THB
     const status = statuses[i % statuses.length]
     const daysAgo = i + 1
     const requestDate = new Date(2025, 3, 30 - daysAgo) // April backwards
@@ -1094,6 +1101,8 @@ export const mockRequests: EWARequest[] = [
       periodStart: '2025-04-01',
       periodEnd: '2025-04-30',
       requestedAmount: amount,
+      transferFee,
+      netTransferAmount: amount - transferFee,
       earnedToDate: (emp.monthlySalary ?? (emp.dailyRate ?? 400) * 22) * 0.8,
       maxWithdrawable: (emp.monthlySalary ?? (emp.dailyRate ?? 400) * 22) * 0.4,
       previousEWAThisPeriod: 0,
@@ -1258,6 +1267,16 @@ export const useEWAStore = create<EWAStore>((set, get) => ({
 ```typescript
 // src/lib/utils/ewa-calculations.ts
 import dayjs from 'dayjs'
+
+export const DEFAULT_TRANSFER_FEE_THB = 15
+
+// R5: Calculate employee net transfer after fee
+export function calculateNetTransferAmount(
+  requestedAmount: number,
+  transferFee = DEFAULT_TRANSFER_FEE_THB,
+): number {
+  return Math.max(requestedAmount - transferFee, 0)
+}
 
 // R1: Calculate earned wages to date
 export function calculateEarnedToDate(

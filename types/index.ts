@@ -41,6 +41,8 @@ export interface EWARequest {
   employeeId: string
   employee?: Employee
   amount: number               // THB
+  transferFee: number          // THB, paid by employee per transaction
+  netTransferAmount: number    // amount - transferFee
   reason: EWAReason
   status: EWAStatus
   requestedAt: string          // ISO datetime
