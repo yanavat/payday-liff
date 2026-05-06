@@ -76,7 +76,11 @@
     "recentRequests": "คำขอล่าสุด",
     "payrollCycle": "รอบเงินเดือน",
     "requestBreakdown": "สัดส่วนคำขอ",
-    "upcomingDates": "วันสำคัญที่จะถึง"
+    "upcomingDates": "วันสำคัญที่จะถึง",
+    "fromYesterday": "จากเมื่อวาน",
+    "today": "วันนี้",
+    "total": "รวม",
+    "fromBudget": "จากงบ THB 500K"
   },
   "requests": {
     "title": "คำขอเบิกเงินล่วงหน้า",

@@ -83,28 +83,28 @@ export function DashboardPageContent() {
           label={t("dashboard.pendingRequests")}
           value={String(statusCounts.pending)}
           trend={3}
-          trendLabel="from yesterday"
+          trendLabel={t("dashboard.fromYesterday")}
           icon={<Clock3 className="h-[18px] w-[18px]" />}
           variant="hero"
         />
         <MetricCard
           label={t("dashboard.approvedToday")}
           value={String(statusCounts.approved)}
-          sub={`${formatTHBCompact(disbursedAmount)} total`}
+          sub={`${formatTHBCompact(disbursedAmount)} ${t("dashboard.total")}`}
           trend={8}
-          trendLabel="today"
+          trendLabel={t("dashboard.today")}
           icon={<CheckCircle2 className="h-[18px] w-[18px]" />}
         />
         <MetricCard
           label={t("dashboard.disbursedMonth")}
           value={formatTHBCompact(disbursedAmount)}
-          sub="from THB 500K"
+          sub={t("dashboard.fromBudget")}
           icon={<Banknote className="h-[18px] w-[18px]" />}
         />
         <MetricCard
           label={t("dashboard.enrolledEmployees")}
           value={String(employees.length)}
-          sub="Phase 2"
+          sub=""
           icon={<Users className="h-[18px] w-[18px]" />}
         />
       </div>

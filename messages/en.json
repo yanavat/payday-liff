@@ -76,7 +76,11 @@
     "recentRequests": "Recent Requests",
     "payrollCycle": "Payroll Cycle",
     "requestBreakdown": "Request Breakdown",
-    "upcomingDates": "Upcoming Dates"
+    "upcomingDates": "Upcoming Dates",
+    "fromYesterday": "from yesterday",
+    "today": "today",
+    "total": "total",
+    "fromBudget": "from THB 500K"
   },
   "requests": {
     "title": "EWA Request List",

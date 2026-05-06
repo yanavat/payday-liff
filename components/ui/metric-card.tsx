@@ -38,7 +38,7 @@ export function MetricCard({
             {value}
           </p>
           <div className="flex items-center gap-2">
-            {sub && <p className="mt-1 text-caption text-text-muted">{sub}</p>}
+            {sub && <p className="text-caption text-text-muted">{sub}</p>}
 
             {typeof trend === "number" && (
               <div className="">

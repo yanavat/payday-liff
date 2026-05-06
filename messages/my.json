@@ -145,7 +145,11 @@
     "recentRequests": "မကြာသေးမီတောင်းဆိုမှုများ",
     "payrollCycle": "လစာကာလ",
     "requestBreakdown": "တောင်းဆိုမှုခွဲထုတ်ချက်",
-    "upcomingDates": "လာမည့်နေ့ရက်များ"
+    "upcomingDates": "လာမည့်နေ့ရက်များ",
+    "fromYesterday": "မနေ့ကမှ",
+    "today": "ယနေ့",
+    "total": "စုစုပေါင်း",
+    "fromBudget": "THB 500K မှ"
   },
   "requests": {
     "title": "EWA တောင်းဆိုမှုစာရင်း",

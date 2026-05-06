@@ -26,7 +26,7 @@ export function TabBar({
   return (
     <div
       className={cn(
-        "flex items-center",
+        "flex w-fit items-center",
         variant === "pill" && "gap-0.5 rounded-full bg-bg-secondary p-1",
         variant === "underline" && "gap-1 border-b border-border",
         className,
