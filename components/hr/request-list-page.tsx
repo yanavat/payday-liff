@@ -150,7 +150,7 @@ export function RequestListPage() {
   }
 
   return (
-    <div className="max-w-[1152px] space-y-6">
+    <div className="space-y-4">
       <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">

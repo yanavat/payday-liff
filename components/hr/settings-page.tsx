@@ -49,7 +49,7 @@ export function SettingsPageContent() {
   }
 
   return (
-    <div className="max-w-[960px] space-y-4 pb-20">
+    <div className="space-y-4">
       <header>
         <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
           {t("title")}

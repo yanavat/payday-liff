@@ -69,6 +69,8 @@
   },
   "login": {
     "title": "ဝင်ရောက်မည်",
+    "hrTitle": "HR ဝင်ရောက်မည်",
+    "hrSubtitle": "ဝန်ထမ်းကြိုထုတ်တောင်းဆိုစနစ်",
     "appTagline": "လစာကြိုထုတ်စနစ်",
     "employeeId": "ဝန်ထမ်း ID",
     "employeeIdPlaceholder": "ဝန်ထမ်း ID ထည့်ပါ",

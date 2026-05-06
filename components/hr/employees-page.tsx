@@ -38,7 +38,7 @@ export function EmployeesPageContent() {
   ).length;
 
   return (
-    <div className="max-w-[1152px] space-y-4">
+    <div className="space-y-4">
       <header>
         <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
           {tc("title")}

@@ -46,15 +46,19 @@ export function HRLoginPage() {
         <LocaleSwitcher />
       </div>
       <section className="relative w-full max-w-[400px] rounded-xl border border-border bg-bg-canvas p-8 shadow-modal">
-        <div className="mb-8 text-center">
-          <BrandLogo className="mb-4" size={48} />
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-            PayDay+
-          </p>
-          <h1 className="mt-2 text-2xl font-bold leading-tight text-text-primary">
-            {t("title")}
+        <div className="mb-8">
+          <div className="mb-4 flex items-center justify-start gap-2">
+            <BrandLogo className="mx-0" size={40} />
+            <span className="text-base font-semibold text-primary">
+              PayDay+
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold leading-tight text-text-primary">
+            {t("hrTitle")}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-text-muted">PayDay+ HR</p>
+          <p className="mt-2 text-sm leading-6 text-text-muted">
+            {t("hrSubtitle")}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

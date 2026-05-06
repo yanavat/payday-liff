@@ -195,6 +195,8 @@
   },
   "login": {
     "title": "Sign In",
+    "hrTitle": "HR Sign In",
+    "hrSubtitle": "Employee Advance Request System",
     "appTagline": "Earned Wage Access Platform",
     "employeeId": "Employee ID",
     "employeeIdPlaceholder": "Enter employee ID",
