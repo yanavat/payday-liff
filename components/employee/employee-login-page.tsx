@@ -8,6 +8,7 @@ import { PINPad } from "@/components/ui/pin-pad";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { cn } from "@/lib/utils";
 import { authenticateEmployee } from "@/lib/auth/mock-auth";
+import { BrandLogo } from "../shared/brand-logo";
 
 const maxAttempts = 5;
 
@@ -58,10 +59,11 @@ export function EmployeeLoginPage() {
         <LocaleSwitcher />
       </div>
 
-      <div className="relative z-10 mb-8 mt-12 flex flex-col items-center">
-        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white shadow-hover">
+      <div className="relative z-10 mb-8  flex flex-col items-center">
+        {/* <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white shadow-hover">
           <ShieldCheck className="h-8 w-8" strokeWidth={1.8} aria-hidden />
-        </div>
+        </div> */}
+        <BrandLogo className="my-2" />
         <h1 className="text-2xl font-bold leading-tight text-primary">
           PayDay+
         </h1>

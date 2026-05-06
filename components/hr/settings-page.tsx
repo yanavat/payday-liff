@@ -82,6 +82,7 @@ export function SettingsPageContent() {
               setPolicyTab(value);
               markDirty();
             }}
+            className="rounded-md"
           />
           <SettingsPanel title={t("ewaPolicy")}>
             <label className="grid gap-2">
@@ -219,10 +220,13 @@ export function SettingsPageContent() {
             </div>
           ))}
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
-            <NumberField label="LINE Token" value="••••••••••••" />
-            <button className="mt-6 h-9 rounded-md border border-border px-4 text-sm font-medium">
+            <NumberField
+              label="LINE Official Account ID"
+              value="@PaydayFactory"
+            />
+            {/* <button className="mt-6 h-9 rounded-md border border-border px-4 text-sm font-medium">
               Test connection
-            </button>
+            </button> */}
           </div>
         </SettingsPanel>
       )}

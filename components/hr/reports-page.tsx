@@ -298,9 +298,7 @@ function ToggleButton({
       onClick={onClick}
       className={cn(
         "h-8 rounded-sm px-4 text-sm font-medium",
-        active
-          ? "bg-bg-canvas text-text-primary shadow-card"
-          : "text-text-muted",
+        active ? "bg-primary text-text-primary shadow-card" : "text-text-muted",
       )}
     >
       {children}

@@ -15,6 +15,8 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
+import { signOut } from "@/lib/auth/session";
+import { useRouter } from "next/navigation";
 
 const mainNav = [
   { href: "/hr/dashboard", labelKey: "dashboard", icon: Gauge },
@@ -24,10 +26,11 @@ const mainNav = [
   { href: "/hr/settings", labelKey: "settings", icon: Settings },
 ];
 
-const footerNav = [{ href: "/", labelKey: "logout", icon: LogOut }];
+const footerNav = [{ href: "/hr/login", labelKey: "logout", icon: LogOut }];
 
 export function HRSidebar() {
   const t = useTranslations("nav");
+  const router = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -156,6 +159,9 @@ export function HRSidebar() {
                 "flex h-[38px] items-center gap-3 rounded-md px-3 text-sm font-medium text-text-secondary transition hover:bg-primary-bg hover:text-primary-dark",
                 collapsed && "justify-center px-0",
               )}
+              onClick={() => {
+                signOut("hr", router);
+              }}
             >
               <Icon
                 className="h-[18px] w-[18px] shrink-0"
