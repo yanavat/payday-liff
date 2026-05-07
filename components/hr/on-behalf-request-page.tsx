@@ -90,12 +90,12 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
             >
               {t("backToList")}
             </Link>
-            <Link
+            {/* <Link
               href="/hr/employees"
               className="inline-flex h-10 items-center rounded-md border border-border px-4 text-sm font-medium"
             >
               {t("backToList")}
-            </Link>
+            </Link> */}
           </div>
         </section>
       </div>
