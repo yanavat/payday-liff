@@ -35,33 +35,34 @@
 
 Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
+> May 11 update: this fork is now the standalone root LIFF app. The previous npm workspace packages under `packages/` were removed; future LIFF work should target the repository root.
+
 ### Phase 8.1 — Foundation (Week 1–2)
 
-- [x] Convert repo to npm workspaces without moving the current HR app first
-- [x] Create `packages/payday-liff` as the employee LINE LIFF Next.js app
-- [x] Create `packages/shared` as local workspace package `@payday/shared`
-- [x] Extract shared types from `types/index.ts` into `packages/shared`
-- [x] Extract `formatTHB()`, transfer fee utilities, and `cn()` into `packages/shared`
-- [ ] Extract employee-relevant i18n messages into `packages/shared`
+- [x] Promote this fork to a standalone root LIFF app and remove the temporary `packages/` workspace layout
+- [x] Move the LIFF app shell to the repository root
+- [x] Keep shared types in root `types/index.ts`
+- [x] Keep `formatTHB()`, transfer fee utilities, and `cn()` in root `lib/utils/`
+- [ ] Extract employee-relevant i18n messages for root LIFF usage
 - [x] Extract business rule constants: min amounts, max percentages, cutoff rules, transfer fee
 - [x] Extract Thai dayjs/date configuration into `packages/shared`
 - [x] Define shared design token contract for Tailwind/CSS variables
-- [x] Create `packages/payday-api` for LIFF auth, employee linking, webhooks, and notification adapters
-- [x] Add mock-backed `packages/payday-api` interfaces for LIFF identity verification
+- [x] Keep LIFF auth, employee linking, webhooks, and notification adapters in the root app/API layer
+- [x] Add mock-backed interfaces for LIFF identity verification
 - [x] Add mock-backed employee linking API for LINE userId → employee mapping
 - [x] Add mock-backed notification dispatch adapter for LINE Messaging API
 - [ ] Set up LINE Developer Console: LINE Login channel, Messaging API channel, LIFF app
-- [x] Install `@line/liff@2.21.4` in `packages/payday-liff` and wire it for Next.js client-only usage
+- [x] Install `@line/liff@2.21.4` in the root LIFF app and wire it for Next.js client-only usage
 - [x] Implement `LIFFAuthGate` with `liff.init()`, login handling, profile loading, and linked-user check
-- [ ] Implement first-time Employee ID linking form for unlinked LINE users
-- [ ] Add explicit external-browser fallback with `https://liff.line.me/{liffId}` "Open in LINE" link
-- [ ] Deploy LIFF workspace as a separate Vercel project from this repo
+- [x] Implement first-time Employee ID linking form for unlinked LINE users
+- [x] Add explicit external-browser fallback with `https://liff.line.me/{liffId}` "Open in LINE" link
+- [ ] Deploy root LIFF app as a Vercel project from this repo
 - [ ] Register deployed LIFF endpoint URL in LINE Developer Console
 
 ### Phase 8.2 — Screen Migration (Week 3–4)
 
-- [ ] Port E-2 Home into `packages/payday-liff` with LINE profile picture support
-- [ ] Remove employee NotificationBell behavior that is replaced by LINE push notifications
+- [x] Port E-2 Home into the root LIFF app with LINE profile picture support
+- [x] Remove employee NotificationBell behavior that is replaced by LINE push notifications
 - [ ] Adapt OfflineBanner for LIFF context with `navigator.onLine` and `liff.isInClient()`
 - [ ] Port E-3 Request amount step with quick amounts, reason chips, fee, and net amount display
 - [ ] Replace request PIN confirmation with transaction-level step-up confirmation
@@ -74,11 +75,11 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 - [ ] Remove employee session logout UI from LIFF profile
 - [ ] Port BottomTabBar and EmployeeShell into the LIFF app context
 - [ ] Move shared UI primitives only when they have both HR and LIFF consumers
-- [ ] Keep employee-only components inside `packages/payday-liff`
+- [ ] Keep employee-only components in the root LIFF app
 
 ### Phase 8.3 — LINE Features (Week 5–6)
 
-- [ ] Implement LINE Messaging API adapter in `packages/payday-api`
+- [ ] Implement LINE Messaging API adapter in the root app/API layer
 - [ ] Keep channel access tokens and webhook secrets server-side only
 - [ ] Implement webhook signature validation for LINE events
 - [ ] Add typed notification commands for approved, rejected, disbursed, payday reminder, cutoff warning, and monthly summary
