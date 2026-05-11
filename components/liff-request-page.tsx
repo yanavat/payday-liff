@@ -39,12 +39,16 @@ export function LiffRequestPage() {
   const tc = useTranslations('common')
 
   const reasonLabel = useMemo(
-    () => t(`reasons.${reason}` as keyof typeof t),
+    () => t(`reasons.${reason}`),
     [reason, t],
   )
 
   useEffect(() => {
-    loadLiffClient().then((liff) => setIsInClient(liff.isInClient()))
+    let cancelled = false
+    loadLiffClient().then((liff) => {
+      if (!cancelled) setIsInClient(liff.isInClient())
+    })
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
@@ -183,7 +187,7 @@ export function LiffRequestPage() {
                       : 'rounded-full border border-border bg-white px-3 py-2 text-[16px] font-medium text-text-secondary'
                   }
                 >
-                  {t(`reasons.${item.value}` as keyof typeof t)}
+                  {t(`reasons.${item.value}`)}
                 </button>
               ))}
             </div>

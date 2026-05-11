@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
+import { loadLiffClient } from '@/lib/liff-client'
 
 const { confettiMock } = vi.hoisted(() => ({ confettiMock: vi.fn() }))
 vi.mock('canvas-confetti', () => ({ default: confettiMock }))
@@ -162,5 +163,27 @@ describe('LiffRequestPage — step 3 success', () => {
   it('fires confetti after 300ms', () => {
     vi.advanceTimersByTime(400)
     expect(confettiMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('shows share button and calls shareTargetPicker when in LINE client', async () => {
+    // Restore real timers for this test so async promise resolution works
+    vi.useRealTimers()
+    const shareTargetPickerMock = vi.fn().mockResolvedValue(undefined)
+    const inClientLiff = {
+      isInClient: () => true,
+      shareTargetPicker: shareTargetPickerMock,
+    } as never
+    // First call: useEffect (isInClient detection); second call: handleShare
+    vi.mocked(loadLiffClient)
+      .mockResolvedValueOnce(inClientLiff)
+      .mockResolvedValueOnce(inClientLiff)
+    renderWithIntl(<LiffRequestPage />, { messages })
+    goToStep2()
+    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '000000' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    // wait for the isInClient effect to resolve and the share button to appear
+    await screen.findByRole('button', { name: /Share Receipt/i })
+    fireEvent.click(screen.getByRole('button', { name: /Share Receipt/i }))
+    await vi.waitFor(() => expect(shareTargetPickerMock).toHaveBeenCalledTimes(1))
   })
 })
