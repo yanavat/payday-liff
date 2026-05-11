@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bell,
   ChevronDown,
@@ -273,14 +273,19 @@ function BankAccountSheet({
     }
   }, [open, initialBankCode, initialHolderName]);
 
+  const onCloseRef = useRef(onClose);
   useEffect(() => {
-    function handleKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
+    onCloseRef.current = onClose;
+  });
+
+  useEffect(() => {
     if (!open) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onCloseRef.current();
+    }
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [onClose, open]);
+  }, [open]);
 
   if (!visible) return null;
 

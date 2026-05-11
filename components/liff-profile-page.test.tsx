@@ -18,6 +18,7 @@ vi.mock('next/image', () => ({
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }))
 
+import { useLiffProfile } from '@/components/liff-auth-gate'
 import { LiffProfilePage } from './liff-profile-page'
 
 const messages = {
@@ -77,5 +78,16 @@ describe('LiffProfilePage', () => {
     const stored = JSON.parse(localStorage.getItem('payday-liff-employee-links') ?? '{}')
     expect(stored).not.toHaveProperty('U1234567890')
     expect(reloadMock).toHaveBeenCalledOnce()
+  })
+
+  it('falls back to Avatar initials when pictureUrl is absent', () => {
+    vi.mocked(useLiffProfile).mockReturnValueOnce({
+      userId: 'U9999',
+      displayName: 'No Picture',
+      pictureUrl: undefined,
+    } as never)
+    renderWithIntl(<LiffProfilePage />, { messages })
+    // next/image is mocked to render <img>, so absence of <img> confirms Avatar is shown instead
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 })
