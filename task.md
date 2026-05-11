@@ -63,19 +63,19 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
 - [x] Port E-2 Home into the root LIFF app with LINE profile picture support
 - [x] Remove employee NotificationBell behavior that is replaced by LINE push notifications
-- [ ] Adapt OfflineBanner for LIFF context with `navigator.onLine` and `liff.isInClient()`
-- [ ] Port E-3 Request amount step with quick amounts, reason chips, fee, and net amount display
-- [ ] Replace request PIN confirmation with transaction-level step-up confirmation
-- [ ] Support WebAuthn/device biometric confirmation when available
-- [ ] Add server-issued one-time confirmation code fallback for unsupported devices
-- [ ] Port E-3 Success step and replace Web Share API with `liff.shareTargetPicker()`
-- [ ] Port E-4 History with tabs, accordion cards, and status badges
-- [ ] Add LIFF deep-link handling for history request params, e.g. `?page=history&id=EWA-001`
-- [ ] Port E-5 Profile with LINE profile picture and unlink account flow
-- [ ] Remove employee session logout UI from LIFF profile
-- [ ] Port BottomTabBar and EmployeeShell into the LIFF app context
-- [ ] Move shared UI primitives only when they have both HR and LIFF consumers
-- [ ] Keep employee-only components in the root LIFF app
+- [x] Adapt OfflineBanner for LIFF context with `navigator.onLine` and `liff.isInClient()`
+- [x] Port E-3 Request amount step with quick amounts, reason chips, fee, and net amount display
+- [x] Replace request PIN confirmation with transaction-level step-up confirmation
+- [x] Support WebAuthn/device biometric confirmation when available
+- [x] Add server-issued one-time confirmation code fallback for unsupported devices
+- [x] Port E-3 Success step and replace Web Share API with `liff.shareTargetPicker()`
+- [x] Port E-4 History with tabs, accordion cards, and status badges
+- [x] Add LIFF deep-link handling for history request params, e.g. `?page=history&id=EWA-001`
+- [x] Port E-5 Profile with LINE profile picture and unlink account flow
+- [x] Remove employee session logout UI from LIFF profile
+- [x] Port BottomTabBar and EmployeeShell into the LIFF app context
+- [x] Move shared UI primitives only when they have both HR and LIFF consumers
+- [x] Keep employee-only components in the root LIFF app
 
 ### Phase 8.3 — LINE Features (Week 5–6)
 
@@ -154,5 +154,5 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 | 5 · UX & A11y     | 9           | 9       | 100%     |
 | 6 · Polish        | 10          | 10      | 100%     |
 | 7 · Deploy        | 6           | 3       | 50%      |
-| 8 · LIFF Migration | 65          | 14      | 22%      |
-| **Total**         | **227**     | **173** | **76%**  |
+| 8 · LIFF Migration | 65          | 27      | 41%      |
+| **Total**         | **227**     | **186** | **82%**  |
