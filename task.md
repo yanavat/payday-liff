@@ -92,11 +92,11 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 - [ ] Design Flex Message template for monthly summary notification
 - [ ] Configure LINE rich menu with Home, Request, History, and Profile entry points
 - [ ] Route push-notification deep links to the correct LIFF screen/request
-- [ ] Add receipt sharing through `liff.shareTargetPicker()`
+- [x] Add receipt sharing through `liff.shareTargetPicker()`
 
 ### Phase 8.4 — Testing & Launch (Week 7–8)
 
-- [ ] Add LIFF mock mode for local development with `NEXT_PUBLIC_LIFF_MOCK=true`
+- [x] Add LIFF mock mode for local development with `NEXT_PUBLIC_LIFF_MOCK=true`
 - [ ] Test local dev through HTTPS tunnel/ngrok
 - [ ] Test external browser flow through `https://liff.line.me/{liffId}`
 - [ ] Test inside LINE on real iOS device
@@ -154,5 +154,5 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 | 5 · UX & A11y     | 9           | 9       | 100%     |
 | 6 · Polish        | 10          | 10      | 100%     |
 | 7 · Deploy        | 6           | 3       | 50%      |
-| 8 · LIFF Migration | 65          | 27      | 41%      |
-| **Total**         | **227**     | **186** | **82%**  |
+| 8 · LIFF Migration | 65          | 29      | 45%      |
+| **Total**         | **227**     | **188** | **83%**  |
