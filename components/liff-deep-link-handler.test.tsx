@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
 import { LiffDeepLinkHandler } from "./liff-deep-link-handler";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(),
   useRouter: vi.fn(),
   useSearchParams: vi.fn(),
 }));
@@ -16,16 +17,11 @@ describe("LiffDeepLinkHandler", () => {
     vi.mocked(useRouter).mockReturnValue({ replace } as unknown as ReturnType<
       typeof useRouter
     >);
-  });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
+    vi.mocked(usePathname).mockReturnValue("/");
   });
 
   it("redirects to /history when page=history", () => {
-    vi.stubGlobal("window", {
-      location: { href: "https://liff.line.me/123?page=history&id=EWA-001" },
-    });
+    window.history.pushState({}, "", "/?page=history&id=EWA-001");
     const params = new URLSearchParams("page=history&id=EWA-001");
     vi.mocked(useSearchParams).mockReturnValue(
       params as unknown as ReturnType<typeof useSearchParams>,
@@ -36,10 +32,21 @@ describe("LiffDeepLinkHandler", () => {
     expect(replace).toHaveBeenCalledWith("/history?id=EWA-001");
   });
 
+  it("keeps the locale prefix when redirecting from a localized LIFF route", () => {
+    window.history.pushState({}, "", "/en?page=history&id=EWA-001");
+    vi.mocked(usePathname).mockReturnValue("/en");
+    const params = new URLSearchParams("page=history&id=EWA-001");
+    vi.mocked(useSearchParams).mockReturnValue(
+      params as unknown as ReturnType<typeof useSearchParams>,
+    );
+
+    render(<LiffDeepLinkHandler />);
+
+    expect(replace).toHaveBeenCalledWith("/en/history?id=EWA-001");
+  });
+
   it("redirects to /request when page=request", () => {
-    vi.stubGlobal("window", {
-      location: { href: "https://liff.line.me/123?page=request" },
-    });
+    window.history.pushState({}, "", "/?page=request");
     const params = new URLSearchParams("page=request");
     vi.mocked(useSearchParams).mockReturnValue(
       params as unknown as ReturnType<typeof useSearchParams>,
@@ -51,9 +58,7 @@ describe("LiffDeepLinkHandler", () => {
   });
 
   it("redirects to /profile when page=profile", () => {
-    vi.stubGlobal("window", {
-      location: { href: "https://liff.line.me/123?page=profile" },
-    });
+    window.history.pushState({}, "", "/?page=profile");
     const params = new URLSearchParams("page=profile");
     vi.mocked(useSearchParams).mockReturnValue(
       params as unknown as ReturnType<typeof useSearchParams>,
@@ -65,9 +70,7 @@ describe("LiffDeepLinkHandler", () => {
   });
 
   it("redirects to home and cleans params when page=home", () => {
-    vi.stubGlobal("window", {
-      location: { href: "https://liff.line.me/123?page=home" },
-    });
+    window.history.pushState({}, "", "/?page=home");
     const params = new URLSearchParams("page=home");
     vi.mocked(useSearchParams).mockReturnValue(
       params as unknown as ReturnType<typeof useSearchParams>,
@@ -79,9 +82,7 @@ describe("LiffDeepLinkHandler", () => {
   });
 
   it("does nothing when no page param", () => {
-    vi.stubGlobal("window", {
-      location: { href: "https://liff.line.me/123" },
-    });
+    window.history.pushState({}, "", "/");
     const params = new URLSearchParams("");
     vi.mocked(useSearchParams).mockReturnValue(
       params as unknown as ReturnType<typeof useSearchParams>,

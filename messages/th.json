@@ -222,7 +222,13 @@
     "cutoffWarning": "ปิดรับคำขอในอีก {days} วัน",
     "paydayCountdown": "จ่ายเงินในอีก {days} วัน",
     "recentRequests": "คำขอล่าสุด",
-    "viewAllHistory": "ดูประวัติทั้งหมด →"
+    "viewAllHistory": "ดูประวัติทั้งหมด",
+    "earnedWage": "รายได้สะสม",
+    "maxAllowed": "เบิกได้สูงสุด",
+    "previousAdvance": "เบิกไปแล้ว",
+    "remaining": "คงเหลือ",
+    "dayProgress": "Day {elapsed} / {total}",
+    "requestItemTitle": "คำขอเบิกเงิน"
   },
   "requestWizard": {
     "step1": "เลือกจำนวน",
@@ -252,7 +258,11 @@
     "referenceNumber": "รหัสอ้างอิง",
     "backToHome": "กลับหน้าหลัก",
     "shareReceipt": "แชร์ใบรับคำขอ",
-    "withdrawAll": "เบิกทั้งหมด"
+    "shareReceiptText": "ยื่นคำขอเบิกเงินสำเร็จ\nจำนวน: {amount}\nอ้างอิง: {reference}",
+    "withdrawAll": "เบิกทั้งหมด",
+    "otpLabel": "รหัสยืนยัน (OTP)",
+    "otpHint": "กรอก 000000 เพื่อยืนยัน",
+    "invalidOtp": "รหัสไม่ถูกต้อง"
   },
   "history": {
     "title": "ประวัติการเบิก",
@@ -265,7 +275,8 @@
     "approvedBy": "อนุมัติโดย",
     "transferFee": "ค่าธรรมเนียมการโอน",
     "netTransferAmount": "ยอดโอนสุทธิ",
-    "exportPaySlip": "ส่งออกสลิป PDF"
+    "exportPaySlip": "ส่งออกสลิป PDF",
+    "requestCount": "{count} ครั้ง"
   },
   "profile": {
     "title": "โปรไฟล์",
@@ -287,7 +298,8 @@
     "notifyPayday": "แจ้งเตือนวันจ่ายเงิน",
     "notifyLine": "แจ้งเตือนผ่าน LINE",
     "language": "ภาษา",
-    "logout": "ออกจากระบบ"
+    "logout": "ออกจากระบบ",
+    "unlinkLine": "ยกเลิกการเชื่อมต่อ LINE"
   },
   "liff": {
     "loading": "กำลังโหลด PayDay+...",

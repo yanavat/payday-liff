@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
 vi.mock('next/navigation', () => ({
+  usePathname: vi.fn(() => '/history'),
   useSearchParams: vi.fn(() => new URLSearchParams()),
 }))
 

@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect } from 'react'
 import { Check, Share2 } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { QuickAmountButton } from '@/components/ui/quick-amount-button'
 import { StatusBadge } from '@/components/ui/status-badge'
@@ -11,6 +12,7 @@ import { currentEmployee } from '@/lib/mock/currentUser'
 import { formatTHB } from '@/lib/utils/format'
 import { DEFAULT_TRANSFER_FEE_THB, getNetTransferAmount } from '@/lib/utils/fees'
 import { loadLiffClient } from '@/lib/liff-client'
+import { withLiffLocale } from '@/lib/liff-routes'
 
 const available = 3500
 const quickAmounts = [1000, 2000, 3000]
@@ -36,6 +38,7 @@ export function LiffRequestPage() {
   const netTransferAmount = getNetTransferAmount(amount, transferFee)
   const t = useTranslations('requestWizard')
   const tc = useTranslations('common')
+  const pathname = usePathname()
 
   const reasonLabel = useMemo(
     () => t(`reasons.${reason}`),
@@ -83,7 +86,7 @@ export function LiffRequestPage() {
   function confirmRequest() {
     if (otp !== '000000') {
       setOtp('')
-      setOtpError('รหัสไม่ถูกต้อง')
+      setOtpError(t('invalidOtp'))
       return
     }
     setStep(3)
@@ -95,7 +98,10 @@ export function LiffRequestPage() {
     await liff.shareTargetPicker([
       {
         type: 'text',
-        text: `ยื่นคำขอเบิกเงินสำเร็จ\nจำนวน: ${formatTHB(amount)}\nอ้างอิง: EWA-20250501-041`,
+        text: t('shareReceiptText', {
+          amount: formatTHB(amount),
+          reference: 'EWA-20250501-041',
+        }),
       },
     ])
   }
@@ -232,7 +238,7 @@ export function LiffRequestPage() {
 
           <div className="rounded-lg border border-border bg-white p-4 shadow-card">
             <div className="mb-4 text-center text-[16px] font-semibold text-text-primary">
-              รหัสยืนยัน (OTP)
+              {t('otpLabel')}
             </div>
             {otpError && (
               <p className="mb-3 text-center text-[16px] font-medium text-red-600">{otpError}</p>
@@ -249,7 +255,7 @@ export function LiffRequestPage() {
               placeholder="000000"
               className="w-full rounded-md border border-border bg-bg-secondary px-4 py-3 text-center font-mono text-[24px] tracking-widest focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
-            <p className="mt-2 text-center text-[14px] text-text-muted">กรอก 000000 เพื่อยืนยัน</p>
+            <p className="mt-2 text-center text-[14px] text-text-muted">{t('otpHint')}</p>
           </div>
 
           <button
@@ -308,7 +314,7 @@ export function LiffRequestPage() {
           </div>
 
           <Link
-            href="/"
+            href={withLiffLocale(pathname, '/')}
             className="animate-page-fade-in fill-mode-both mt-6 flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition focus:outline-none focus:ring-2 focus:ring-primary/30"
             style={{ animationDelay: '950ms' }}
           >

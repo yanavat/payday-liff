@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { Avatar } from "@/components/ui/avatar";
@@ -21,6 +21,7 @@ import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { useLiffProfile } from "@/components/liff-auth-gate";
 import { currentEmployee } from "@/lib/mock/currentUser";
+import { loadLiffClient } from "@/lib/liff-client";
 
 const EMPLOYEE_LINKS_STORAGE_KEY = "payday-liff-employee-links";
 
@@ -35,8 +36,10 @@ const THAI_BANKS = [
   { code: "GSB", nameTh: "ออมสิน", nameEn: "Government Savings Bank" },
 ];
 
-function getBankDisplayName(code: string) {
-  return THAI_BANKS.find((b) => b.code === code)?.nameTh ?? code;
+function getBankDisplayName(code: string, locale: string) {
+  const bank = THAI_BANKS.find((b) => b.code === code);
+  if (!bank) return code;
+  return locale === "th" ? bank.nameTh : bank.nameEn;
 }
 
 function maskAccountNumber(num: string) {
@@ -48,6 +51,7 @@ function maskAccountNumber(num: string) {
 
 export function LiffProfilePage() {
   const t = useTranslations();
+  const locale = useLocale();
   const profile = useLiffProfile();
   const [approval, setApproval] = useState(true);
   const [payday, setPayday] = useState(true);
@@ -79,6 +83,10 @@ export function LiffProfilePage() {
       ) as Record<string, string>;
       delete links[profile.userId];
       localStorage.setItem(EMPLOYEE_LINKS_STORAGE_KEY, JSON.stringify(links));
+      void loadLiffClient().then((liff) => {
+        liff.logout();
+        liff.closeWindow();
+      });
     } catch {
       // ignore parse errors
     }
@@ -107,12 +115,10 @@ export function LiffProfilePage() {
             />
           )}
           <h1 className="mt-3 text-[22px] font-bold leading-tight text-white">
-            {currentEmployee.nameTh}
+            {profile?.displayName || currentEmployee.nameTh}
           </h1>
-          {profile?.displayName && (
-            <p className="mt-0.5 text-[14px] text-white/70">
-              {profile.displayName}
-            </p>
+          {profile?.email && (
+            <p className="mt-0.5 text-[14px] text-white/70">{profile.email}</p>
           )}
           <p className="mt-1 text-[15px] text-white/80">
             {currentEmployee.id} · {currentEmployee.department}
@@ -143,7 +149,7 @@ export function LiffProfilePage() {
             </button>
           </div>
           <p className="text-[16px] font-semibold text-text-primary">
-            {getBankDisplayName(bankCode)}
+            {getBankDisplayName(bankCode, locale)}
           </p>
           <p className="mt-1 font-mono text-[15px] text-text-secondary">
             {accountMasked}
@@ -218,7 +224,7 @@ export function LiffProfilePage() {
           className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-red-200 text-[16px] font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200"
         >
           <Link2Off className="h-5 w-5" aria-hidden />
-          ยกเลิกการเชื่อมต่อ LINE
+          {t("profile.unlinkLine")}
         </button>
       </main>
 
@@ -227,6 +233,7 @@ export function LiffProfilePage() {
         onClose={() => setShowEditBank(false)}
         initialBankCode={bankCode}
         initialHolderName={holderName}
+        locale={locale}
         onSave={handleSaveBank}
       />
     </div>
@@ -238,6 +245,7 @@ interface BankAccountSheetProps {
   onClose: () => void;
   initialBankCode: string;
   initialHolderName: string;
+  locale: string;
   onSave: (data: {
     bankCode: string;
     accountNumber: string;
@@ -250,6 +258,7 @@ function BankAccountSheet({
   onClose,
   initialBankCode,
   initialHolderName,
+  locale,
   onSave,
 }: BankAccountSheetProps) {
   const t = useTranslations();
@@ -342,7 +351,7 @@ function BankAccountSheet({
               >
                 {THAI_BANKS.map((bank) => (
                   <option key={bank.code} value={bank.code}>
-                    {bank.nameTh} ({bank.nameEn})
+                    {locale === "th" ? bank.nameTh : bank.nameEn}
                   </option>
                 ))}
               </select>

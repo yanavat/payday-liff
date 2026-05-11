@@ -5,6 +5,12 @@ import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
 
 const pushMock = vi.fn();
 
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(() => ({ replace: vi.fn() })),
+  usePathname: vi.fn(() => "/en/employee/profile"),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+}));
+
 vi.mock("@/i18n/navigation", () => ({
   useRouter: vi.fn(() => ({ push: pushMock })),
   usePathname: vi.fn(() => "/en/employee/profile"),
@@ -16,6 +22,9 @@ const messages = {
     bankAccount: "Bank account",
     ewaLimit: "EWA limit",
     maxPercent: "Maximum",
+    edit: "Edit",
+    percentOfSalary: "{percent}% of salary",
+    usedCount: "{used} / {max} this cycle",
     used: "Used",
     remaining: "Remaining",
     notifications: "Notifications",

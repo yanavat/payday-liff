@@ -14,6 +14,18 @@ vi.mock('@/components/shared/locale-switcher', () => ({
   LocaleSwitcher: () => <div data-testid="locale-switcher" />,
 }))
 
+const liffLogoutMock = vi.fn()
+const liffCloseWindowMock = vi.fn()
+
+vi.mock('@/lib/liff-client', () => ({
+  loadLiffClient: vi.fn(() =>
+    Promise.resolve({
+      logout: liffLogoutMock,
+      closeWindow: liffCloseWindowMock,
+    }),
+  ),
+}))
+
 vi.mock('next/image', () => ({
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }))
@@ -43,10 +55,16 @@ const messages = {
     notifyLine: 'Notify via LINE',
     language: 'Language',
     logout: 'Log out',
+    unlinkLine: 'Unlink LINE account',
   },
 }
 
 describe('LiffProfilePage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    localStorage.clear()
+  })
+
   it('shows the LINE profile picture', () => {
     renderWithIntl(<LiffProfilePage />, { messages })
     expect(screen.getByAltText('Mock LINE User')).toHaveAttribute('src', 'https://profile.line.example/avatar.jpg')
@@ -64,7 +82,7 @@ describe('LiffProfilePage', () => {
 
   it('shows an unlink LINE button', () => {
     renderWithIntl(<LiffProfilePage />, { messages })
-    expect(screen.getByRole('button', { name: /ยกเลิกการเชื่อมต่อ LINE/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Unlink LINE account/i })).toBeInTheDocument()
   })
 
   it('unlink button clears localStorage entry and reloads', () => {
@@ -73,7 +91,7 @@ describe('LiffProfilePage', () => {
     localStorage.setItem('payday-liff-employee-links', JSON.stringify({ U1234567890: 'EMP-001' }))
 
     renderWithIntl(<LiffProfilePage />, { messages })
-    fireEvent.click(screen.getByRole('button', { name: /ยกเลิกการเชื่อมต่อ LINE/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Unlink LINE account/i }))
 
     const stored = JSON.parse(localStorage.getItem('payday-liff-employee-links') ?? '{}')
     expect(stored).not.toHaveProperty('U1234567890')

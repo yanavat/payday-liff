@@ -59,7 +59,11 @@ const messages = {
     referenceNumber: 'Reference Number',
     backToHome: 'Back to Home',
     shareReceipt: 'Share Receipt',
+    shareReceiptText: 'Advance request submitted\nAmount: {amount}\nReference: {reference}',
     withdrawAll: 'Withdraw All',
+    otpLabel: 'Confirmation code (OTP)',
+    otpHint: 'Enter 000000 to confirm',
+    invalidOtp: 'Invalid code',
   },
 }
 
@@ -105,7 +109,7 @@ describe('LiffRequestPage — step 2 OTP', () => {
   })
 
   it('shows OTP label', () => {
-    expect(screen.getByText('รหัสยืนยัน (OTP)')).toBeInTheDocument()
+    expect(screen.getByText('Confirmation code (OTP)')).toBeInTheDocument()
   })
 
   it('Confirm button is disabled until 6 digits are entered', () => {
@@ -117,7 +121,7 @@ describe('LiffRequestPage — step 2 OTP', () => {
   it('shows error and stays on step 2 when wrong OTP is entered', () => {
     fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '111111' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
-    expect(screen.getByText('รหัสไม่ถูกต้อง')).toBeInTheDocument()
+    expect(screen.getByText('Invalid code')).toBeInTheDocument()
     expect(screen.getByText('Summary')).toBeInTheDocument()
   })
 

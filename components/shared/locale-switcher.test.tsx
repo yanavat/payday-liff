@@ -3,10 +3,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { LocaleSwitcher } from "./locale-switcher";
 
 const replaceMock = vi.fn();
+const pathnameMock = vi.fn(() => "/th/profile");
+const searchParamsMock = vi.fn(() => new URLSearchParams());
 
-vi.mock("@/i18n/navigation", () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: replaceMock }),
-  usePathname: () => "/th/employee/profile",
+  usePathname: () => pathnameMock(),
+  useSearchParams: () => searchParamsMock(),
 }));
 
 vi.mock("next-intl", () => ({
@@ -16,6 +19,8 @@ vi.mock("next-intl", () => ({
 describe("LocaleSwitcher", () => {
   beforeEach(() => {
     replaceMock.mockClear();
+    pathnameMock.mockReturnValue("/th/profile");
+    searchParamsMock.mockReturnValue(new URLSearchParams());
   });
 
   describe("pill variant (default)", () => {
@@ -60,9 +65,32 @@ describe("LocaleSwitcher", () => {
       );
 
       expect(replaceMock).toHaveBeenCalledTimes(1);
-      expect(replaceMock).toHaveBeenCalledWith("/th/employee/profile", {
-        locale: "en",
-      });
+      expect(replaceMock).toHaveBeenCalledWith("/en/profile");
+    });
+
+    it("adds a locale prefix when switching from an unprefixed LIFF route", () => {
+      pathnameMock.mockReturnValue("/profile");
+
+      render(<LocaleSwitcher />);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Switch language to English" }),
+      );
+
+      expect(replaceMock).toHaveBeenCalledWith("/en/profile");
+    });
+
+    it("preserves search params when switching language", () => {
+      pathnameMock.mockReturnValue("/th/history");
+      searchParamsMock.mockReturnValue(new URLSearchParams("id=EWA-001"));
+
+      render(<LocaleSwitcher />);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Switch language to English" }),
+      );
+
+      expect(replaceMock).toHaveBeenCalledWith("/en/history?id=EWA-001");
     });
 
     it("does nothing when clicking the already active locale", () => {
@@ -100,9 +128,7 @@ describe("LocaleSwitcher", () => {
       fireEvent.change(select, { target: { value: "my" } });
 
       expect(replaceMock).toHaveBeenCalledTimes(1);
-      expect(replaceMock).toHaveBeenCalledWith("/th/employee/profile", {
-        locale: "my",
-      });
+      expect(replaceMock).toHaveBeenCalledWith("/my/profile");
     });
 
     it("does nothing when selecting the already active locale", () => {

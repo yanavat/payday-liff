@@ -5,9 +5,14 @@ import { renderWithIntl } from "@/tests/i18n/test-utils";
 
 const replaceMock = vi.fn();
 
-// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(() => ({ replace: replaceMock })),
+  usePathname: vi.fn(() => "/th/employee/login"),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+}));
+
 vi.mock("@/i18n/navigation", () => ({
-  useRouter: vi.fn(() => ({ push: vi.fn(), replace: replaceMock })),
+  useRouter: vi.fn(() => ({ push: vi.fn() })),
   usePathname: vi.fn(() => "/th/employee/login"),
   Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
 }));
@@ -70,9 +75,7 @@ describe("EmployeeLoginPage", () => {
     });
     fireEvent.click(thaiButton);
 
-    expect(replaceMock).toHaveBeenCalledWith("/th/employee/login", {
-      locale: "th",
-    });
+    expect(replaceMock).toHaveBeenCalledWith("/th/employee/login");
   });
 
   it("shows employee ID input with placeholder", () => {

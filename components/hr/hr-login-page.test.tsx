@@ -4,9 +4,16 @@ import { HRLoginPage } from "./hr-login-page";
 import { renderWithIntl } from "@/tests/i18n/test-utils";
 
 const pushMock = vi.fn();
+const replaceMock = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(() => ({ replace: replaceMock })),
+  usePathname: vi.fn(() => "/en/hr/login"),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+}));
 
 vi.mock("@/i18n/navigation", () => ({
-  useRouter: vi.fn(() => ({ push: pushMock, replace: vi.fn() })),
+  useRouter: vi.fn(() => ({ push: pushMock })),
   usePathname: vi.fn(() => "/en/hr/login"),
   Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>

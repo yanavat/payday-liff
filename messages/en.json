@@ -222,7 +222,13 @@
     "cutoffWarning": "Cutoff in {days} days",
     "paydayCountdown": "Payday in {days} days",
     "recentRequests": "Recent Requests",
-    "viewAllHistory": "View all history →"
+    "viewAllHistory": "View all history",
+    "earnedWage": "Earned wage",
+    "maxAllowed": "Max allowed",
+    "previousAdvance": "Withdrawn",
+    "remaining": "Remaining",
+    "dayProgress": "Day {elapsed} / {total}",
+    "requestItemTitle": "Advance request"
   },
   "requestWizard": {
     "step1": "Select Amount",
@@ -252,7 +258,11 @@
     "referenceNumber": "Reference Number",
     "backToHome": "Back to Home",
     "shareReceipt": "Share Receipt",
+    "shareReceiptText": "Advance request submitted\nAmount: {amount}\nReference: {reference}",
     "withdrawAll": "Withdraw All",
+    "otpLabel": "Confirmation code (OTP)",
+    "otpHint": "Enter 000000 to confirm",
+    "invalidOtp": "Invalid code",
     "requestedDate": "Requested",
     "approvedDate": "Approved",
     "transferDate": "Transferred",
@@ -269,7 +279,8 @@
     "approvedBy": "Approved By",
     "transferFee": "Transfer Fee",
     "netTransferAmount": "Net Transfer Amount",
-    "exportPaySlip": "Export pay slip PDF"
+    "exportPaySlip": "Export pay slip PDF",
+    "requestCount": "{count} requests"
   },
   "profile": {
     "title": "Profile",
@@ -291,7 +302,8 @@
     "notifyPayday": "Notify on payday",
     "notifyLine": "LINE notifications",
     "language": "Language",
-    "logout": "Log out"
+    "logout": "Log out",
+    "unlinkLine": "Unlink LINE account"
   },
   "liff": {
     "loading": "Loading PayDay+...",

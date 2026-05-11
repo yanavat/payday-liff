@@ -2,21 +2,28 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 import { EmptyState } from '@/components/ui/empty-state'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { TabBar, type TabItem } from '@/components/ui/tab-bar'
 import { currentEmployee } from '@/lib/mock/currentUser'
 import { getRequestsByEmployee } from '@/lib/mock/requests'
+import { withLiffLocale } from '@/lib/liff-routes'
 import { cn } from '@/lib/utils'
 import { formatTHB } from '@/lib/utils/format'
 
-function formatDate(value?: string) {
+const dateLocales: Record<string, string> = {
+  th: 'th-TH',
+  en: 'en-US',
+  my: 'my-MM',
+}
+
+function formatDate(value: string | undefined, locale: string) {
   if (!value) return '-'
-  return new Intl.DateTimeFormat('th-TH', {
+  return new Intl.DateTimeFormat(dateLocales[locale] ?? 'en-US', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -27,6 +34,8 @@ function formatDate(value?: string) {
 
 export function LiffHistoryPage() {
   const t = useTranslations()
+  const locale = useLocale()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const deepLinkId = searchParams.get('id')
 
@@ -75,17 +84,17 @@ export function LiffHistoryPage() {
           <SummaryCell
             label={t('history.thisMonth')}
             value="฿5,500"
-            sub="2 ครั้ง"
+            sub={t('history.requestCount', { count: 2 })}
           />
           <SummaryCell
             label={t('history.lastMonth')}
             value="฿5,500"
-            sub="2 ครั้ง"
+            sub={t('history.requestCount', { count: 2 })}
           />
           <SummaryCell
             label={t('history.total')}
             value="฿24,000"
-            sub="9 ครั้ง"
+            sub={t('history.requestCount', { count: 9 })}
           />
         </div>
       </div>
@@ -106,7 +115,7 @@ export function LiffHistoryPage() {
           description={t('home.requestCta')}
           action={
             <Link
-              href="/request"
+              href={withLiffLocale(pathname, '/request')}
               className="rounded-md bg-primary px-4 py-2 text-[16px] font-semibold text-white"
             >
               {t('requestWizard.step1')}
@@ -116,7 +125,7 @@ export function LiffHistoryPage() {
       ) : (
         <div className="space-y-2">
           {filtered.slice(0, 10).map((request) => {
-            const dateParts = new Intl.DateTimeFormat('th-TH', {
+            const dateParts = new Intl.DateTimeFormat(dateLocales[locale] ?? 'en-US', {
               day: '2-digit',
               month: 'short',
             })
@@ -171,11 +180,11 @@ export function LiffHistoryPage() {
                   <div className="border-t border-border-light bg-bg-secondary p-4 text-[16px]">
                     <DetailRow
                       label={t('history.requestedDate')}
-                      value={formatDate(request.requestedAt)}
+                      value={formatDate(request.requestedAt, locale)}
                     />
                     <DetailRow
                       label={t('history.approvedDate')}
-                      value={formatDate(request.approvedAt)}
+                      value={formatDate(request.approvedAt, locale)}
                     />
                     <DetailRow
                       label={t('history.approvedBy')}
@@ -183,7 +192,7 @@ export function LiffHistoryPage() {
                     />
                     <DetailRow
                       label={t('history.transferDate')}
-                      value={formatDate(request.disbursedAt)}
+                      value={formatDate(request.disbursedAt, locale)}
                     />
                     <DetailRow
                       label={t('profile.bankAccount')}

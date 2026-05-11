@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { getLiffLocalePrefix } from "@/lib/liff-routes";
 
 /**
  * Handles deep-link routing from LINE push notifications and rich menu.
@@ -14,6 +16,7 @@ import { useRouter, useSearchParams } from "next/navigation";
  * Removes the ?page param after routing to keep URLs clean.
  */
 export function LiffDeepLinkHandler() {
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -23,6 +26,7 @@ export function LiffDeepLinkHandler() {
 
     const id = searchParams.get("id");
     const url = new URL(window.location.href);
+    const localePrefix = getLiffLocalePrefix(pathname);
 
     // Remove the deep-link params so they don't persist on refresh
     url.searchParams.delete("page");
@@ -30,24 +34,24 @@ export function LiffDeepLinkHandler() {
 
     switch (page) {
       case "home":
-        router.replace("/");
+        router.replace(`${localePrefix}/`);
         break;
       case "request":
-        router.replace(`/request${url.search}`);
+        router.replace(`${localePrefix}/request${url.search}`);
         break;
       case "history":
         router.replace(
-          `/history${id ? `?id=${encodeURIComponent(id)}` : url.search}`,
+          `${localePrefix}/history${id ? `?id=${encodeURIComponent(id)}` : url.search}`,
         );
         break;
       case "profile":
-        router.replace(`/profile${url.search}`);
+        router.replace(`${localePrefix}/profile${url.search}`);
         break;
       default:
         // Unknown page — just clean the URL
         router.replace(url.pathname + url.search);
     }
-  }, [searchParams, router]);
+  }, [pathname, searchParams, router]);
 
   return null;
 }

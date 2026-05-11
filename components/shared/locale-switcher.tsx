@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter, usePathname } from "@/i18n/navigation";
 import { ChevronDown } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 
@@ -28,11 +28,12 @@ export function LocaleSwitcher({
 }: LocaleSwitcherProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const locale = useLocale();
 
   function handleChange(nextLocale: string) {
     if (nextLocale === locale) return;
-    router.replace(pathname, { locale: nextLocale });
+    router.replace(getLocalizedPath(pathname, nextLocale, searchParams));
   }
 
   if (variant === "select") {
@@ -91,4 +92,19 @@ export function LocaleSwitcher({
       })}
     </div>
   );
+}
+
+function getLocalizedPath(
+  pathname: string | null,
+  nextLocale: string,
+  searchParams: URLSearchParams,
+) {
+  const safePathname = pathname || "/";
+  const pathWithoutLocale = safePathname.replace(/^\/(th|en|my)(?=\/|$)/, "");
+  const normalizedPath = pathWithoutLocale || "/";
+  const search = searchParams.toString();
+
+  return `/${nextLocale}${normalizedPath === "/" ? "" : normalizedPath}${
+    search ? `?${search}` : ""
+  }`;
 }

@@ -92,7 +92,13 @@
     "cutoffWarning": "နောက်ဆုံးနေ့ {days} ရက်ကျန်သည်",
     "paydayCountdown": "လစာနေ့ {days} ရက်ကျန်သည်",
     "recentRequests": "မကြာသေးမီတောင်းဆိုမှုများ",
-    "viewAllHistory": "မှတ်တမ်းအားလုံးကြည့် →"
+    "viewAllHistory": "မှတ်တမ်းအားလုံးကြည့်",
+    "earnedWage": "ရရှိထားသောလစာ",
+    "maxAllowed": "အများဆုံးထုတ်ယူနိုင်သောပမာဏ",
+    "previousAdvance": "ထုတ်ယူပြီး",
+    "remaining": "ကျန်ရှိ",
+    "dayProgress": "နေ့ {elapsed} / {total}",
+    "requestItemTitle": "ငွေကြိုထုတ်တောင်းဆိုမှု"
   },
   "requestWizard": {
     "step1": "ပမာဏရွေးချယ်",
@@ -122,7 +128,11 @@
     "referenceNumber": "ကိုးကားနံပါတ်",
     "backToHome": "ပင်မသို့ပြန်",
     "shareReceipt": "ဘောင်ချာမျှဝေ",
-    "withdrawAll": "အကုန်ထုတ်ပါ"
+    "shareReceiptText": "ငွေကြိုထုတ်တောင်းဆိုမှု အောင်မြင်ပါသည်\nပမာဏ: {amount}\nကိုးကား: {reference}",
+    "withdrawAll": "အကုန်ထုတ်ပါ",
+    "otpLabel": "အတည်ပြုကုဒ် (OTP)",
+    "otpHint": "အတည်ပြုရန် 000000 ထည့်ပါ",
+    "invalidOtp": "ကုဒ်မမှန်ကန်ပါ"
   },
   "history": {
     "title": "တောင်းဆိုမှုမှတ်တမ်း",
@@ -135,7 +145,8 @@
     "approvedBy": "ခွင့်ပြုသူ",
     "transferFee": "လွှဲပြောင်းခ",
     "netTransferAmount": "အမှန်တကယ်လွှဲပြောင်းမည့်ပမာဏ",
-    "exportPaySlip": "လစာစလစ် PDF ထုတ်ရန်"
+    "exportPaySlip": "လစာစလစ် PDF ထုတ်ရန်",
+    "requestCount": "{count} ခု"
   },
   "dashboard": {
     "title": "ဒက်ဆ်ဘုတ်",
@@ -287,7 +298,8 @@
     "notifyPayday": "လစာနေ့",
     "notifyLine": "LINE မှတဆင့်",
     "language": "ဘာသာစကား",
-    "logout": "ထွက်မည်"
+    "logout": "ထွက်မည်",
+    "unlinkLine": "LINE အကောင့်ချိတ်ဆက်မှုဖြုတ်မည်"
   },
   "liff": {
     "loading": "PayDay+ တင်နေသည်...",
