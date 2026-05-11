@@ -46,7 +46,7 @@ export function LiffHomePage() {
     .slice(0, 3)
 
   return (
-    <main className="employee-screen bg-bg-page pb-5">
+    <div className="bg-bg-page pb-5">
       <header className="flex items-center justify-between px-4 py-4">
         <div>
           <h1 className="text-[18px] font-semibold leading-tight text-text-primary">
@@ -167,6 +167,6 @@ export function LiffHomePage() {
           })}
         </div>
       </section>
-    </main>
+    </div>
   )
 }
