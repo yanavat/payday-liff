@@ -48,14 +48,14 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
   }, [])
 
   if (authState === 'loading') {
-    return <main className="employee-screen">Loading PayDay+...</main>
+    return <main className="employee-screen p-5">Loading PayDay+...</main>
   }
 
   if (authState === 'error') {
     return (
-      <main className="employee-screen">
-        <h1>Open in LINE</h1>
-        <p>PayDay+ needs LINE to verify your employee account.</p>
+      <main className="employee-screen p-5">
+        <h1 className="text-2xl font-semibold">Open in LINE</h1>
+        <p className="mt-2 text-text-secondary">PayDay+ needs LINE to verify your employee account.</p>
       </main>
     )
   }

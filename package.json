@@ -1,15 +1,11 @@
 {
-  "name": "wow-payday-plus",
+  "name": "payday-liff",
   "version": "0.1.0",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "dev:liff": "npm run dev -w @payday/payday-liff",
     "build": "next build",
-    "build:liff": "npm run build -w @payday/payday-liff",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
@@ -17,6 +13,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@line/liff": "2.21.4",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

@@ -4,7 +4,6 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { ToastProvider } from "@/components/ui/toast";
-import "../globals.css";
 
 export const metadata: Metadata = {
   title: {
@@ -33,27 +32,8 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body suppressHydrationWarning>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  if (localStorage.getItem('payday-dark-mode') === 'true' && location.pathname.includes('/hr/')) {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
-        <NextIntlClientProvider messages={messages}>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      <ToastProvider>{children}</ToastProvider>
+    </NextIntlClientProvider>
   );
 }
