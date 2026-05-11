@@ -13,6 +13,7 @@ import { departments, employees, requests as seedRequests } from "@/lib/mock";
 import dayjs from "@/lib/dayjs";
 import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
+import { notifyRequestStatusChange } from "@/lib/line/dispatch";
 import { RequestDetailDrawer } from "./request-detail-drawer";
 
 type StatusFilter = "all" | EWARequest["status"];
@@ -147,6 +148,33 @@ export function RequestListPage() {
           ? t("requestDetail.approveSuccess")
           : t("requestDetail.rejectSuccess"),
     });
+
+    // Dispatch LINE push notifications for each affected request
+    if (
+      nextStatus === "approved" ||
+      nextStatus === "rejected" ||
+      nextStatus === "disbursed"
+    ) {
+      for (const id of ids) {
+        const request = seedRequests.find((r) => r.id === id);
+        const employee = request
+          ? employees.find((e) => e.id === request.employeeId)
+          : undefined;
+        if (request && employee) {
+          const notifyType =
+            nextStatus === "approved"
+              ? "request_approved"
+              : nextStatus === "rejected"
+                ? "request_rejected"
+                : "disbursement_complete";
+          notifyRequestStatusChange(notifyType, request, employee, "th").catch(
+            () => {
+              // Silently fail — notifications are best-effort in this MVP
+            },
+          );
+        }
+      }
+    }
   }
 
   return (
