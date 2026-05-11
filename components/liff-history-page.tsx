@@ -51,9 +51,11 @@ export function LiffHistoryPage() {
   )
 
   useEffect(() => {
+    let cancelled = false
     if (deepLinkId !== null && requests.some((r) => r.id === deepLinkId)) {
-      setExpandedId(deepLinkId)
+      if (!cancelled) setExpandedId(deepLinkId)
     }
+    return () => { cancelled = true }
   }, [deepLinkId, requests])
 
   const filtered =
@@ -204,12 +206,6 @@ export function LiffHistoryPage() {
               </article>
             )
           })}
-          <button
-            type="button"
-            className="mt-3 flex h-12 w-full items-center justify-center rounded-md border border-border bg-white text-[16px] font-semibold text-text-secondary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
-          >
-            {t('common.loading')}
-          </button>
         </div>
       )}
     </div>
