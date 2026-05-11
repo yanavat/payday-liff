@@ -2,7 +2,7 @@
 
 > Earned Wage Access Platform · Factory Edition  
 > Stack: Next.js 15 + TypeScript + Tailwind + shadcn/ui  
-> Last updated: May 8, 2026
+> Last updated: May 11, 2026
 
 ---
 
@@ -37,21 +37,22 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
 ### Phase 8.1 — Foundation (Week 1–2)
 
-- [ ] Convert repo to npm workspaces without moving the current HR app first
-- [ ] Create `packages/payday-liff` as the employee LINE LIFF Next.js app
-- [ ] Create `packages/shared` as local workspace package `@payday/shared`
-- [ ] Extract shared types from `types/index.ts` into `packages/shared`
-- [ ] Extract `formatTHB()`, transfer fee utilities, and `cn()` into `packages/shared`
+- [x] Convert repo to npm workspaces without moving the current HR app first
+- [x] Create `packages/payday-liff` as the employee LINE LIFF Next.js app
+- [x] Create `packages/shared` as local workspace package `@payday/shared`
+- [x] Extract shared types from `types/index.ts` into `packages/shared`
+- [x] Extract `formatTHB()`, transfer fee utilities, and `cn()` into `packages/shared`
 - [ ] Extract employee-relevant i18n messages into `packages/shared`
-- [ ] Extract business rule constants: min amounts, max percentages, cutoff rules, transfer fee
-- [ ] Extract Thai dayjs/date configuration into `packages/shared`
-- [ ] Define shared design token contract for Tailwind/CSS variables
-- [ ] Create `packages/payday-api` for LIFF auth, employee linking, webhooks, and notification adapters
-- [ ] Add mock-backed `packages/payday-api` interfaces for LIFF identity verification
-- [ ] Add mock-backed employee linking API for LINE userId → employee mapping
-- [ ] Add mock-backed notification dispatch adapter for LINE Messaging API
+- [x] Extract business rule constants: min amounts, max percentages, cutoff rules, transfer fee
+- [x] Extract Thai dayjs/date configuration into `packages/shared`
+- [x] Define shared design token contract for Tailwind/CSS variables
+- [x] Create `packages/payday-api` for LIFF auth, employee linking, webhooks, and notification adapters
+- [x] Add mock-backed `packages/payday-api` interfaces for LIFF identity verification
+- [x] Add mock-backed employee linking API for LINE userId → employee mapping
+- [x] Add mock-backed notification dispatch adapter for LINE Messaging API
 - [ ] Set up LINE Developer Console: LINE Login channel, Messaging API channel, LIFF app
-- [ ] Implement `LIFFAuthGate` with `liff.init()`, login handling, profile loading, and linked-user check
+- [x] Install `@line/liff@2.21.4` in `packages/payday-liff` and wire it for Next.js client-only usage
+- [x] Implement `LIFFAuthGate` with `liff.init()`, login handling, profile loading, and linked-user check
 - [ ] Implement first-time Employee ID linking form for unlinked LINE users
 - [ ] Add explicit external-browser fallback with `https://liff.line.me/{liffId}` "Open in LINE" link
 - [ ] Deploy LIFF workspace as a separate Vercel project from this repo
@@ -152,5 +153,5 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 | 5 · UX & A11y     | 9           | 9       | 100%     |
 | 6 · Polish        | 10          | 10      | 100%     |
 | 7 · Deploy        | 6           | 3       | 50%      |
-| 8 · LIFF Migration | 64          | 0       | 0%       |
-| **Total**         | **226**     | **159** | **70%**  |
+| 8 · LIFF Migration | 65          | 14      | 22%      |
+| **Total**         | **227**     | **173** | **76%**  |

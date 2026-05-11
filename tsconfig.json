@@ -35,6 +35,9 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "packages/payday-api",
+    "packages/payday-liff",
+    "packages/shared"
   ]
 }

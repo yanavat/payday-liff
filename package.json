@@ -2,9 +2,14 @@
   "name": "wow-payday-plus",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
+    "dev:liff": "npm run dev -w @payday/payday-liff",
     "build": "next build",
+    "build:liff": "npm run build -w @payday/payday-liff",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
