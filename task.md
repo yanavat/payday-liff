@@ -79,19 +79,19 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
 ### Phase 8.3 — LINE Features (Week 5–6)
 
-- [ ] Implement LINE Messaging API adapter in the root app/API layer
-- [ ] Keep channel access tokens and webhook secrets server-side only
-- [ ] Implement webhook signature validation for LINE events
-- [ ] Add typed notification commands for approved, rejected, disbursed, payday reminder, cutoff warning, and monthly summary
-- [ ] Wire HR approval/rejection/disbursement events to notification dispatch path
-- [ ] Design Flex Message template for request approved notification
-- [ ] Design Flex Message template for request rejected notification
-- [ ] Design Flex Message template for disbursement complete notification
-- [ ] Design Flex Message template for payday reminder notification
-- [ ] Design Flex Message template for cutoff warning notification
-- [ ] Design Flex Message template for monthly summary notification
-- [ ] Configure LINE rich menu with Home, Request, History, and Profile entry points
-- [ ] Route push-notification deep links to the correct LIFF screen/request
+- [x] Implement LINE Messaging API adapter in the root app/API layer
+- [x] Keep channel access tokens and webhook secrets server-side only
+- [x] Implement webhook signature validation for LINE events
+- [x] Add typed notification commands for approved, rejected, disbursed, payday reminder, cutoff warning, and monthly summary
+- [x] Wire HR approval/rejection/disbursement events to notification dispatch path
+- [x] Design Flex Message template for request approved notification
+- [x] Design Flex Message template for request rejected notification
+- [x] Design Flex Message template for disbursement complete notification
+- [x] Design Flex Message template for payday reminder notification
+- [x] Design Flex Message template for cutoff warning notification
+- [x] Design Flex Message template for monthly summary notification
+- [x] Configure LINE rich menu with Home, Request, History, and Profile entry points
+- [x] Route push-notification deep links to the correct LIFF screen/request
 - [x] Add receipt sharing through `liff.shareTargetPicker()`
 
 ### Phase 8.4 — Testing & Launch (Week 7–8)
@@ -144,15 +144,15 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
 ## Progress Summary
 
-| Phase             | Total Tasks | Done    | Progress |
-| ----------------- | ----------- | ------- | -------- |
-| 0 · Setup         | 9           | 9       | 100%     |
-| 1 · Design System | 19          | 19      | 100%     |
-| 2 · Mock Data     | 7           | 7       | 100%     |
-| 3 · HR Side       | 65          | 65      | 100%     |
-| 4 · Employee Side | 37          | 37      | 100%     |
-| 5 · UX & A11y     | 9           | 9       | 100%     |
-| 6 · Polish        | 10          | 10      | 100%     |
-| 7 · Deploy        | 6           | 3       | 50%      |
-| 8 · LIFF Migration | 65          | 29      | 45%      |
-| **Total**         | **227**     | **188** | **83%**  |
+| Phase              | Total Tasks | Done    | Progress |
+| ------------------ | ----------- | ------- | -------- |
+| 0 · Setup          | 9           | 9       | 100%     |
+| 1 · Design System  | 19          | 19      | 100%     |
+| 2 · Mock Data      | 7           | 7       | 100%     |
+| 3 · HR Side        | 65          | 65      | 100%     |
+| 4 · Employee Side  | 37          | 37      | 100%     |
+| 5 · UX & A11y      | 9           | 9       | 100%     |
+| 6 · Polish         | 10          | 10      | 100%     |
+| 7 · Deploy         | 6           | 3       | 50%      |
+| 8 · LIFF Migration | 64          | 45      | 70%      |
+| **Total**          | **226**     | **204** | **90%**  |
