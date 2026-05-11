@@ -50,4 +50,17 @@ describe('LiffOfflineBanner', () => {
     expect(await screen.findByText('ไม่มีอินเทอร์เน็ต')).toBeInTheDocument()
     expect(screen.queryByText('เปิดใน LINE เพื่อใช้งานได้ครบถ้วน')).not.toBeInTheDocument()
   })
+
+  it('suppresses open-in-LINE banner in mock mode', async () => {
+    vi.stubEnv('NEXT_PUBLIC_LIFF_MOCK', 'true')
+    vi.resetModules()
+    const { loadLiffClient: freshLoadLiffClient } = await import('@/lib/liff-client')
+    vi.mocked(freshLoadLiffClient).mockResolvedValue({ isInClient: () => false } as never)
+    const { LiffOfflineBanner: FreshBanner } = await import('./liff-offline-banner')
+    const { container } = render(<FreshBanner />)
+    await act(async () => {})
+    expect(container).toBeEmptyDOMElement()
+    vi.unstubAllEnvs()
+    vi.resetModules()
+  })
 })

@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import { ExternalLink, WifiOff } from 'lucide-react'
 import { loadLiffClient } from '@/lib/liff-client'
 
+const isMockMode = process.env.NEXT_PUBLIC_LIFF_MOCK === 'true'
+
 export function LiffOfflineBanner() {
   const [isOnline, setIsOnline] = useState(true)
   const [isInClient, setIsInClient] = useState(true)
-  const isMockMode = process.env.NEXT_PUBLIC_LIFF_MOCK === 'true'
 
   useEffect(() => {
     setIsOnline(navigator.onLine)
@@ -23,8 +24,12 @@ export function LiffOfflineBanner() {
 
   useEffect(() => {
     if (isMockMode) return
-    loadLiffClient().then((liff) => setIsInClient(liff.isInClient()))
-  }, [isMockMode])
+    let cancelled = false
+    loadLiffClient().then((liff) => {
+      if (!cancelled) setIsInClient(liff.isInClient())
+    })
+    return () => { cancelled = true }
+  }, [])
 
   if (!isOnline) {
     return (
