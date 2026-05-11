@@ -160,8 +160,8 @@ describe('LiffRequestPage — step 3 success', () => {
     expect(screen.queryByRole('button', { name: /Share Receipt/i })).not.toBeInTheDocument()
   })
 
-  it('fires confetti after 300ms', () => {
-    vi.advanceTimersByTime(400)
+  it('fires confetti after 300ms', async () => {
+    await vi.advanceTimersByTimeAsync(400)
     expect(confettiMock).toHaveBeenCalledTimes(2)
   })
 

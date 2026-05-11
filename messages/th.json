@@ -288,5 +288,18 @@
     "notifyLine": "แจ้งเตือนผ่าน LINE",
     "language": "ภาษา",
     "logout": "ออกจากระบบ"
+  },
+  "liff": {
+    "loading": "กำลังโหลด PayDay+...",
+    "openInLine": "เปิดใน LINE",
+    "openInLineDescription": "PayDay+ ต้องใช้ LINE เพื่อยืนยันบัญชีพนักงานของคุณ",
+    "openInLineButton": "เปิดใน LINE",
+    "linkTitle": "เชื่อมต่อบัญชีพนักงาน",
+    "linkDescription": "กรอกรหัสพนักงานของคุณครั้งเดียวเพื่อเชื่อมต่อ PayDay+ กับบัญชี LINE",
+    "employeeIdLabel": "รหัสพนักงาน",
+    "employeeIdPlaceholder": "EMP-0001",
+    "linkButton": "เชื่อมต่อบัญชี",
+    "offlineMessage": "ไม่มีอินเทอร์เน็ต",
+    "externalBrowserMessage": "เปิดใน LINE เพื่อใช้งานได้ครบถ้วน"
   }
 }

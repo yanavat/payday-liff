@@ -288,5 +288,18 @@
     "notifyLine": "LINE မှတဆင့်",
     "language": "ဘာသာစကား",
     "logout": "ထွက်မည်"
+  },
+  "liff": {
+    "loading": "PayDay+ တင်နေသည်...",
+    "openInLine": "LINE တွင်ဖွင့်မည်",
+    "openInLineDescription": "PayDay+ သည် သင်၏ဝန်ထမ်းအကောင့်ကိုစစ်ဆေးရန် LINE လိုအပ်သည်",
+    "openInLineButton": "LINE တွင်ဖွင့်မည်",
+    "linkTitle": "ဝန်ထမ်းအကောင့်ချိတ်ဆက်မည်",
+    "linkDescription": "PayDay+ ကို LINE အကောင့်နှင့်ချိတ်ဆက်ရန် ဝန်ထမ်းသတ်မှတ်နံပါတ်ကိုတစ်ကြိမ်ထည့်ပါ",
+    "employeeIdLabel": "ဝန်ထမ်းသတ်မှတ်နံပါတ်",
+    "employeeIdPlaceholder": "EMP-0001",
+    "linkButton": "အကောင့်ချိတ်ဆက်မည်",
+    "offlineMessage": "အင်တာနက်ချိတ်ဆက်မှုမရှိ",
+    "externalBrowserMessage": "LINE တွင်ဖွင့်မှသာ အပြည့်အဝသုံးနိုင်သည်"
   }
 }

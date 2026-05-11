@@ -347,6 +347,13 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
+  /* Pads the LIFF main content area clear of the fixed tab bar + home indicator */
+  .liff-content-area {
+    flex: 1;
+    overflow: auto;
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+
   /* ── Focus ring (WCAG AA) ──────────────────────── */
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;

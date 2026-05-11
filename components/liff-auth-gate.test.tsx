@@ -1,7 +1,8 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { LiffClient } from '@/lib/liff-client'
+import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
 import { LIFFAuthGate, useLiffProfile } from './liff-auth-gate'
 
@@ -27,6 +28,27 @@ function createLiffClient(overrides: Partial<LiffClient> = {}): LiffClient {
   } as unknown as LiffClient
 }
 
+const messages = {
+  ...defaultMessages,
+  liff: {
+    loading: 'Loading PayDay+...',
+    openInLine: 'Open in LINE',
+    openInLineDescription: 'PayDay+ needs LINE to verify your employee account.',
+    openInLineButton: 'Open in LINE',
+    linkTitle: 'Link employee account',
+    linkDescription: 'Enter your employee ID once to connect PayDay+ with your LINE account.',
+    employeeIdLabel: 'Employee ID',
+    employeeIdPlaceholder: 'EMP-0001',
+    linkButton: 'Link account',
+    offlineMessage: 'No internet connection',
+    externalBrowserMessage: 'Open in LINE for the full experience',
+  },
+}
+
+function renderGate(children = <p>Employee app</p>) {
+  return renderWithIntl(<LIFFAuthGate>{children}</LIFFAuthGate>, { messages })
+}
+
 describe('LIFFAuthGate', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -41,11 +63,7 @@ describe('LIFFAuthGate', () => {
   })
 
   it('asks first-time LINE users to link an employee ID', async () => {
-    render(
-      <LIFFAuthGate>
-        <p>Employee app</p>
-      </LIFFAuthGate>,
-    )
+    renderGate()
 
     expect(await screen.findByRole('heading', { name: 'Link employee account' })).toBeInTheDocument()
     expect(screen.getByLabelText('Employee ID')).toBeInTheDocument()
@@ -53,11 +71,7 @@ describe('LIFFAuthGate', () => {
   })
 
   it('saves the employee link and then shows the app', async () => {
-    render(
-      <LIFFAuthGate>
-        <p>Employee app</p>
-      </LIFFAuthGate>,
-    )
+    renderGate()
 
     fireEvent.change(await screen.findByLabelText('Employee ID'), {
       target: { value: 'EMP-0041' },
@@ -75,11 +89,7 @@ describe('LIFFAuthGate', () => {
   it('shows an Open in LINE link when opened outside the LINE client', async () => {
     loadLiffClientMock.mockResolvedValue(createLiffClient({ isInClient: vi.fn(() => false) as LiffClient['isInClient'] }))
 
-    render(
-      <LIFFAuthGate>
-        <p>Employee app</p>
-      </LIFFAuthGate>,
-    )
+    renderGate()
 
     const link = await screen.findByRole('link', { name: 'Open in LINE' })
 
@@ -107,11 +117,7 @@ describe('LIFFAuthGate', () => {
       }),
     )
 
-    render(
-      <LIFFAuthGate>
-        <ProfileConsumer />
-      </LIFFAuthGate>,
-    )
+    renderGate(<ProfileConsumer />)
 
     expect(await screen.findByText('https://profile.line.example/avatar.jpg')).toBeInTheDocument()
   })

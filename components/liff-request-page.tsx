@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useState, useEffect } from 'react'
-import confetti from 'canvas-confetti'
 import { Check, Share2 } from 'lucide-react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -53,27 +52,32 @@ export function LiffRequestPage() {
 
   useEffect(() => {
     if (step !== 3) return
-    const shoot = (origin: { x: number; y: number }) =>
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin,
-        colors: ['#2dbd8f', '#a8e6cf', '#ffffff', '#ffd700', '#ff6b6b'],
-        scalar: 1.1,
-        gravity: 1.2,
-        ticks: 200,
-      })
-    const t1 = setTimeout(() => {
-      shoot({ x: 0.3, y: 0.5 })
-      shoot({ x: 0.7, y: 0.5 })
-    }, 300)
-    const t2 = setTimeout(() => {
-      shoot({ x: 0.5, y: 0.4 })
-    }, 600)
-    return () => {
-      clearTimeout(t1)
-      clearTimeout(t2)
-    }
+    let cancelled = false
+    import('canvas-confetti').then(({ default: confetti }) => {
+      if (cancelled) return
+      const shoot = (origin: { x: number; y: number }) =>
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin,
+          colors: ['#2dbd8f', '#a8e6cf', '#ffffff', '#ffd700', '#ff6b6b'],
+          scalar: 1.1,
+          gravity: 1.2,
+          ticks: 200,
+        })
+      const t1 = setTimeout(() => {
+        shoot({ x: 0.3, y: 0.5 })
+        shoot({ x: 0.7, y: 0.5 })
+      }, 300)
+      const t2 = setTimeout(() => {
+        shoot({ x: 0.5, y: 0.4 })
+      }, 600)
+      return () => {
+        clearTimeout(t1)
+        clearTimeout(t2)
+      }
+    })
+    return () => { cancelled = true }
   }, [step])
 
   function confirmRequest() {

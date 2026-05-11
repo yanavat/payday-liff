@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 import { loadLiffClient } from '@/lib/liff-client'
 
@@ -81,6 +82,8 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
     }
   }, [isMockMode, liffId])
 
+  const t = useTranslations('liff')
+
   function handleLinkEmployee(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -94,19 +97,19 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
   }
 
   if (authState === 'loading') {
-    return <main className="employee-screen p-5">Loading PayDay+...</main>
+    return <main className="employee-screen p-5">{t('loading')}</main>
   }
 
   if (authState === 'external') {
     return (
       <main className="employee-screen p-5">
-        <h1 className="text-2xl font-semibold">Open in LINE</h1>
-        <p className="mt-2 text-text-secondary">PayDay+ needs LINE to verify your employee account.</p>
+        <h1 className="text-2xl font-semibold">{t('openInLine')}</h1>
+        <p className="mt-2 text-text-secondary">{t('openInLineDescription')}</p>
         <a
           className="mt-6 inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 font-medium text-white"
           href={`https://liff.line.me/${liffId}`}
         >
-          Open in LINE
+          {t('openInLineButton')}
         </a>
       </main>
     )
@@ -115,17 +118,17 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
   if (authState === 'linking') {
     return (
       <main className="employee-screen p-5">
-        <h1 className="text-2xl font-semibold">Link employee account</h1>
-        <p className="mt-2 text-text-secondary">Enter your employee ID once to connect PayDay+ with your LINE account.</p>
+        <h1 className="text-2xl font-semibold">{t('linkTitle')}</h1>
+        <p className="mt-2 text-text-secondary">{t('linkDescription')}</p>
         <form className="mt-6 space-y-4" onSubmit={handleLinkEmployee}>
           <label className="block text-sm font-medium text-text-primary" htmlFor="employee-id">
-            Employee ID
+            {t('employeeIdLabel')}
           </label>
           <input
             className="h-12 w-full rounded-md border border-border bg-bg-canvas px-4 text-base outline-none focus-visible:ring-2 focus-visible:ring-primary"
             id="employee-id"
             onChange={(event) => setEmployeeId(event.target.value)}
-            placeholder="EMP-0001"
+            placeholder={t('employeeIdPlaceholder')}
             value={employeeId}
           />
           <button
@@ -133,7 +136,7 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
             disabled={!employeeId.trim()}
             type="submit"
           >
-            Link account
+            {t('linkButton')}
           </button>
         </form>
       </main>
@@ -143,14 +146,14 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
   if (authState === 'error') {
     return (
       <main className="employee-screen p-5">
-        <h1 className="text-2xl font-semibold">Open in LINE</h1>
-        <p className="mt-2 text-text-secondary">PayDay+ needs LINE to verify your employee account.</p>
+        <h1 className="text-2xl font-semibold">{t('openInLine')}</h1>
+        <p className="mt-2 text-text-secondary">{t('openInLineDescription')}</p>
         {liffId ? (
           <a
             className="mt-6 inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 font-medium text-white"
             href={`https://liff.line.me/${liffId}`}
           >
-            Open in LINE
+            {t('openInLineButton')}
           </a>
         ) : null}
       </main>
