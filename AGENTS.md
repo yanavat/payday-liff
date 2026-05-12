@@ -11,6 +11,8 @@ PayDay+ is an Earned Wage Access (EWA) platform for factory workers. Employees c
 
 **Figma design reference:** https://www.figma.com/design/mmEkmsppCk5Dx2hynYhxwX/EWA-Project?node-id=0-1&p=f&t=DnJmrWvrh9WSGTpA-0
 
+**Backend:** the NestJS backend POC for this product lives in a sibling repo at `../payday-backend/` (created 2026-05-12). Its design spec, implementation plan, and task tracker are owned over there — do not regenerate them in this repo.
+
 ---
 
 ## Tech stack
