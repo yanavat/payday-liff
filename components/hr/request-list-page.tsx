@@ -11,7 +11,12 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { TableRowSkeleton } from "@/components/ui/table-row-skeleton";
 import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { useToast } from "@/components/ui/toast";
-import { useEWARequests, useEmployees, useDepartments, useEWARequestActions } from "@/lib/api/hooks";
+import {
+  useEWARequests,
+  useEmployees,
+  useDepartments,
+  useEWARequestActions,
+} from "@/lib/api/hooks";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import type { EWARequestDto, EmployeeDto } from "@/lib/api/types";
 import dayjs from "@/lib/dayjs";
@@ -53,15 +58,28 @@ function RequestListContent() {
   const [department, setDepartment] = useState("all");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
-  const [confirmAction, setConfirmAction] = useState<"approve" | "reject" | null>(null);
+  const [confirmAction, setConfirmAction] = useState<
+    "approve" | "reject" | null
+  >(null);
 
-  const { data: requestsData, loading, error, refetch } = useEWARequests({
+  const {
+    data: requestsData,
+    loading,
+    error,
+    refetch,
+  } = useEWARequests({
     status: status === "all" ? undefined : status,
     limit: 200,
   });
   const { data: employeesData } = useEmployees({ limit: 1000 });
   const { data: departmentsData } = useDepartments();
-  const { approve, reject: rejectRequest, disburse, loading: actionLoading, error: actionError } = useEWARequestActions();
+  const {
+    approve,
+    reject: rejectRequest,
+    disburse,
+    loading: actionLoading,
+    error: actionError,
+  } = useEWARequestActions();
 
   const allRequests = requestsData?.data ?? [];
   const allEmployees = employeesData?.data ?? [];
@@ -73,15 +91,25 @@ function RequestListContent() {
         const employee = allEmployees.find((e) => e.id === request.employeeId);
         return employee ? { request, employee } : null;
       })
-      .filter((row): row is { request: EWARequestDto; employee: EmployeeDto } => row !== null)
+      .filter(
+        (row): row is { request: EWARequestDto; employee: EmployeeDto } =>
+          row !== null,
+      )
       .filter((row) => {
-        const searchable = `${row.employee.name} ${row.employee.nameTh} ${row.employee.id} ${row.employee.department}`.toLowerCase();
+        const searchable =
+          `${row.employee.name} ${row.employee.nameTh} ${row.employee.id} ${row.employee.department}`.toLowerCase();
         const matchesQuery = searchable.includes(query.trim().toLowerCase());
-        const matchesCycle = payCycle === "all" || row.request.payCycle === payCycle;
-        const matchesDepartment = department === "all" || row.employee.department === department;
+        const matchesCycle =
+          payCycle === "all" || row.request.payCycle === payCycle;
+        const matchesDepartment =
+          department === "all" || row.employee.department === department;
         return matchesQuery && matchesCycle && matchesDepartment;
       })
-      .sort((a, b) => dayjs(b.request.requestedAt).valueOf() - dayjs(a.request.requestedAt).valueOf());
+      .sort(
+        (a, b) =>
+          dayjs(b.request.requestedAt).valueOf() -
+          dayjs(a.request.requestedAt).valueOf(),
+      );
   }, [allRequests, allEmployees, query, payCycle, department]);
 
   const activeRow = rows.find((row) => row.request.id === activeRequestId);
@@ -94,7 +122,9 @@ function RequestListContent() {
 
   function toggleRow(id: string, checked: boolean) {
     setSelectedIds((current) =>
-      checked ? Array.from(new Set(current.concat(id))) : current.filter((item) => item !== id),
+      checked
+        ? Array.from(new Set(current.concat(id)))
+        : current.filter((item) => item !== id),
     );
   }
 
@@ -129,7 +159,10 @@ function RequestListContent() {
   async function handleDisburse(id: string) {
     const result = await disburse(id);
     if (result) {
-      toast({ variant: "success", message: t("requestDetail.disburseSuccess") ?? "Disbursed" });
+      toast({
+        variant: "success",
+        message: t("requestDetail.disburseSuccess") ?? "Disbursed",
+      });
       refetch();
     } else if (actionError) {
       toast({ variant: "error", message: getApiErrorMessage(actionError, t) });
@@ -161,8 +194,11 @@ function RequestListContent() {
         <div className="overflow-hidden rounded-xl border border-border bg-bg-canvas shadow-card">
           <table className="w-full border-collapse">
             <tbody>
-              <TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton />
-              <TableRowSkeleton /><TableRowSkeleton />
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+              <TableRowSkeleton />
             </tbody>
           </table>
         </div>
@@ -203,14 +239,22 @@ function RequestListContent() {
           <div className="space-y-3">
             <FilterRow label={t("common.status")}>
               {statusTabs.slice(0, 4).map((tab) => (
-                <PillTab key={tab.value} active={status === tab.value} onClick={() => setStatus(tab.value)}>
+                <PillTab
+                  key={tab.value}
+                  active={status === tab.value}
+                  onClick={() => setStatus(tab.value)}
+                >
                   {tab.label}
                 </PillTab>
               ))}
             </FilterRow>
             <FilterRow label={t("requests.payCycle")}>
               {payCycleTabs.map((tab) => (
-                <PillTab key={tab.value} active={payCycle === tab.value} onClick={() => setPayCycle(tab.value)}>
+                <PillTab
+                  key={tab.value}
+                  active={payCycle === tab.value}
+                  onClick={() => setPayCycle(tab.value)}
+                >
                   {tab.label}
                 </PillTab>
               ))}
@@ -219,7 +263,10 @@ function RequestListContent() {
 
           <div className="flex flex-wrap items-center gap-3">
             <label className="relative block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" aria-hidden />
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted"
+                aria-hidden
+              />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -234,7 +281,9 @@ function RequestListContent() {
             >
               <option value="all">{t("requests.allDepartments")}</option>
               {allDepartments.map((d) => (
-                <option key={d.id} value={d.name}>{d.nameTh || d.name}</option>
+                <option key={d.id} value={d.name}>
+                  {d.nameTh || d.name}
+                </option>
               ))}
             </select>
             <button
@@ -288,7 +337,10 @@ function RequestListContent() {
                   <input
                     type="checkbox"
                     aria-label={tc("all")}
-                    checked={visibleRows.length > 0 && selectedIds.length === visibleRows.length}
+                    checked={
+                      visibleRows.length > 0 &&
+                      selectedIds.length === visibleRows.length
+                    }
                     onChange={(e) => toggleAllVisible(e.target.checked)}
                     className="h-4 w-4 rounded border-border accent-primary"
                   />
@@ -296,8 +348,12 @@ function RequestListContent() {
                 <HeaderCell>{t("requests.employee")}</HeaderCell>
                 <HeaderCell>{t("requests.department")}</HeaderCell>
                 <HeaderCell>{t("requests.payCycle")}</HeaderCell>
-                <HeaderCell align="right">{t("requests.amount")} (THB)</HeaderCell>
-                <HeaderCell align="right">{t("requestDetail.earnedWage")}</HeaderCell>
+                <HeaderCell align="right">
+                  {t("requests.amount")} (THB)
+                </HeaderCell>
+                <HeaderCell align="right">
+                  {t("requestDetail.earnedWage")}
+                </HeaderCell>
                 <HeaderCell>{t("requests.requestDate")}</HeaderCell>
                 <HeaderCell>{t("common.status")}</HeaderCell>
                 <HeaderCell align="right">{t("requests.actions")}</HeaderCell>
@@ -305,10 +361,13 @@ function RequestListContent() {
             </thead>
             <tbody>
               {visibleRows.map(({ request, employee }) => {
-                const earned = employee.payCycle === "monthly"
-                  ? Math.round((employee.baseSalary / 31) * 14)
-                  : Math.round((employee.baseSalary / 5) * 3);
-                const ratio = Math.round((request.amount / Math.max(earned, 1)) * 100);
+                const earned =
+                  employee.payCycle === "monthly"
+                    ? Math.round((employee.baseSalary / 31) * 14)
+                    : Math.round((employee.baseSalary / 5) * 3);
+                const ratio = Math.round(
+                  (request.amount / Math.max(earned, 1)) * 100,
+                );
 
                 return (
                   <tr
@@ -321,34 +380,61 @@ function RequestListContent() {
                         type="checkbox"
                         aria-label={`Select ${employee.nameTh}`}
                         checked={selectedIds.includes(request.id)}
-                        onChange={(e) => toggleRow(request.id, e.target.checked)}
+                        onChange={(e) =>
+                          toggleRow(request.id, e.target.checked)
+                        }
                         className="h-4 w-4 rounded border-border accent-primary"
                       />
                     </td>
                     <td className="px-4">
                       <div className="flex items-center gap-3">
-                        <Avatar initials={employee.name.slice(0, 2)} size="md" />
+                        <Avatar
+                          initials={employee.name.slice(0, 2)}
+                          size="md"
+                        />
                         <div>
-                          <div className="text-[13px] font-medium leading-[20.8px] text-text-primary">{employee.nameTh}</div>
-                          <div className="text-[11px] leading-[16.5px] text-text-muted">ID: {employee.id}</div>
+                          <div className="text-[13px] font-medium leading-[20.8px] text-text-primary">
+                            {employee.nameTh}
+                          </div>
+                          <div className="text-[11px] leading-[16.5px] text-text-muted">
+                            ID: {employee.id}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 text-[13px] text-text-secondary">{employee.department}</td>
-                    <td className="px-4"><PayCycleBadge type={request.payCycle} /></td>
-                    <td className="px-4 text-right font-number text-[13px] font-semibold text-text-primary">{formatTHB(request.amount)}</td>
+                    <td className="px-4 text-[13px] text-text-secondary">
+                      {employee.department}
+                    </td>
+                    <td className="px-4">
+                      <PayCycleBadge type={request.payCycle} />
+                    </td>
+                    <td className="px-4 text-right font-number text-[13px] font-semibold text-text-primary">
+                      {formatTHB(request.amount)}
+                    </td>
                     <td className="px-4 text-right font-number text-[13px] text-text-secondary">
                       {formatTHB(earned)}
-                      <span className={cn("ml-2 rounded-full px-2 py-1 text-[11px] font-medium", earnedRatioClass(ratio))}>
+                      <span
+                        className={cn(
+                          "ml-2 rounded-full px-2 py-1 text-[11px] font-medium",
+                          earnedRatioClass(ratio),
+                        )}
+                      >
                         {ratio}%
                       </span>
                     </td>
-                    <td className="px-4 text-[13px] text-text-secondary">{dayjs(request.requestedAt).format("DD MMM YYYY")}</td>
-                    <td className="px-4"><StatusBadge status={request.status} /></td>
+                    <td className="px-4 text-[13px] text-text-secondary">
+                      {dayjs(request.requestedAt).format("DD MMM YYYY")}
+                    </td>
+                    <td className="px-4">
+                      <StatusBadge status={request.status} />
+                    </td>
                     <td className="px-4 text-right">
                       <button
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); setActiveRequestId(request.id); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveRequestId(request.id);
+                        }}
                         className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-primary-dark transition hover:bg-primary-bg focus:outline-none focus:ring-2 focus:ring-primary/30"
                       >
                         <Eye className="h-3.5 w-3.5" aria-hidden />
@@ -368,7 +454,12 @@ function RequestListContent() {
             action={
               <button
                 type="button"
-                onClick={() => { setQuery(""); setStatus("all"); setPayCycle("all"); setDepartment("all"); }}
+                onClick={() => {
+                  setQuery("");
+                  setStatus("all");
+                  setPayCycle("all");
+                  setDepartment("all");
+                }}
                 className="h-9 rounded-md bg-primary px-4 text-sm font-medium text-white"
               >
                 {tc("retry")}
@@ -380,22 +471,32 @@ function RequestListContent() {
 
         <div className="flex items-center justify-between border-t border-border bg-bg-canvas px-4 py-3">
           <p className="text-[11px] text-text-muted">
-            Showing {visibleRows.length ? 1 : 0} to {visibleRows.length} of {rows.length}
+            Showing {visibleRows.length ? 1 : 0} to {visibleRows.length} of{" "}
+            {rows.length}
           </p>
         </div>
       </section>
 
       <RequestDetailDrawer
-        request={activeRow?.request as any ?? null}
-        employee={activeRow?.employee as any}
-        history={allRequests.filter((r) => r.employeeId === activeRow?.request.employeeId) as any[]}
+        request={activeRow?.request as unknown as EWARequestDto | null}
+        employee={activeRow?.employee as unknown as EmployeeDto}
+        history={
+          allRequests.filter(
+            (r) => r.employeeId === activeRow?.request.employeeId,
+          ) as unknown as EWARequestDto[]
+        }
         open={!!activeRequestId}
         confirmAction={confirmAction}
         actionLoading={actionLoading}
-        onClose={() => { setActiveRequestId(null); setConfirmAction(null); }}
+        onClose={() => {
+          setActiveRequestId(null);
+          setConfirmAction(null);
+        }}
         onApprove={() => setConfirmAction("approve")}
         onReject={() => setConfirmAction("reject")}
-        onDisburse={activeRequestId ? () => handleDisburse(activeRequestId) : undefined}
+        onDisburse={
+          activeRequestId ? () => handleDisburse(activeRequestId) : undefined
+        }
         onCancelConfirm={() => setConfirmAction(null)}
         onConfirmApprove={handleConfirmApprove}
         onConfirmReject={handleConfirmReject}
@@ -412,16 +513,32 @@ export function RequestListPage() {
   );
 }
 
-function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
+function FilterRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex items-center gap-2">
-      <div className="w-20 text-xs font-medium text-text-secondary">{label}</div>
+      <div className="w-20 text-xs font-medium text-text-secondary">
+        {label}
+      </div>
       <div className="flex flex-wrap gap-2">{children}</div>
     </div>
   );
 }
 
-function PillTab({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function PillTab({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -438,6 +555,16 @@ function PillTab({ active, onClick, children }: { active: boolean; onClick: () =
   );
 }
 
-function HeaderCell({ children, align = "left" }: { children: React.ReactNode; align?: "left" | "right" }) {
-  return <th className={cn("px-4 py-3", align === "right" && "text-right")}>{children}</th>;
+function HeaderCell({
+  children,
+  align = "left",
+}: {
+  children: React.ReactNode;
+  align?: "left" | "right";
+}) {
+  return (
+    <th className={cn("px-4 py-3", align === "right" && "text-right")}>
+      {children}
+    </th>
+  );
 }

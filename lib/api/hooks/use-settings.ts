@@ -2,112 +2,119 @@
 // React Hooks - Settings API
 // ============================================================
 
-import { useState, useEffect, useCallback } from 'react'
-import { settingsService } from '../services'
+import { useState, useEffect, useCallback } from "react";
+import { settingsService } from "../services";
 import type {
   AppSettingsDto,
   UpdateSettingsDto,
   PartialEwaPolicyDto,
   UpdateNotificationSettingsDto,
   ApiError,
-} from '../types'
+} from "../types";
 
 export function useSettings() {
-  const [data, setData] = useState<AppSettingsDto | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<ApiError | null>(null)
+  const [data, setData] = useState<AppSettingsDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
 
   const fetchData = useCallback(async (signal?: AbortSignal) => {
     try {
-      setLoading(true)
-      setError(null)
-      const result = await settingsService.get()
-      if (!signal?.aborted) setData(result)
+      setLoading(true);
+      setError(null);
+      const result = await settingsService.get();
+      if (!signal?.aborted) setData(result);
     } catch (err) {
-      if (!signal?.aborted) setError(err as ApiError)
+      if (!signal?.aborted) setError(err as ApiError);
     } finally {
-      if (!signal?.aborted) setLoading(false)
+      if (!signal?.aborted) setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const controller = new AbortController()
-    fetchData(controller.signal)
-    return () => controller.abort()
-  }, [fetchData])
+    const controller = new AbortController();
+    fetchData(controller.signal);
+    return () => controller.abort();
+  }, [fetchData]);
 
-  const retry = useCallback(() => fetchData(), [fetchData])
+  const retry = useCallback(() => fetchData(), [fetchData]);
 
-  return { data, loading, error, refetch: fetchData, retry }
+  return { data, loading, error, refetch: fetchData, retry };
 }
 
-export function useEwaPolicy(cycle: 'monthly' | 'weekly') {
-  const [data, setData] = useState<PartialEwaPolicyDto | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<ApiError | null>(null)
+export function useEwaPolicy(cycle: "monthly" | "weekly") {
+  const [data, setData] = useState<PartialEwaPolicyDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
 
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const result = await settingsService.getPolicy(cycle)
-      setData(result)
+      setLoading(true);
+      setError(null);
+      const result = await settingsService.getPolicy(cycle);
+      setData(result);
     } catch (err) {
-      setError(err as ApiError)
+      setError(err as ApiError);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  }, [cycle]);
 
-  useEffect(() => {
-    fetch()
-  }, [cycle])
+  // useEffect(() => {
+  //   fetch();
+  // }, [cycle, fetch]);
 
-  return { data, loading, error, refetch: fetch }
+  return { data, loading, error, refetch: fetch };
 }
 
 export function useSettingsActions() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<ApiError | null>(null)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
 
-  const updateSettings = async (data: UpdateSettingsDto): Promise<AppSettingsDto | null> => {
+  const updateSettings = async (
+    data: UpdateSettingsDto,
+  ): Promise<AppSettingsDto | null> => {
     try {
-      setLoading(true)
-      setError(null)
-      return await settingsService.update(data)
+      setLoading(true);
+      setError(null);
+      return await settingsService.update(data);
     } catch (err) {
-      setError(err as ApiError)
-      return null
+      setError(err as ApiError);
+      return null;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const updatePolicy = async (cycle: 'monthly' | 'weekly', data: PartialEwaPolicyDto): Promise<PartialEwaPolicyDto | null> => {
+  const updatePolicy = async (
+    cycle: "monthly" | "weekly",
+    data: PartialEwaPolicyDto,
+  ): Promise<PartialEwaPolicyDto | null> => {
     try {
-      setLoading(true)
-      setError(null)
-      return await settingsService.updatePolicy(cycle, data)
+      setLoading(true);
+      setError(null);
+      return await settingsService.updatePolicy(cycle, data);
     } catch (err) {
-      setError(err as ApiError)
-      return null
+      setError(err as ApiError);
+      return null;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const updateNotifications = async (data: UpdateNotificationSettingsDto): Promise<AppSettingsDto | null> => {
+  const updateNotifications = async (
+    data: UpdateNotificationSettingsDto,
+  ): Promise<AppSettingsDto | null> => {
     try {
-      setLoading(true)
-      setError(null)
-      return await settingsService.updateNotifications(data)
+      setLoading(true);
+      setError(null);
+      return await settingsService.updateNotifications(data);
     } catch (err) {
-      setError(err as ApiError)
-      return null
+      setError(err as ApiError);
+      return null;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  return { updateSettings, updatePolicy, updateNotifications, loading, error }
+  return { updateSettings, updatePolicy, updateNotifications, loading, error };
 }

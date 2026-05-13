@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { PINPad } from "@/components/ui/pin-pad";
 import { QuickAmountButton } from "@/components/ui/quick-amount-button";
-import { StatusBadge } from "@/components/ui/status-badge";
+import { RequestStatus, StatusBadge } from "@/components/ui/status-badge";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { currentEmployee } from "@/lib/mock/currentUser";
 import {
@@ -20,6 +20,7 @@ import {
   DEFAULT_TRANSFER_FEE_THB,
   getNetTransferAmount,
 } from "@/lib/utils/fees";
+import { EWARequestDto } from "@/lib/api/types";
 
 const quickAmounts = [1000, 2000, 3000];
 const reasonChips = [
@@ -37,7 +38,9 @@ export function EmployeeRequestPage() {
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
-  const [createdRequest, setCreatedRequest] = useState<any>(null);
+  const [createdRequest, setCreatedRequest] = useState<EWARequestDto | null>(
+    null,
+  );
 
   // Fetch current period data
   const {
@@ -103,7 +106,12 @@ export function EmployeeRequestPage() {
       const result = await create({
         employeeId: currentEmployee.id,
         amount,
-        reason: reason as any,
+        reason: reason as unknown as
+          | "emergency"
+          | "medical"
+          | "education"
+          | "utility"
+          | "other",
         employeeNote: "",
       });
 
@@ -364,7 +372,10 @@ export function EmployeeRequestPage() {
           >
             <SummaryRow
               label={t("referenceNumber")}
-              value={createdRequest?.referenceNumber || "EWA-20250501-041"}
+              value={
+                (createdRequest as unknown as { referenceNumber?: string })
+                  ?.referenceNumber || "EWA-20250501-041"
+              }
             />
             <SummaryRow
               label={t("requestedAmount")}
@@ -382,13 +393,19 @@ export function EmployeeRequestPage() {
             />
             <div className="mt-3 flex items-center justify-between">
               <span className="text-text-secondary">{tc("status")}</span>
-              <StatusBadge status={createdRequest?.status || "pending"} />
+              {createdRequest && (
+                <StatusBadge
+                  status={createdRequest?.status as unknown as RequestStatus}
+                />
+              )}
             </div>
             <SummaryRow
               label={tc("requestDate")}
               value={
-                createdRequest?.requestedAt
-                  ? new Date(createdRequest.requestedAt).toLocaleString("th-TH")
+                (createdRequest as unknown as EWARequestDto)?.requestedAt
+                  ? new Date(createdRequest!.requestedAt).toLocaleString(
+                      "th-TH",
+                    )
                   : "01/05/2568 · 09:32"
               }
             />

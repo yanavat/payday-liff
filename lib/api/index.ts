@@ -6,8 +6,8 @@ export {
   getApiClient,
   setAuthToken,
   clearAuthToken,
-  type ApiError,
-} from './client'
+  // type ApiError,
+} from "./client";
 
-export * from './types'
-export * from './services'
+export * from "./types";
+export * from "./services";

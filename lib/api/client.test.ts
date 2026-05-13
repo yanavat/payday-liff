@@ -33,7 +33,7 @@ describe("ApiClient fetchWithRetry behaviour", () => {
 
     const { getApiClient } = await import("./client");
     // Reset singleton so fresh fetch is used
-    (getApiClient as any).__cache = undefined;
+    (getApiClient as unknown).__cache = undefined;
     const client = getApiClient();
 
     // Use a timeout to avoid real 1s wait in tests
@@ -51,7 +51,11 @@ describe("ApiClient fetchWithRetry behaviour", () => {
     let calls = 0;
     globalThis.fetch = vi.fn().mockImplementation(async () => {
       calls++;
-      if (calls === 1) return new Response("Server Error", { status: 500, statusText: "Server Error" });
+      if (calls === 1)
+        return new Response("Server Error", {
+          status: 500,
+          statusText: "Server Error",
+        });
       return new Response(JSON.stringify({ id: "2" }), { status: 200 });
     }) as unknown as typeof fetch;
 
@@ -71,16 +75,21 @@ describe("ApiClient fetchWithRetry behaviour", () => {
     let calls = 0;
     globalThis.fetch = vi.fn().mockImplementation(async () => {
       calls++;
-      return new Response(JSON.stringify({ message: "Not Found", statusCode: 404 }), {
-        status: 404,
-        statusText: "Not Found",
-      });
+      return new Response(
+        JSON.stringify({ message: "Not Found", statusCode: 404 }),
+        {
+          status: 404,
+          statusText: "Not Found",
+        },
+      );
     }) as unknown as typeof fetch;
 
     const { getApiClient } = await import("./client");
     const client = getApiClient();
 
-    await expect(client.get("/test")).rejects.toMatchObject({ statusCode: 404 });
+    await expect(client.get("/test")).rejects.toMatchObject({
+      statusCode: 404,
+    });
     expect(calls).toBe(1);
   });
 
@@ -101,9 +110,11 @@ describe("ApiClient fetchWithRetry behaviour", () => {
   });
 
   it("handles 204 No Content by returning undefined", async () => {
-    globalThis.fetch = vi.fn().mockResolvedValue(
-      new Response(null, { status: 204 }),
-    ) as unknown as typeof fetch;
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(null, { status: 204 }),
+      ) as unknown as typeof fetch;
 
     const { getApiClient } = await import("./client");
     const client = getApiClient();
@@ -121,8 +132,14 @@ describe("getApiErrorMessage — error code mapping", () => {
     const cases: Array<[TestApiError, string]> = [
       [{ statusCode: 401, message: "Unauthorized" }, "common.sessionExpired"],
       [{ statusCode: 403, message: "Forbidden" }, "common.noPermission"],
-      [{ statusCode: 500, message: "Internal Server Error" }, "common.serverError"],
-      [{ statusCode: 503, message: "Service Unavailable" }, "common.serverError"],
+      [
+        { statusCode: 500, message: "Internal Server Error" },
+        "common.serverError",
+      ],
+      [
+        { statusCode: 503, message: "Service Unavailable" },
+        "common.serverError",
+      ],
     ];
 
     for (const [error, expected] of cases) {
@@ -133,6 +150,8 @@ describe("getApiErrorMessage — error code mapping", () => {
   it("treats missing statusCode as a network error", async () => {
     const { getApiErrorMessage } = await import("./errors");
     const t = (k: string) => k;
-    expect(getApiErrorMessage({ message: "Failed to fetch" }, t)).toBe("common.networkError");
+    expect(getApiErrorMessage({ message: "Failed to fetch" }, t)).toBe(
+      "common.networkError",
+    );
   });
 });
