@@ -2,7 +2,7 @@
 
 > Earned Wage Access Platform · Factory Edition  
 > Stack: Next.js 15 + TypeScript + Tailwind + shadcn/ui  
-> Last updated: May 11, 2026
+> Last updated: May 14, 2026
 
 ---
 
@@ -115,6 +115,89 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
 ---
 
+## Phase 9 — Backend API Integration
+
+> Backend API is available at `http://localhost:3001/docs-json` (NestJS + Prisma + PostgreSQL)
+> This phase replaces mock data with real API calls for both HR dashboard and LIFF employee app
+
+### Phase 9.1 — API Infrastructure
+
+- [x] Set up API client infrastructure with base URL, error handling, and x-company-id header injection
+- [x] Generate TypeScript types from backend OpenAPI spec (DTOs, request/response interfaces)
+- [x] Add environment variable configuration for API base URL (development vs production)
+- [x] Implement request/response interceptor for error handling and retry logic
+- [x] Add authentication token storage and retrieval (HttpOnly cookies or localStorage)
+
+### Phase 9.2 — Core Domain API Services
+
+- [x] Implement Companies API service (list, create, get, update)
+- [x] Implement Employees API service (list, create, get, update, delete, overrides, effective-policy, current-period)
+- [x] Implement EWA Requests API service (create, list, preview, on-behalf, approve, reject, disburse)
+- [x] Implement HR Users API service (list, create, get, update, delete)
+- [x] Implement Departments API service (list, create, get, update, delete)
+- [x] Implement Payroll Cycles API service (list, get, update)
+
+### Phase 9.3 — Configuration & LINE API Services
+
+- [x] Implement Settings API service (get, update, policy get/update, notifications update)
+- [x] Implement LINE API service (push, richmenu, webhook, notify request status)
+- [x] Implement Bank Transfers API service (list, get, fail, retry, settle)
+- [x] Implement Audit Logs API service (list, get)
+- [x] Implement Notifications API service (list, get)
+
+### Phase 9.4 — React Hooks Integration
+
+- [x] Create React hooks for Companies API (useCompanies, useCompany)
+- [x] Create React hooks for Employees API (useEmployees, useEmployee, useEmployeeCurrentPeriod, useEmployeeEffectivePolicy)
+- [x] Create React hooks for EWA Requests API (useEWARequests, useEWARequest, usePreviewEWARequest)
+- [x] Create React hooks for HR Users API (useHRUsers, useHRUser)
+- [x] Create React hooks for Settings API (useSettings, useEwaPolicy)
+- [x] Create React hooks for LINE API (useLinePush, useLineRichMenu)
+
+### Phase 9.5 — Employee Screen Integration (LIFF)
+
+- [x] Update E-2 Home screen to use real API for balance hero and recent requests
+- [x] Update E-3 Request screen to use real API for amount validation and request submission
+- [ ] Replace PIN confirmation with backend-issued one-time confirmation code flow
+- [x] Update E-4 History screen to use real API for request history with filters
+- [ ] Update E-5 Profile screen to use real API for employee profile and settings
+- [ ] Replace LINE profile picture with backend employee data if LINE profile unavailable
+- [ ] Implement real-time balance updates via polling or WebSocket
+
+### Phase 9.6 — HR Screen Integration
+
+- [x] Update HR-1 Dashboard to use real API for metric cards and recent requests
+- [x] Update HR-2 Request List to use real API with filtering and pagination
+- [x] Update HR-3 Request Detail drawer to use real API for request details
+- [x] Wire HR approve/reject/disbursement actions to backend API
+- [x] Update HR-4 Reports to use real API for charts and department breakdown
+- [x] Update HR-5 Settings to use real API for EWA policy and notification settings
+- [x] Update HR-6 Employees to use real API for employee list and management
+- [x] Update HR-7 On-Behalf Request to use real API for HR-submitted requests
+
+### Phase 9.7 — UX & Error Handling
+
+- [x] Add loading states for all API calls (skeletons, spinners, progress indicators)
+- [x] Implement error boundary for API failures
+- [x] Add user-friendly error messages for common API errors (validation, network, auth)
+- [x] Implement retry logic with exponential backoff for failed requests
+- [ ] Add optimistic UI updates for immediate user feedback
+- [x] Implement request cancellation for navigating away from pending requests
+- [x] Add offline detection and queueing for API requests when network unavailable
+
+### Phase 9.8 — Validation & Testing
+
+- [ ] Implement frontend request validation matching backend business rules
+- [ ] Add form validation for employee data entry (salary, department, pay cycle)
+- [ ] Add form validation for EWA request submission (amount limits, cutoff rules)
+- [ ] Add integration tests for API service layer
+- [ ] Add E2E tests for critical user flows (login, request, approval)
+- [ ] Test error handling scenarios (network failure, 401, 403, 500)
+- [ ] Test pagination and filtering for list endpoints
+- [ ] Performance test API call batching and caching strategies
+
+---
+
 ## Backlog (Post-MVP)
 
 - [ ] Backend API (Fastify + Prisma + PostgreSQL)
@@ -155,4 +238,5 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 | 6 · Polish         | 10          | 10      | 100%     |
 | 7 · Deploy         | 6           | 3       | 50%      |
 | 8 · LIFF Migration | 64          | 49      | 77%      |
-| **Total**          | **226**     | **208** | **92%**  |
+| 9 · Backend API    | 52          | 39      | 75%      |
+| **Total**          | **278**     | **247** | **89%**  |
