@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TabBar } from "@/components/ui/tab-bar";
+import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { Toggle } from "./settings-toggle";
 import { useToast } from "@/components/ui/toast";
+import { useSettings, useSettingsActions } from "@/lib/api/hooks";
+import { getApiErrorMessage } from "@/lib/api/errors";
 import { cn } from "@/lib/utils";
 
 const mainTabs = [
@@ -20,19 +23,48 @@ const policyTabs = [
   { value: "weekly", labelKey: "weekly" },
 ];
 
-export function SettingsPageContent() {
+function SettingsContent() {
   const t = useTranslations("settings");
   const tc = useTranslations("common");
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("policy");
-  const [policyTab, setPolicyTab] = useState("monthly");
-  const [maxPercent, setMaxPercent] = useState(100);
-  const [autoApproval, setAutoApproval] = useState(true);
-  const [blackoutDates, setBlackoutDates] = useState([
-    "2025-05-28",
-    "2025-05-29",
-  ]);
+  const [policyTab, setPolicyTab] = useState<"monthly" | "weekly">("monthly");
+  const [maxPercent, setMaxPercent] = useState(50);
+  const [autoApproval, setAutoApproval] = useState(false);
+  const [blackoutDates, setBlackoutDates] = useState<string[]>([]);
   const [dirty, setDirty] = useState(false);
+
+  const { data: settings, loading: settingsLoading, error: settingsError } = useSettings();
+  const { updatePolicy, loading: saving, error: saveError } = useSettingsActions();
+
+  // Sync state when settings load or policyTab changes
+  useEffect(() => {
+    const policy = settings?.ewaPolicy?.[policyTab];
+    if (policy) {
+      setMaxPercent(policy.maxPercent ?? 50);
+      setAutoApproval(policy.autoApproval ?? false);
+      setBlackoutDates(policy.blackoutDates ?? []);
+      setDirty(false);
+    }
+  }, [settings, policyTab]);
+
+  function markDirty() {
+    setDirty(true);
+  }
+
+  async function handleSave() {
+    const result = await updatePolicy(policyTab, {
+      maxPercent,
+      autoApproval,
+      blackoutDates,
+    });
+    if (result) {
+      setDirty(false);
+      toast({ variant: "success", message: t("saveSuccess") });
+    } else if (saveError) {
+      toast({ variant: "error", message: getApiErrorMessage(saveError, tc) });
+    }
+  }
 
   const mainTabsTranslated = mainTabs.map((tab) => ({
     value: tab.value,
@@ -44,8 +76,25 @@ export function SettingsPageContent() {
     label: t(tab.labelKey as keyof typeof t),
   }));
 
-  function markDirty() {
-    setDirty(true);
+  const activePolicy = settings?.ewaPolicy?.[policyTab];
+
+  if (settingsLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-6 w-48 animate-pulse rounded bg-bg-secondary" />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-32 animate-pulse rounded-lg bg-bg-secondary" />
+        ))}
+      </div>
+    );
+  }
+
+  if (settingsError) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center text-text-secondary">
+        {getApiErrorMessage(settingsError, tc)}
+      </div>
+    );
   }
 
   return (
@@ -66,10 +115,7 @@ export function SettingsPageContent() {
       <TabBar
         tabs={mainTabsTranslated}
         value={activeTab}
-        onChange={(value) => {
-          setActiveTab(value);
-          markDirty();
-        }}
+        onChange={setActiveTab}
         variant="underline"
       />
 
@@ -78,66 +124,41 @@ export function SettingsPageContent() {
           <TabBar
             tabs={policyTabsTranslated}
             value={policyTab}
-            onChange={(value) => {
-              setPolicyTab(value);
-              markDirty();
-            }}
+            onChange={(v) => setPolicyTab(v as "monthly" | "weekly")}
             className="rounded-md"
           />
           <SettingsPanel title={t("ewaPolicy")}>
             <label className="grid gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-text-primary">
-                  {t("maxPercent")}
-                </span>
-                <span className="font-number text-sm font-semibold text-primary">
-                  {maxPercent}%
-                </span>
+                <span className="text-sm font-medium text-text-primary">{t("maxPercent")}</span>
+                <span className="font-number text-sm font-semibold text-primary">{maxPercent}%</span>
               </div>
               <input
-                type="range"
-                min={0}
-                max={100}
-                step={5}
+                type="range" min={0} max={100} step={5}
                 value={maxPercent}
-                onChange={(event) => {
-                  setMaxPercent(Number(event.target.value));
-                  markDirty();
-                }}
+                onChange={(e) => { setMaxPercent(Number(e.target.value)); markDirty(); }}
                 className="accent-primary"
               />
             </label>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <NumberField label={t("maxRequests")} value="2" suffix="period" />
-              <NumberField label={t("minAmount")} value="500" prefix="THB" />
-              <NumberField label={t("maxPercent")} value="10000" prefix="THB" />
+              <NumberField label={t("maxRequests")} value={String(activePolicy?.maxRequestsPerPeriod ?? 2)} suffix="period" />
+              <NumberField label={t("minAmount")} value={String(activePolicy?.minAmount ?? 500)} prefix="THB" />
+              <NumberField label={t("autoApprovalThreshold")} value={String(activePolicy?.autoApprovalThreshold ?? 3000)} prefix="THB" />
             </div>
           </SettingsPanel>
 
           <SettingsPanel title={tc("approve")}>
             <Toggle
               checked={autoApproval}
-              onChange={(checked) => {
-                setAutoApproval(checked);
-                markDirty();
-              }}
+              onChange={(checked) => { setAutoApproval(checked); markDirty(); }}
               label={t("autoApproval")}
               description="Low-risk requests only"
             />
-            {autoApproval && (
-              <NumberField
-                label={t("autoApprovalThreshold")}
-                value="3000"
-                prefix="THB"
-              />
-            )}
             <div>
-              <p className="mb-2 text-sm font-medium text-text-primary">
-                {t("approvalChain")}
-              </p>
+              <p className="mb-2 text-sm font-medium text-text-primary">{t("approvalChain")}</p>
               <div className="flex gap-3">
-                <RadioPill checked label={t("singleApproval")} />
-                <RadioPill label={t("twoStepApproval")} />
+                <RadioPill checked={activePolicy?.approvalChain === "single"} label={t("singleApproval")} />
+                <RadioPill checked={activePolicy?.approvalChain === "two_step"} label={t("twoStepApproval")} />
               </div>
             </div>
           </SettingsPanel>
@@ -147,38 +168,21 @@ export function SettingsPageContent() {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <SelectField
                   label={t("weeklyPayday")}
-                  options={["Mon", "Tue", "Wed", "Thu", "Fri"]}
-                  value="Fri"
+                  options={["mon", "tue", "wed", "thu", "fri"]}
+                  value={activePolicy?.weeklyPayday ?? "fri"}
                 />
-                <SelectField
-                  label={t("ewaCutoffDays")}
-                  options={["Mon", "Tue", "Wed", "Thu", "Fri"]}
-                  value="Thu"
-                />
-                <SelectField
-                  label="Cutoff time"
-                  options={["16:00", "17:00", "18:00"]}
-                  value="18:00"
-                />
+                <NumberField label={t("ewaCutoffDays")} value={String(activePolicy?.ewaCutoffDays ?? 1)} suffix="days" />
               </div>
             </SettingsPanel>
           )}
 
           <SettingsPanel title={t("blackoutDates")}>
             <div className="flex flex-wrap gap-2">
-              {blackoutDates.map((date, index) => (
-                <span
-                  key={date + index}
-                  className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-1 text-sm"
-                >
+              {blackoutDates.map((date, i) => (
+                <span key={date + i} className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-1 text-sm">
                   {date}
                   <button
-                    onClick={() => {
-                      setBlackoutDates((current) =>
-                        current.filter((item) => item !== date),
-                      );
-                      markDirty();
-                    }}
+                    onClick={() => { setBlackoutDates((c) => c.filter((d) => d !== date)); markDirty(); }}
                     aria-label={`Remove ${date}`}
                   >
                     <X className="h-3.5 w-3.5" />
@@ -186,10 +190,7 @@ export function SettingsPageContent() {
                 </span>
               ))}
               <button
-                onClick={() => {
-                  setBlackoutDates((current) => current.concat("2025-05-30"));
-                  markDirty();
-                }}
+                onClick={() => { setBlackoutDates((c) => [...c, new Date().toISOString().slice(0, 10)]); markDirty(); }}
                 className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-sm text-primary"
               >
                 <Plus className="h-3.5 w-3.5" /> Add date
@@ -201,62 +202,31 @@ export function SettingsPageContent() {
 
       {activeTab === "notifications" && (
         <SettingsPanel title={t("notifications")}>
-          {[
-            "New request",
-            "Pending > 2 hours",
-            "Request approved",
-            "Request rejected",
-            "Payday",
-          ].map((label) => (
-            <div
-              key={label}
-              className="flex items-center justify-between border-b border-border-light py-3 last:border-0"
-            >
+          {["New request", "Pending > 2 hours", "Request approved", "Request rejected", "Payday"].map((label) => (
+            <div key={label} className="flex items-center justify-between border-b border-border-light py-3 last:border-0">
               <span className="text-sm font-medium">{label}</span>
               <div className="flex gap-4">
-                <Toggle checked onChange={markDirty} label="Email" />
-                <Toggle checked onChange={markDirty} label="LINE" />
+                <Toggle checked onChange={() => {}} label="Email" />
+                <Toggle checked onChange={() => {}} label="LINE" />
               </div>
             </div>
           ))}
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
-            <NumberField
-              label="LINE Official Account ID"
-              value="@PaydayFactory"
-            />
-            {/* <button className="mt-6 h-9 rounded-md border border-border px-4 text-sm font-medium">
-              Test connection
-            </button> */}
-          </div>
         </SettingsPanel>
       )}
 
       {activeTab === "users" && (
         <SettingsPanel title="HR Users">
           <div className="mb-3 flex justify-end">
-            <button className="h-9 rounded-md bg-primary px-4 text-sm font-medium text-white">
-              + Add HR User
-            </button>
+            <button className="h-9 rounded-md bg-primary px-4 text-sm font-medium text-white">+ Add HR User</button>
           </div>
           <table className="w-full border-collapse">
             <tbody>
-              {[
-                ["HR Admin", "hr@factory.co.th", "HR Manager"],
-                ["Finance", "finance@factory.co.th", "Accountant"],
-                ["Viewer", "viewer@factory.co.th", "Viewer"],
-              ].map((row) => (
-                <tr
-                  key={row[1]}
-                  className="h-[52px] border-b border-border-light last:border-0"
-                >
+              {[["HR Admin", "hr@factory.co.th", "HR Manager"], ["Finance", "finance@factory.co.th", "Accountant"]].map((row) => (
+                <tr key={row[1]} className="h-[52px] border-b border-border-light last:border-0">
                   <td className="text-sm font-medium">{row[0]}</td>
                   <td className="text-sm text-text-muted">{row[1]}</td>
                   <td className="text-sm">{row[2]}</td>
-                  <td className="text-right">
-                    <button className="text-sm font-medium text-primary">
-                      Edit role
-                    </button>
-                  </td>
+                  <td className="text-right"><button className="text-sm font-medium text-primary">Edit role</button></td>
                 </tr>
               ))}
             </tbody>
@@ -267,20 +237,18 @@ export function SettingsPageContent() {
       {activeTab === "general" && (
         <SettingsPanel title={t("general")}>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <NumberField label="Company" value="Factory Co., Ltd." />
-            <NumberField label="Employer ID" value="FAC-2025" />
+            <NumberField label="Company" value={settings?.companyName ?? ""} />
           </div>
         </SettingsPanel>
       )}
 
       <div className="fixed bottom-5 right-5">
         <button
-          onClick={() => {
-            setDirty(false);
-            toast({ variant: "success", message: t("saveSuccess") });
-          }}
-          className="h-11 rounded-md bg-primary px-6 text-sm font-semibold text-white shadow-hover hover:bg-primary-dark"
+          onClick={handleSave}
+          disabled={saving || !dirty}
+          className="flex h-11 items-center gap-2 rounded-md bg-primary px-6 text-sm font-semibold text-white shadow-hover hover:bg-primary-dark disabled:opacity-50"
         >
+          {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           {tc("save")}
         </button>
       </div>
@@ -288,13 +256,15 @@ export function SettingsPageContent() {
   );
 }
 
-function SettingsPanel({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+export function SettingsPageContent() {
+  return (
+    <ApiErrorBoundary>
+      <SettingsContent />
+    </ApiErrorBoundary>
+  );
+}
+
+function SettingsPanel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-lg border border-border bg-bg-canvas p-5 shadow-card">
       <h2 className="mb-4 text-section-title text-text-primary">{title}</h2>
@@ -303,72 +273,33 @@ function SettingsPanel({
   );
 }
 
-function NumberField({
-  label,
-  value,
-  prefix,
-  suffix,
-}: {
-  label: string;
-  value: string;
-  prefix?: string;
-  suffix?: string;
-}) {
+function NumberField({ label, value, prefix, suffix }: { label: string; value: string; prefix?: string; suffix?: string }) {
   return (
     <label className="block">
       <span className="text-label text-text-muted">{label}</span>
       <div className="mt-2 flex h-10 items-center rounded-md border border-border bg-bg-secondary px-3">
         {prefix && <span className="text-text-muted">{prefix}</span>}
-        <input
-          defaultValue={value}
-          className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none"
-        />
+        <input defaultValue={value} key={value} className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none" />
         {suffix && <span className="text-text-muted">{suffix}</span>}
       </div>
     </label>
   );
 }
 
-function SelectField({
-  label,
-  options,
-  value,
-}: {
-  label: string;
-  options: string[];
-  value: string;
-}) {
+function SelectField({ label, options, value }: { label: string; options: string[]; value: string }) {
   return (
     <label className="block">
       <span className="text-label text-text-muted">{label}</span>
-      <select
-        defaultValue={value}
-        className="mt-2 h-10 w-full rounded-md border border-border bg-bg-secondary px-3 text-sm outline-none"
-      >
-        {options.map((option) => (
-          <option key={option}>{option}</option>
-        ))}
+      <select defaultValue={value} className="mt-2 h-10 w-full rounded-md border border-border bg-bg-secondary px-3 text-sm outline-none">
+        {options.map((o) => <option key={o}>{o}</option>)}
       </select>
     </label>
   );
 }
 
-function RadioPill({
-  checked = false,
-  label,
-}: {
-  checked?: boolean;
-  label: string;
-}) {
+function RadioPill({ checked = false, label }: { checked?: boolean; label: string }) {
   return (
-    <span
-      className={cn(
-        "rounded-full border px-3 py-1 text-sm",
-        checked
-          ? "border-primary bg-primary-subtle text-primary-dark"
-          : "border-border text-text-secondary",
-      )}
-    >
+    <span className={cn("rounded-full border px-3 py-1 text-sm", checked ? "border-primary bg-primary-subtle text-primary-dark" : "border-border text-text-secondary")}>
       {label}
     </span>
   );
