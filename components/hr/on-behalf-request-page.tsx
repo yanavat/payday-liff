@@ -1,18 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { AlertTriangle, Building2, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, Building2, CheckCircle2, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Avatar } from "@/components/ui/avatar";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { QuickAmountButton } from "@/components/ui/quick-amount-button";
+import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { useToast } from "@/components/ui/toast";
-import { employees, hrUser } from "@/lib/mock";
+import { useEmployee, useEWARequestActions } from "@/lib/api/hooks";
+import { getApiErrorMessage } from "@/lib/api/errors";
 import { formatTHB } from "@/lib/utils/format";
-import { generateRefNumber } from "@/lib/utils/format";
-import type { Employee, EWAReason } from "@/types";
+import type { EmployeeDto } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
+
+type EWAReason = "emergency" | "medical" | "education" | "utility" | "other";
 
 const reasonOptions: Array<{ value: EWAReason }> = [
   { value: "emergency" },
@@ -22,13 +25,26 @@ const reasonOptions: Array<{ value: EWAReason }> = [
   { value: "other" },
 ];
 
-export function OnBehalfRequestPage({ employeeId }: { employeeId: string }) {
-  const employee = employees.find((item) => item.id === employeeId);
+function OnBehalfRequestContent({ employeeId }: { employeeId: string }) {
+  const t = useTranslations("common");
+  const { data: employee, loading, error } = useEmployee(employeeId);
 
-  if (!employee) {
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-6 w-48 animate-pulse rounded bg-bg-secondary" />
+        <div className="h-48 animate-pulse rounded-xl bg-bg-secondary" />
+        <div className="h-64 animate-pulse rounded-xl bg-bg-secondary" />
+      </div>
+    );
+  }
+
+  if (error || !employee) {
     return (
       <div className="max-w-[640px]">
-        <h1 className="text-[22px] font-semibold">Employee not found</h1>
+        <h1 className="text-[22px] font-semibold">
+          {error ? getApiErrorMessage(error, t) : "Employee not found"}
+        </h1>
         <Link href="/hr/employees" className="mt-4 inline-flex text-primary">
           Back to list
         </Link>
@@ -39,7 +55,15 @@ export function OnBehalfRequestPage({ employeeId }: { employeeId: string }) {
   return <OnBehalfForm employee={employee} />;
 }
 
-function OnBehalfForm({ employee }: { employee: Employee }) {
+export function OnBehalfRequestPage({ employeeId }: { employeeId: string }) {
+  return (
+    <ApiErrorBoundary>
+      <OnBehalfRequestContent employeeId={employeeId} />
+    </ApiErrorBoundary>
+  );
+}
+
+function OnBehalfForm({ employee }: { employee: EmployeeDto }) {
   const t = useTranslations("hrRequest");
   const tc = useTranslations("common");
   const tr = useTranslations("requestWizard");
@@ -47,7 +71,10 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
   const [amount, setAmount] = useState(1000);
   const [reason, setReason] = useState<EWAReason>("emergency");
   const [hrNote, setHrNote] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedRef, setSubmittedRef] = useState<string | null>(null);
+
+  const { createOnBehalf, loading: submitting, error: submitError } = useEWARequestActions();
+
   const maxAmount =
     employee.payCycle === "monthly"
       ? Math.round(employee.baseSalary * 0.25)
@@ -61,13 +88,26 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
     employee.ewaStatus === "eligible" &&
     !overLimit &&
     amount >= 500 &&
-    hrNote.trim().length >= 10;
-  const ref = useMemo(
-    () => generateRefNumber(new Date("2025-05-14T09:00:00")),
-    [],
-  );
+    hrNote.trim().length >= 10 &&
+    !submitting;
 
-  if (submitted) {
+  async function handleSubmit() {
+    const result = await createOnBehalf({
+      employeeId: employee.id,
+      amount,
+      reason,
+      employeeNote: hrNote,
+      submittedBy: "HR",
+    });
+    if (result) {
+      setSubmittedRef(result.referenceNumber);
+      toast({ variant: "success", message: tc("success") });
+    } else if (submitError) {
+      toast({ variant: "error", message: getApiErrorMessage(submitError, tc) });
+    }
+  }
+
+  if (submittedRef) {
     return (
       <div className="mx-auto max-w-[640px] space-y-4">
         <section className="rounded-xl border border-border bg-bg-canvas p-8 text-center shadow-card">
@@ -77,11 +117,9 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
           </h1>
           <p className="mt-1 text-sm text-text-secondary">{tc("success")}</p>
           <div className="mx-auto mt-6 max-w-sm rounded-lg bg-bg-secondary p-4 text-left text-sm">
-            <Info label={t("auditRef")} value={ref} />
+            <Info label={t("auditRef")} value={submittedRef} />
             <Info label={tc("amount")} value={formatTHB(amount)} />
             <Info label={tc("employeeId")} value={employee.nameTh} />
-            <Info label={hrUser.name} value="HR" />
-            <Info label="Audit" value="5821" />
           </div>
           <div className="mt-6 flex justify-center gap-3">
             <Link
@@ -90,12 +128,6 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
             >
               {t("backToList")}
             </Link>
-            {/* <Link
-              href="/hr/employees"
-              className="inline-flex h-10 items-center rounded-md border border-border px-4 text-sm font-medium"
-            >
-              {t("backToList")}
-            </Link> */}
           </div>
         </section>
       </div>
@@ -122,9 +154,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
         <div className="flex items-center gap-3">
           <Avatar initials={employee.nameTh.slice(0, 2)} size="md" />
           <div className="flex-1">
-            <h2 className="font-semibold text-text-primary">
-              {employee.nameTh}
-            </h2>
+            <h2 className="font-semibold text-text-primary">{employee.nameTh}</h2>
             <p className="text-caption text-text-muted">
               {employee.id} · {employee.department}
             </p>
@@ -133,9 +163,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
         </div>
         <div className="mt-5 rounded-xl bg-primary p-5 text-white">
           <p className="text-sm text-white/80">{t("availableBalance")}</p>
-          <p className="font-number text-4xl font-bold">
-            {formatTHB(maxAmount)}
-          </p>
+          <p className="font-number text-4xl font-bold">{formatTHB(maxAmount)}</p>
           <p className="mt-1 text-sm text-white/80">
             50% of {formatTHB(earned)}
           </p>
@@ -150,9 +178,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
 
       <section className="space-y-5 rounded-xl border border-border bg-bg-canvas p-5 shadow-card">
         <div>
-          <h2 className="text-section-title text-text-primary">
-            {t("selectAmount")}
-          </h2>
+          <h2 className="text-section-title text-text-primary">{t("selectAmount")}</h2>
           <div className="mt-3 grid grid-cols-3 gap-2">
             {[1000, 2000, 3000].map((quickAmount) => (
               <QuickAmountButton
@@ -165,9 +191,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
             ))}
           </div>
           <label className="mt-4 block">
-            <span className="text-label text-text-muted">
-              {t("customAmount")}
-            </span>
+            <span className="text-label text-text-muted">{t("customAmount")}</span>
             <div
               className={cn(
                 "mt-2 flex h-11 items-center rounded-md border bg-bg-secondary px-3",
@@ -178,14 +202,12 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
               <input
                 type="number"
                 value={amount}
-                onChange={(event) => setAmount(Number(event.target.value))}
+                onChange={(e) => setAmount(Number(e.target.value))}
                 className="min-w-0 flex-1 bg-transparent px-2 font-number outline-none"
               />
             </div>
             {overLimit ? (
-              <p className="mt-1 text-caption text-red-600">
-                {tr("amountError")}
-              </p>
+              <p className="mt-1 text-caption text-red-600">{tr("amountError")}</p>
             ) : (
               <p className="mt-1 text-caption text-text-muted">
                 Remaining: {formatTHB(maxAmount - amount)}
@@ -195,9 +217,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
         </div>
 
         <div>
-          <h2 className="text-section-title text-text-primary">
-            {tr("reason")}
-          </h2>
+          <h2 className="text-section-title text-text-primary">{tr("reason")}</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {reasonOptions.map((option) => (
               <button
@@ -220,7 +240,7 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
           <span className="text-label text-text-muted">{t("hrNote")}</span>
           <textarea
             value={hrNote}
-            onChange={(event) => setHrNote(event.target.value)}
+            onChange={(e) => setHrNote(e.target.value)}
             rows={3}
             placeholder={t("hrNotePlaceholder")}
             className="mt-2 w-full rounded-md border border-border bg-bg-secondary px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -236,20 +256,16 @@ function OnBehalfForm({ employee }: { employee: Employee }) {
             <p className="text-sm font-medium">
               {t("bankAccount")}: {employee.bankAccountMasked}
             </p>
-            <p className="text-caption text-text-muted">
-              Contact HR to change account
-            </p>
+            <p className="text-caption text-text-muted">Contact HR to change account</p>
           </div>
         </div>
 
         <button
           disabled={!canSubmit}
-          onClick={() => {
-            setSubmitted(true);
-            toast({ variant: "success", message: tc("success") });
-          }}
-          className="h-12 w-full rounded-md bg-primary text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={handleSubmit}
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
+          {submitting && <Loader2 className="h-5 w-5 animate-spin" />}
           {t("submitOnBehalf")}
         </button>
         <Link
