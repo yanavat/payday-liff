@@ -5,14 +5,9 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Link } from "@/i18n/navigation";
 import { currentEmployee } from "@/lib/mock/currentUser";
-import { getRequestsByEmployee } from "@/lib/mock/requests";
-import { payCycles } from "@/lib/mock/payrollCycles";
+import { useEmployeeCurrentPeriod } from "@/lib/api/hooks";
+import { useEWARequests } from "@/lib/api/hooks";
 import { formatTHB } from "@/lib/utils/format";
-
-const earnedWage = 9200;
-const maxAllowed = 4600;
-const previousAdvance = 1100;
-const available = maxAllowed - previousAdvance;
 
 function formatRequestDate(value: string) {
   return new Intl.DateTimeFormat("th-TH", {
@@ -23,13 +18,65 @@ function formatRequestDate(value: string) {
 
 export function EmployeeHomePage() {
   const t = useTranslations();
-  const cycle = payCycles[currentEmployee.payCycle];
-  const recentRequests = getRequestsByEmployee(currentEmployee.id)
-    .sort(
-      (a, b) =>
-        new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime(),
-    )
-    .slice(0, 3);
+
+  // Fetch current period data from API
+  const {
+    data: currentPeriod,
+    loading: periodLoading,
+    error: periodError,
+  } = useEmployeeCurrentPeriod(currentEmployee.id);
+
+  // Fetch recent requests from API
+  const {
+    data: requestsData,
+    loading: requestsLoading,
+    error: requestsError,
+  } = useEWARequests({
+    employeeId: currentEmployee.id,
+    limit: 3,
+  });
+
+  // Calculate values from API data or fallback to defaults
+  const earnedWage = currentPeriod?.earnedToDate ?? 9200;
+  const maxAllowed = currentPeriod?.maxWithdrawable ?? 4600;
+  const previousAdvance = currentPeriod?.previousEWAThisPeriod ?? 1100;
+  const available = maxAllowed - previousAdvance;
+
+  // Get recent requests from API or empty array
+  const recentRequests = requestsData?.data ?? [];
+
+  // Get cycle info from API or fallback
+  const cycle = currentPeriod
+    ? {
+        daysElapsed: currentPeriod.daysElapsed,
+        totalDays: currentPeriod.totalDays,
+      }
+    : { daysElapsed: 14, totalDays: 31 };
+
+  // Show loading state
+  if (periodLoading || requestsLoading) {
+    return (
+      <div className="min-h-full bg-bg-page pb-5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
+          <p className="text-text-muted">{t("common.loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (periodError || requestsError) {
+    return (
+      <div className="min-h-full bg-bg-page pb-5 flex items-center justify-center">
+        <div className="text-center px-4">
+          <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+          <p className="text-text-primary font-semibold">{t("common.error")}</p>
+          <p className="text-text-muted mt-1">{t("common.errorLoadingData")}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full bg-bg-page pb-5">
@@ -99,7 +146,9 @@ export function EmployeeHomePage() {
             {t("home.payPeriod")}
           </h2>
           <span className="text-[16px] font-medium text-primary">
-            {t("home.paydayCountdown", { days: 17 })}
+            {t("home.paydayCountdown", {
+              days: cycle.totalDays - cycle.daysElapsed,
+            })}
           </span>
         </div>
         <ProgressBar
@@ -111,11 +160,19 @@ export function EmployeeHomePage() {
           <span>
             Day {cycle.daysElapsed} / {cycle.totalDays}
           </span>
-          <span>{t("home.cutoffWarning", { days: 17 })}</span>
+          <span>
+            {t("home.cutoffWarning", {
+              days: cycle.totalDays - cycle.daysElapsed,
+            })}
+          </span>
         </div>
         <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[16px] text-amber-800">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
-          <span>{t("home.cutoffWarning", { days: 24 })}</span>
+          <span>
+            {t("home.cutoffWarning", {
+              days: cycle.totalDays - cycle.daysElapsed,
+            })}
+          </span>
         </div>
       </section>
 

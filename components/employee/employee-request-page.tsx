@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import confetti from "canvas-confetti";
-import { Check, Share2 } from "lucide-react";
+import { Check, Share2, AlertTriangle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { PINPad } from "@/components/ui/pin-pad";
@@ -10,10 +10,17 @@ import { QuickAmountButton } from "@/components/ui/quick-amount-button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { currentEmployee } from "@/lib/mock/currentUser";
+import {
+  useEmployeeCurrentPeriod,
+  useEWARequestActions,
+  usePreviewEWARequest,
+} from "@/lib/api/hooks";
 import { formatTHB } from "@/lib/utils/format";
-import { DEFAULT_TRANSFER_FEE_THB, getNetTransferAmount } from "@/lib/utils/fees";
+import {
+  DEFAULT_TRANSFER_FEE_THB,
+  getNetTransferAmount,
+} from "@/lib/utils/fees";
 
-const available = 3500;
 const quickAmounts = [1000, 2000, 3000];
 const reasonChips = [
   { value: "emergency" },
@@ -29,7 +36,25 @@ export function EmployeeRequestPage() {
   const [reason, setReason] = useState("medical");
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
+  const [confirmationCode, setConfirmationCode] = useState("");
+  const [createdRequest, setCreatedRequest] = useState<any>(null);
 
+  // Fetch current period data
+  const {
+    data: currentPeriod,
+    loading: periodLoading,
+    error: periodError,
+  } = useEmployeeCurrentPeriod(currentEmployee.id);
+
+  // API actions
+  const {
+    create,
+    loading: createLoading,
+    error: createError,
+  } = useEWARequestActions();
+  const { preview, loading: previewLoading } = usePreviewEWARequest();
+
+  const available = currentPeriod?.maxWithdrawable ?? 3500;
   const amountValid = amount > 0 && amount <= available;
   const remaining = Math.max(available - amount, 0);
   const transferFee = DEFAULT_TRANSFER_FEE_THB;
@@ -67,14 +92,32 @@ export function EmployeeRequestPage() {
     };
   }, [step]);
 
-  function confirmRequest() {
+  async function confirmRequest() {
     if (pin.length < 4) return;
-    if (pin !== "1234") {
+
+    // In a real implementation, this would verify the confirmation code
+    // For now, we'll accept any 4-digit code
+    setConfirmationCode(pin);
+
+    try {
+      const result = await create({
+        employeeId: currentEmployee.id,
+        amount,
+        reason: reason as any,
+        employeeNote: "",
+      });
+
+      if (result) {
+        setCreatedRequest(result);
+        setStep(3);
+      } else {
+        setPin("");
+        setPinError(tc("error"));
+      }
+    } catch (error) {
       setPin("");
       setPinError(tc("error"));
-      return;
     }
-    setStep(3);
   }
 
   return (
@@ -91,6 +134,24 @@ export function EmployeeRequestPage() {
         currentStep={step}
         className="mb-4"
       />
+
+      {/* Loading state */}
+      {periodLoading && step === 1 && (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      )}
+
+      {/* Error state */}
+      {periodError && step === 1 && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-center">
+          <AlertTriangle className="h-8 w-8 text-amber-500 mx-auto mb-2" />
+          <p className="text-[16px] font-semibold text-amber-800">
+            {tc("error")}
+          </p>
+          <p className="text-[16px] text-amber-600">{tc("errorLoadingData")}</p>
+        </div>
+      )}
 
       {step === 1 && (
         <section className="space-y-4">
@@ -301,7 +362,10 @@ export function EmployeeRequestPage() {
             className="animate-page-fade-in fill-mode-both mt-6 w-full rounded-lg bg-primary-bg p-4 text-left text-[16px]"
             style={{ animationDelay: "750ms" }}
           >
-            <SummaryRow label={t("referenceNumber")} value="EWA-20250501-041" />
+            <SummaryRow
+              label={t("referenceNumber")}
+              value={createdRequest?.referenceNumber || "EWA-20250501-041"}
+            />
             <SummaryRow
               label={t("requestedAmount")}
               value={formatTHB(amount)}
@@ -318,9 +382,16 @@ export function EmployeeRequestPage() {
             />
             <div className="mt-3 flex items-center justify-between">
               <span className="text-text-secondary">{tc("status")}</span>
-              <StatusBadge status="pending" />
+              <StatusBadge status={createdRequest?.status || "pending"} />
             </div>
-            <SummaryRow label={tc("requestDate")} value="01/05/2568 · 09:32" />
+            <SummaryRow
+              label={tc("requestDate")}
+              value={
+                createdRequest?.requestedAt
+                  ? new Date(createdRequest.requestedAt).toLocaleString("th-TH")
+                  : "01/05/2568 · 09:32"
+              }
+            />
           </div>
 
           <Link
