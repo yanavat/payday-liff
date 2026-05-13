@@ -187,12 +187,12 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
 ### Phase 9.8 — Validation & Testing
 
-- [ ] Implement frontend request validation matching backend business rules
+- [x] Implement frontend request validation matching backend business rules
 - [ ] Add form validation for employee data entry (salary, department, pay cycle)
-- [ ] Add form validation for EWA request submission (amount limits, cutoff rules)
-- [ ] Add integration tests for API service layer
+- [x] Add form validation for EWA request submission (amount limits, cutoff rules)
+- [x] Add integration tests for API service layer
 - [ ] Add E2E tests for critical user flows (login, request, approval)
-- [ ] Test error handling scenarios (network failure, 401, 403, 500)
+- [x] Test error handling scenarios (network failure, 401, 403, 500)
 - [ ] Test pagination and filtering for list endpoints
 - [ ] Performance test API call batching and caching strategies
 
@@ -238,5 +238,5 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 | 6 · Polish         | 10          | 10      | 100%     |
 | 7 · Deploy         | 6           | 3       | 50%      |
 | 8 · LIFF Migration | 64          | 49      | 77%      |
-| 9 · Backend API    | 52          | 39      | 75%      |
-| **Total**          | **278**     | **247** | **89%**  |
+| 9 · Backend API    | 52          | 43      | 83%      |
+| **Total**          | **278**     | **251** | **90%**  |

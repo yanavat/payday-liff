@@ -1,10 +1,27 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { screen, fireEvent, act } from "@testing-library/react";
 import { EmployeeRequestPage } from "./employee-request-page";
 import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
 
-const { confettiMock } = vi.hoisted(() => ({ confettiMock: vi.fn() }));
+const { confettiMock, createMock } = vi.hoisted(() => ({
+  confettiMock: vi.fn(),
+  createMock: vi.fn(),
+}));
 vi.mock("canvas-confetti", () => ({ default: confettiMock }));
+
+vi.mock("@/lib/api/hooks", () => ({
+  useEmployeeCurrentPeriod: () => ({ data: { maxWithdrawable: 3500 }, loading: false, error: null }),
+  useEWARequestActions: () => ({
+    create: createMock,
+    createOnBehalf: vi.fn(),
+    approve: vi.fn(),
+    reject: vi.fn(),
+    disburse: vi.fn(),
+    loading: false,
+    error: null,
+  }),
+  usePreviewEWARequest: () => ({ preview: vi.fn(), loading: false, error: null }),
+}));
 
 vi.mock("@/i18n/navigation", () => ({
   Link: ({
@@ -98,14 +115,39 @@ const messages = {
   },
 };
 
+const mockRequest = {
+  id: "req-1",
+  referenceNumber: "EWA-20250501-041",
+  amount: 3000,
+  transferFee: 15,
+  netTransferAmount: 2985,
+  status: "pending" as const,
+  requestedAt: "2025-05-01T09:00:00",
+  approvedAt: undefined,
+  rejectedAt: undefined,
+  disbursedAt: undefined,
+  approvedBy: undefined,
+  employeeNote: undefined,
+  hrNote: undefined,
+  payCycle: "monthly" as const,
+  isOnBehalf: false,
+  onBehalfBy: undefined,
+  reason: "medical" as const,
+  employeeId: "EMP-001",
+  createdAt: "2025-05-01T09:00:00",
+  updatedAt: "2025-05-01T09:00:00",
+};
+
 function goToStep2() {
   fireEvent.click(screen.getByRole("button", { name: /Next →/i }));
 }
 
-function goToStep3() {
+async function goToStep3() {
   goToStep2();
   fireEvent.click(screen.getByRole("button", { name: "Correct PIN" }));
-  fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+  });
 }
 
 describe("EmployeeRequestPage — step 1", () => {
@@ -161,6 +203,7 @@ describe("EmployeeRequestPage — step 1", () => {
 
 describe("EmployeeRequestPage — step 2", () => {
   beforeEach(() => {
+    createMock.mockResolvedValue(null);
     renderWithIntl(<EmployeeRequestPage />, { messages });
     goToStep2();
   });
@@ -188,9 +231,11 @@ describe("EmployeeRequestPage — step 2", () => {
     expect(screen.getByRole("button", { name: "Confirm" })).not.toBeDisabled();
   });
 
-  it("shows error and stays on step 2 when wrong PIN is entered", () => {
+  it("shows error and stays on step 2 when wrong PIN is entered", async () => {
     fireEvent.click(screen.getByRole("button", { name: "Wrong PIN" }));
-    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    });
     expect(screen.getByText("An error occurred")).toBeInTheDocument();
     expect(screen.getByText("Summary")).toBeInTheDocument();
   });
@@ -202,10 +247,11 @@ describe("EmployeeRequestPage — step 2", () => {
 });
 
 describe("EmployeeRequestPage — step 3 (success)", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    createMock.mockResolvedValue(mockRequest);
     vi.useFakeTimers();
     renderWithIntl(<EmployeeRequestPage />, { messages });
-    goToStep3();
+    await goToStep3();
   });
 
   afterEach(() => {
