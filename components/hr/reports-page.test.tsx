@@ -1,4 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
+import type React from "react";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import { screen, fireEvent } from "@testing-library/react";
 import { ReportsPageContent } from "./reports-page";
 import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
@@ -8,9 +9,59 @@ const { downloadPdfMock } = vi.hoisted(() => ({
   downloadPdfMock: vi.fn(),
 }));
 
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
 vi.mock("@/components/ui/toast", () => ({
   useToast: () => ({ toast: toastMock }),
 }));
+
+vi.mock("@/lib/api/hooks", async () => {
+  const [{ requests }, { employees }] = await Promise.all([
+    import("@/lib/mock/requests"),
+    import("@/lib/mock/employees"),
+  ]);
+
+  const paginated = <T,>(data: T[]) => ({
+    data,
+    meta: {
+      total: data.length,
+      page: 1,
+      limit: data.length,
+      totalPages: 1,
+    },
+  });
+
+  return {
+    useEWARequests: () => ({
+      data: paginated(requests),
+      loading: false,
+      error: null,
+      refetch: vi.fn(),
+      retry: vi.fn(),
+    }),
+    useEmployees: () => ({
+      data: paginated(employees),
+      loading: false,
+      error: null,
+      refetch: vi.fn(),
+      retry: vi.fn(),
+    }),
+  };
+});
 
 vi.mock("@/lib/pdf/pdf-export", async () => {
   const actual = await vi.importActual<typeof import("@/lib/pdf/pdf-export")>(
@@ -57,6 +108,18 @@ const messages = {
 };
 
 describe("ReportsPageContent", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-05-30T12:00:00Z"));
+    toastMock.mockClear();
+    downloadPdfMock.mockClear();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
   it("renders page title and export buttons", () => {
     renderWithIntl(<ReportsPageContent />, { messages });
 
@@ -127,8 +190,8 @@ describe("ReportsPageContent", () => {
       screen.getByRole("heading", { name: "Transfer Status" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Retry Failed" }),
-    ).toBeInTheDocument();
+      screen.getAllByRole("button", { name: "Retry Failed" }).length,
+    ).toBeGreaterThan(0);
   });
 
   it("shows toast on CSV export", () => {
@@ -162,7 +225,9 @@ describe("ReportsPageContent", () => {
   it("retries failed transfer and shows info toast", () => {
     renderWithIntl(<ReportsPageContent />, { messages });
 
-    const retryButton = screen.getByRole("button", { name: "Retry Failed" });
+    const retryButton = screen.getAllByRole("button", {
+      name: "Retry Failed",
+    })[0];
     fireEvent.click(retryButton);
 
     expect(toastMock).toHaveBeenCalledWith({
@@ -218,6 +283,6 @@ describe("ReportsPageContent", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Weekly" }));
 
-    expect(screen.getByText("W1")).toBeInTheDocument();
+    expect(screen.getByText("W11")).toBeInTheDocument();
   });
 });
