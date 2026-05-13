@@ -19,9 +19,11 @@ interface RequestDetailDrawerProps {
   history: EWARequest[];
   open: boolean;
   confirmAction: "approve" | "reject" | null;
+  actionLoading?: boolean;
   onClose: () => void;
   onApprove: () => void;
   onReject: () => void;
+  onDisburse?: () => void;
   onCancelConfirm: () => void;
   onConfirmApprove: () => void;
   onConfirmReject: (reason?: string) => void;
@@ -33,9 +35,11 @@ export function RequestDetailDrawer({
   history,
   open,
   confirmAction,
+  actionLoading,
   onClose,
   onApprove,
   onReject,
+  onDisburse,
   onCancelConfirm,
   onConfirmApprove,
   onConfirmReject,
@@ -89,18 +93,36 @@ export function RequestDetailDrawer({
                 <button
                   type="button"
                   onClick={onReject}
-                  className="h-11 rounded-md border border-red-300 bg-bg-canvas text-sm font-semibold text-red-700 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200"
+                  disabled={actionLoading}
+                  className="h-11 rounded-md border border-red-300 bg-bg-canvas text-sm font-semibold text-red-700 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200 disabled:opacity-50"
                 >
-                  {t("common.reject")}
+                  {actionLoading ? (
+                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-red-700 border-t-transparent" />
+                  ) : t("common.reject")}
                 </button>
                 <button
                   type="button"
                   onClick={onApprove}
-                  className="h-11 rounded-md bg-primary text-sm font-semibold text-white transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  disabled={actionLoading}
+                  className="h-11 rounded-md bg-primary text-sm font-semibold text-white transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
                 >
-                  {t("common.approve")}
+                  {actionLoading ? (
+                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : t("common.approve")}
                 </button>
               </div>
+              {request.status === "approved" && onDisburse && (
+                <button
+                  type="button"
+                  onClick={onDisburse}
+                  disabled={actionLoading}
+                  className="h-11 w-full rounded-md bg-green-600 text-sm font-semibold text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300 disabled:opacity-50"
+                >
+                  {actionLoading ? (
+                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : "Disburse"}
+                </button>
+              )}
               <button
                 type="button"
                 className="h-9 w-full rounded-md text-sm font-medium text-text-secondary transition hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/30"
