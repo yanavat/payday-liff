@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { HRSidebar } from "./hr-sidebar";
 import { HRTopbar } from "./hr-topbar";
 import { DarkModeProvider, useDarkMode } from "@/lib/context/dark-mode-context";
+import { OfflineBanner } from "@/components/employee/offline-banner";
 import { cn } from "@/lib/utils";
 
 function HRLayoutContent({ children }: { children: ReactNode }) {
@@ -14,6 +15,7 @@ function HRLayoutContent({ children }: { children: ReactNode }) {
       <HRSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <HRTopbar />
+        <OfflineBanner />
         <main className="min-h-0 flex-1 overflow-auto px-5 py-5">
           {children}
         </main>
