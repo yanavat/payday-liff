@@ -1,41 +1,83 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
-import { departments, employees, requests } from "@/lib/mock";
+import { TableRowSkeleton } from "@/components/ui/table-row-skeleton";
+import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
+import { useEmployees, useDepartments } from "@/lib/api/hooks";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import type { EmployeeDto } from "@/lib/api/types";
 import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 
-export function EmployeesPageContent() {
+function EmployeesContent() {
   const t = useTranslations();
   const tc = useTranslations("employees");
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [department, setDepartment] = useState("all");
   const [payCycle, setPayCycle] = useState("all");
   const [status, setStatus] = useState("all");
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleQueryChange = useCallback((value: string) => {
+    setQuery(value);
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => setDebouncedQuery(value), 300);
+  }, []);
+
+  useEffect(() => () => { if (debounceTimer.current) clearTimeout(debounceTimer.current); }, []);
+
+  const { data: employeesData, loading, error } = useEmployees({
+    department: department === "all" ? undefined : department,
+    payCycle: payCycle === "all" ? undefined : (payCycle as "monthly" | "weekly"),
+    limit: 200,
+  });
+  const { data: departmentsData } = useDepartments();
+
+  const allEmployees = employeesData?.data ?? [];
+  const allDepartments = departmentsData?.data ?? [];
 
   const rows = useMemo(() => {
-    return employees.filter((employee) => {
-      const search =
-        `${employee.name} ${employee.nameTh} ${employee.id}`.toLowerCase();
-      return (
-        search.includes(query.toLowerCase()) &&
-        (department === "all" || employee.department === department) &&
-        (payCycle === "all" || employee.payCycle === payCycle) &&
-        (status === "all" || employee.ewaStatus === status)
-      );
-    });
-  }, [department, payCycle, query, status]);
+    if (!debouncedQuery) return allEmployees;
+    const q = debouncedQuery.toLowerCase();
+    return allEmployees.filter((e) =>
+      `${e.name} ${e.nameTh} ${e.id}`.toLowerCase().includes(q) &&
+      (status === "all" || e.ewaStatus === status)
+    );
+  }, [allEmployees, debouncedQuery, status]);
 
-  const enrolled = employees.length;
-  const notEligible = employees.filter(
-    (employee) => employee.ewaStatus !== "eligible",
-  ).length;
+  const enrolled = employeesData?.total ?? 0;
+  const notEligible = allEmployees.filter((e) => e.ewaStatus !== "eligible").length;
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-6 w-48 animate-pulse rounded bg-bg-secondary" />
+        <div className="overflow-hidden rounded-xl border border-border bg-bg-canvas shadow-card">
+          <table className="w-full border-collapse">
+            <tbody>
+              <TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton />
+              <TableRowSkeleton /><TableRowSkeleton />
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center text-text-secondary">
+        {getApiErrorMessage(error, t)}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -54,7 +96,7 @@ export function EmployeesPageContent() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
             <input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(e) => handleQueryChange(e.target.value)}
               placeholder={tc("searchPlaceholder")}
               className="h-9 w-full rounded-md border border-border bg-bg-secondary pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
@@ -64,22 +106,14 @@ export function EmployeesPageContent() {
             onChange={setDepartment}
             options={[
               ["all", t("requests.allDepartments")],
-              ...departments.map(
-                (department) =>
-                  [department.nameTh, department.nameTh] as [string, string],
-              ),
+              ...allDepartments.map((d) => [d.name, d.nameTh || d.name] as [string, string]),
             ]}
           />
           <FilterSelect
             value={payCycle}
             onChange={setPayCycle}
             options={[
-              [
-                "all",
-                t("common.payCycle.monthly") +
-                  "/" +
-                  t("common.payCycle.weekly"),
-              ],
+              ["all", t("common.payCycle.monthly") + "/" + t("common.payCycle.weekly")],
               ["monthly", t("common.payCycle.monthly")],
               ["weekly", t("common.payCycle.weekly")],
             ]}
@@ -88,7 +122,7 @@ export function EmployeesPageContent() {
             value={status}
             onChange={setStatus}
             options={[
-              ["all", t("status.all")],
+              ["all", t("status.all") ?? "All"],
               ["eligible", t("employees.eligible")],
               ["limit_reached", t("employees.limitReached")],
               ["suspended", t("employees.suspended")],
@@ -105,84 +139,31 @@ export function EmployeesPageContent() {
                 <th className="px-4">{tc("name")}</th>
                 <th className="px-4">{tc("department")}</th>
                 <th className="px-4">{tc("payCycle")}</th>
-                <th className="px-4 text-right">
-                  {t("requestDetail.maxAllowed")}
-                </th>
-                <th className="px-4 text-right">{t("profile.used")}</th>
-                <th className="px-4">{t("profile.remaining")}</th>
+                <th className="px-4 text-right">{t("requestDetail.maxAllowed")}</th>
                 <th className="px-4">{tc("ewaSatus")}</th>
                 <th className="px-4 text-right">{t("requests.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {rows.slice(0, 20).map((employee) => {
-                const used = requests
-                  .filter(
-                    (request) =>
-                      request.employeeId === employee.id &&
-                      request.status !== "rejected",
-                  )
-                  .reduce((sum, request) => sum + request.amount, 0);
-                const max =
-                  employee.payCycle === "monthly"
-                    ? Math.round(employee.baseSalary * 0.25)
-                    : Math.round(employee.baseSalary * 0.5);
-                const remainingCount =
-                  employee.ewaStatus === "eligible" ? 1 : 0;
+                const max = employee.payCycle === "monthly"
+                  ? Math.round(employee.baseSalary * 0.25)
+                  : Math.round(employee.baseSalary * 0.5);
                 return (
-                  <tr
-                    key={employee.id}
-                    className="h-[52px] border-b border-border-light last:border-0 hover:bg-primary-subtle"
-                  >
+                  <tr key={employee.id} className="h-[52px] border-b border-border-light last:border-0 hover:bg-primary-subtle">
                     <td className="px-4">
                       <div className="flex items-center gap-3">
-                        <Avatar
-                          initials={employee.nameTh.slice(0, 2)}
-                          size="sm"
-                        />
+                        <Avatar initials={employee.nameTh.slice(0, 2)} size="sm" />
                         <div>
-                          <div className="text-sm font-medium text-text-primary">
-                            {employee.nameTh}
-                          </div>
-                          <div className="text-caption text-text-muted">
-                            {employee.id}
-                          </div>
+                          <div className="text-sm font-medium text-text-primary">{employee.nameTh}</div>
+                          <div className="text-caption text-text-muted">{employee.id}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 text-sm text-text-secondary">
-                      {employee.department}
-                    </td>
-                    <td className="px-4">
-                      <PayCycleBadge type={employee.payCycle} />
-                    </td>
-                    <td className="px-4 text-right font-number text-sm font-semibold">
-                      {formatTHB(max)}
-                    </td>
-                    <td className="px-4 text-right font-number text-sm text-text-secondary">
-                      {formatTHB(used)}
-                    </td>
-                    <td className="px-4 text-sm">
-                      <span className="mr-2 font-number">
-                        {remainingCount} / 2
-                      </span>
-                      <span className="inline-flex gap-1 align-middle">
-                        {[0, 1].map((index) => (
-                          <span
-                            key={index}
-                            className={cn(
-                              "h-2 w-2 rounded-full",
-                              index < remainingCount
-                                ? "bg-primary"
-                                : "bg-border",
-                            )}
-                          />
-                        ))}
-                      </span>
-                    </td>
-                    <td className="px-4">
-                      <EWAStatusBadge status={employee.ewaStatus} />
-                    </td>
+                    <td className="px-4 text-sm text-text-secondary">{employee.department}</td>
+                    <td className="px-4"><PayCycleBadge type={employee.payCycle} /></td>
+                    <td className="px-4 text-right font-number text-sm font-semibold">{formatTHB(max)}</td>
+                    <td className="px-4"><EWAStatusBadge status={employee.ewaStatus} /></td>
                     <td className="px-4 text-right">
                       {employee.ewaStatus === "eligible" ? (
                         <Link
@@ -192,10 +173,7 @@ export function EmployeesPageContent() {
                           {tc("requestOnBehalf")}
                         </Link>
                       ) : (
-                        <button
-                          disabled
-                          className="h-8 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-muted opacity-50"
-                        >
+                        <button disabled className="h-8 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-muted opacity-50">
                           {tc("requestOnBehalf")}
                         </button>
                       )}
@@ -206,9 +184,7 @@ export function EmployeesPageContent() {
             </tbody>
           </table>
         </div>
-        {rows.length === 0 && (
-          <EmptyState message={t("common.noData")} className="m-4" />
-        )}
+        {rows.length === 0 && <EmptyState message={t("common.noData")} className="m-4" />}
         <div className="border-t border-border px-4 py-3 text-caption text-text-muted">
           Showing {Math.min(rows.length, 20)} / {rows.length}
         </div>
@@ -217,26 +193,22 @@ export function EmployeesPageContent() {
   );
 }
 
-function FilterSelect({
-  value,
-  onChange,
-  options,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  options: Array<[string, string]>;
-}) {
+export function EmployeesPageContent() {
+  return (
+    <ApiErrorBoundary>
+      <EmployeesContent />
+    </ApiErrorBoundary>
+  );
+}
+
+function FilterSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: Array<[string, string]> }) {
   return (
     <select
       value={value}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={(e) => onChange(e.target.value)}
       className="h-9 rounded-md border border-border bg-bg-secondary px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
     >
-      {options.map(([value, label]) => (
-        <option key={value} value={value}>
-          {label}
-        </option>
-      ))}
+      {options.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
     </select>
   );
 }
@@ -247,24 +219,11 @@ const ewaStatusClassMap: Record<string, string> = {
   suspended: "bg-red-100 text-red-800",
 };
 
-function EWAStatusBadge({
-  status,
-}: {
-  status: keyof typeof ewaStatusClassMap;
-}) {
+function EWAStatusBadge({ status }: { status: string }) {
   const tc = useTranslations("employees");
   return (
-    <span
-      className={cn(
-        "rounded-full px-2.5 py-1 text-badge font-medium",
-        ewaStatusClassMap[status],
-      )}
-    >
-      {tc(
-        status === "limit_reached"
-          ? "limitReached"
-          : (status as "eligible" | "suspended"),
-      )}
+    <span className={cn("rounded-full px-2.5 py-1 text-badge font-medium", ewaStatusClassMap[status] ?? "bg-bg-secondary text-text-secondary")}>
+      {status === "limit_reached" ? tc("limitReached") : tc(status as "eligible" | "suspended")}
     </span>
   );
 }
