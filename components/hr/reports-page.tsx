@@ -3,23 +3,21 @@
 import { useMemo, useState } from "react";
 import { BadgeDollarSign, CheckCircle, Download, FileText, ListOrdered, PiggyBank, RefreshCw } from "lucide-react";
 import { MetricCard } from "@/components/ui/metric-card";
+import { MetricCardSkeleton } from "@/components/ui/metric-card-skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { useToast } from "@/components/ui/toast";
 import { useTranslations } from "next-intl";
-import {
-  dailyDisbursements,
-  departmentReports,
-  monthlySummary,
-  reconciliationItems,
-  weeklyDisbursements,
-} from "@/lib/mock";
+import { useEWARequests, useEmployees } from "@/lib/api/hooks";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import dayjs from "@/lib/dayjs";
 import { formatPercent, formatTHB, formatTHBCompact } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { buildReportPdf, downloadPdf } from "@/lib/pdf/pdf-export";
 
 type ReportView = "monthly" | "weekly";
 
-export function ReportsPageContent() {
+function ReportsContent() {
   const { toast } = useToast();
   const t = useTranslations();
   const tc = useTranslations("reports");
@@ -27,13 +25,92 @@ export function ReportsPageContent() {
   const [failedRetried, setFailedRetried] = useState<string[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
-  const chartData =
-    view === "monthly" ? dailyDisbursements.slice(0, 30) : weeklyDisbursements;
-  const maxAmount = Math.max(...chartData.map((item) => item.amount), 1);
-  const approvalRate =
-    (monthlySummary.totalApproved / Math.max(monthlySummary.totalRequests, 1)) *
-    100;
-  const totalFees = Math.round(monthlySummary.totalApproved * 15);
+
+  const { data: requestsData, loading, error } = useEWARequests({ limit: 500 });
+  const { data: employeesData } = useEmployees({ limit: 1000 });
+
+  const allRequests = requestsData?.data ?? [];
+  const allEmployees = employeesData?.data ?? [];
+
+  const { chartData, maxAmount } = useMemo(() => {
+    if (view === "monthly") {
+      const buckets: Record<string, { amount: number; count: number }> = {};
+      const today = dayjs();
+      for (let i = 29; i >= 0; i--) {
+        buckets[today.subtract(i, "day").format("YYYY-MM-DD")] = { amount: 0, count: 0 };
+      }
+      allRequests
+        .filter((r) => r.status === "disbursed" || r.status === "approved")
+        .forEach((r) => {
+          const d = dayjs(r.requestedAt).format("YYYY-MM-DD");
+          if (buckets[d]) { buckets[d].amount += r.amount; buckets[d].count += 1; }
+        });
+      const data = Object.entries(buckets).map(([date, v]) => ({ date, ...v }));
+      return { chartData: data, maxAmount: Math.max(...data.map((d) => d.amount), 1) };
+    } else {
+      const buckets: Record<string, { amount: number; count: number }> = {};
+      const today = dayjs();
+      for (let i = 11; i >= 0; i--) {
+        const w = `W${String(today.subtract(i, "week").week()).padStart(2, "0")}`;
+        buckets[w] = { amount: 0, count: 0 };
+      }
+      allRequests
+        .filter((r) => r.status === "disbursed" || r.status === "approved")
+        .forEach((r) => {
+          const w = `W${String(dayjs(r.requestedAt).week()).padStart(2, "0")}`;
+          if (buckets[w]) { buckets[w].amount += r.amount; buckets[w].count += 1; }
+        });
+      const data = Object.entries(buckets).map(([week, v]) => ({ week, ...v }));
+      return { chartData: data, maxAmount: Math.max(...data.map((d) => d.amount), 1) };
+    }
+  }, [allRequests, view]);
+
+  const summary = useMemo(() => {
+    const totalRequests = allRequests.length;
+    const totalApproved = allRequests.filter((r) => r.status === "approved" || r.status === "disbursed").length;
+    const disbursed = allRequests.filter((r) => r.status === "disbursed");
+    const totalDisbursed = disbursed.reduce((s, r) => s + r.amount, 0);
+    const avgAmount = disbursed.length > 0 ? Math.round(totalDisbursed / disbursed.length) : 0;
+    const totalFees = allRequests.reduce((s, r) => s + (r.transferFee ?? 0), 0);
+    return { totalRequests, totalApproved, totalDisbursed, avgAmount, totalFees };
+  }, [allRequests]);
+
+  const approvalRate = (summary.totalApproved / Math.max(summary.totalRequests, 1)) * 100;
+
+  const departmentReports = useMemo(() => {
+    const deptMap = new Map<string, { totalRequests: number; totalAmount: number }>();
+    allRequests.forEach((r) => {
+      const dept = allEmployees.find((e) => e.id === r.employeeId)?.department ?? "Unknown";
+      const cur = deptMap.get(dept) ?? { totalRequests: 0, totalAmount: 0 };
+      deptMap.set(dept, { totalRequests: cur.totalRequests + 1, totalAmount: cur.totalAmount + r.amount });
+    });
+    return Array.from(deptMap.entries())
+      .map(([department, v]) => ({
+        department, ...v,
+        avgAmount: v.totalRequests > 0 ? Math.round(v.totalAmount / v.totalRequests) : 0,
+      }))
+      .sort((a, b) => b.totalAmount - a.totalAmount);
+  }, [allRequests, allEmployees]);
+
+  const totals = useMemo(() => departmentReports.reduce(
+    (acc, item) => ({ totalRequests: acc.totalRequests + item.totalRequests, totalAmount: acc.totalAmount + item.totalAmount }),
+    { totalRequests: 0, totalAmount: 0 }
+  ), [departmentReports]);
+
+  const reconciliationItems = useMemo(() =>
+    allRequests
+      .filter((r) => r.status !== "pending")
+      .slice(0, 10)
+      .map((r) => ({
+        referenceNumber: r.referenceNumber,
+        employeeId: r.employeeId,
+        amount: r.amount,
+        status: r.status === "disbursed" ? "settled" as const
+          : r.status === "approved" ? "processing" as const
+          : "failed" as const,
+      })),
+    [allRequests]
+  );
 
   const exportReport = (type: "CSV" | "PDF") => {
     if (type === "PDF") {
@@ -41,26 +118,36 @@ export function ReportsPageContent() {
         buildReportPdf({
           title: tc("title"),
           periodLabel: tc("thisMonth"),
-          totalDisbursed: monthlySummary.totalDisbursed,
-          totalRequests: monthlySummary.totalRequests,
+          totalDisbursed: summary.totalDisbursed,
+          totalRequests: summary.totalRequests,
           approvalRate: formatPercent(approvalRate),
         }),
         "payday-report.pdf",
       );
     }
-
     toast({ variant: "success", message: tc("exportSuccess", { type }) });
   };
 
-  const totals = useMemo(() => {
-    return departmentReports.reduce(
-      (acc, item) => ({
-        totalRequests: acc.totalRequests + item.totalRequests,
-        totalAmount: acc.totalAmount + item.totalAmount,
-      }),
-      { totalRequests: 0, totalAmount: 0 },
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-6 w-48 animate-pulse rounded bg-bg-secondary" />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <MetricCardSkeleton /><MetricCardSkeleton /><MetricCardSkeleton />
+          <MetricCardSkeleton /><MetricCardSkeleton />
+        </div>
+        <div className="h-80 animate-pulse rounded-lg bg-bg-secondary" />
+      </div>
     );
-  }, []);
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center text-text-secondary">
+        {getApiErrorMessage(error, t)}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -94,16 +181,10 @@ export function ReportsPageContent() {
 
       <div className="flex justify-end">
         <div className="flex rounded-md bg-bg-secondary p-1">
-          <ToggleButton
-            active={view === "monthly"}
-            onClick={() => setView("monthly")}
-          >
+          <ToggleButton active={view === "monthly"} onClick={() => setView("monthly")}>
             {tc("monthlyView")}
           </ToggleButton>
-          <ToggleButton
-            active={view === "weekly"}
-            onClick={() => setView("weekly")}
-          >
+          <ToggleButton active={view === "weekly"} onClick={() => setView("weekly")}>
             {tc("weeklyView")}
           </ToggleButton>
         </div>
@@ -112,18 +193,18 @@ export function ReportsPageContent() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <MetricCard
           label={tc("totalDisbursed")}
-          value={formatTHBCompact(monthlySummary.totalDisbursed)}
+          value={formatTHBCompact(summary.totalDisbursed)}
           icon={<BadgeDollarSign className="h-5 w-5" />}
         />
         <MetricCard
           label={tc("totalRequests")}
-          value={`${monthlySummary.totalRequests}`}
+          value={`${summary.totalRequests}`}
           sub={tc("items")}
           icon={<ListOrdered className="h-5 w-5" />}
         />
         <MetricCard
           label={tc("avgAmount")}
-          value={formatTHBCompact(monthlySummary.avgAmount)}
+          value={formatTHBCompact(summary.avgAmount)}
           icon={<FileText className="h-5 w-5" />}
         />
         <MetricCard
@@ -133,34 +214,27 @@ export function ReportsPageContent() {
         />
         <MetricCard
           label={tc("totalFees")}
-          value={formatTHBCompact(totalFees)}
+          value={formatTHBCompact(summary.totalFees)}
           icon={<PiggyBank className="h-5 w-5" />}
         />
       </div>
 
       <section className="rounded-lg border border-border bg-bg-canvas p-5 shadow-card">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-section-title text-text-primary">
-            {tc("disbursement")}
-          </h2>
+          <h2 className="text-section-title text-text-primary">{tc("disbursement")}</h2>
           <span className="text-caption text-text-muted">
             {view === "monthly" ? tc("daily30Days") : tc("weekly52Weeks")}
           </span>
         </div>
         <div className="overflow-x-auto">
-          {/* bars */}
           <div className="flex h-48 items-end gap-1 border-b border-border px-2 sm:h-64 sm:gap-0 md:h-72">
             {chartData.map((item, index) => {
-              const heightPct = Math.max(
-                (item.amount / maxAmount) * 75,
-                item.amount > 0 ? 5 : 1,
-              );
-              const highlighted =
-                view === "monthly" ? index === 13 : index === 18;
+              const heightPct = Math.max((item.amount / maxAmount) * 75, item.amount > 0 ? 5 : 1);
+              const highlighted = view === "monthly" ? index === 13 : index === 8;
               const isDaily = "date" in item;
               return (
                 <div
-                  key={isDaily ? item.date : item.week}
+                  key={isDaily ? item.date : (item as { week: string }).week}
                   className="flex h-full min-w-[16px] flex-1 cursor-pointer flex-col items-center justify-end gap-1 sm:min-w-[20px] sm:gap-2 md:min-w-[24px]"
                   onMouseEnter={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
@@ -184,7 +258,6 @@ export function ReportsPageContent() {
               );
             })}
           </div>
-          {/* x-axis labels */}
           <div className="flex gap-1 px-2 pt-1.5 sm:gap-0">
             {chartData.map((item, index) => {
               const isDaily = "date" in item;
@@ -192,15 +265,15 @@ export function ReportsPageContent() {
               const dayNum = dateObj ? dateObj.getDate() : null;
               const showLabel = isDaily
                 ? dayNum === 1 || (dayNum !== null && dayNum % 5 === 0)
-                : index % 4 === 0;
+                : index % 3 === 0;
               const xLabel = isDaily
                 ? showLabel && dateObj
                   ? dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
                   : ""
-                : showLabel ? item.week : "";
+                : showLabel ? (item as { week: string }).week : "";
               return (
                 <div
-                  key={isDaily ? item.date : item.week}
+                  key={isDaily ? item.date : (item as { week: string }).week}
                   className="min-w-[16px] flex-1 text-center text-[9px] text-text-muted sm:min-w-[20px] sm:text-[10px] md:min-w-[24px]"
                 >
                   {xLabel}
@@ -211,7 +284,6 @@ export function ReportsPageContent() {
         </div>
       </section>
 
-      {/* Fixed chart tooltip — escapes overflow clipping */}
       {hoveredIndex !== null && tooltipPos && chartData[hoveredIndex] && (
         <div
           className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-bg-canvas px-3 py-2 shadow-hover"
@@ -234,9 +306,7 @@ export function ReportsPageContent() {
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_420px]">
         <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card">
           <div className="border-b border-border px-5 py-3.5">
-            <h2 className="text-section-title text-text-primary">
-              {tc("departmentBreakdown")}
-            </h2>
+            <h2 className="text-section-title text-text-primary">{tc("departmentBreakdown")}</h2>
           </div>
           <table className="w-full border-collapse">
             <thead>
@@ -249,36 +319,19 @@ export function ReportsPageContent() {
             </thead>
             <tbody>
               {departmentReports.map((item) => (
-                <tr
-                  key={item.department}
-                  className="h-[52px] border-b border-border-light last:border-0"
-                >
-                  <td className="px-4 text-sm font-medium ">
-                    {item.department}
-                  </td>
-                  <td className="px-4 text-right font-number text-sm">
-                    {item.totalRequests}
-                  </td>
-                  <td className="px-4 text-right font-number text-sm font-semibold">
-                    {formatTHB(item.totalAmount)}
-                  </td>
-                  <td className="px-4 text-right font-number text-sm text-text-secondary">
-                    {formatTHB(item.avgAmount)}
-                  </td>
+                <tr key={item.department} className="h-[52px] border-b border-border-light last:border-0">
+                  <td className="px-4 text-sm font-medium">{item.department}</td>
+                  <td className="px-4 text-right font-number text-sm">{item.totalRequests}</td>
+                  <td className="px-4 text-right font-number text-sm font-semibold">{formatTHB(item.totalAmount)}</td>
+                  <td className="px-4 text-right font-number text-sm text-text-secondary">{formatTHB(item.avgAmount)}</td>
                 </tr>
               ))}
               <tr className="h-[52px] bg-bg-secondary font-semibold">
                 <td className="px-4 text-sm">{tc("total")}</td>
+                <td className="px-4 text-right font-number text-sm">{totals.totalRequests}</td>
+                <td className="px-4 text-right font-number text-sm">{formatTHB(totals.totalAmount)}</td>
                 <td className="px-4 text-right font-number text-sm">
-                  {totals.totalRequests}
-                </td>
-                <td className="px-4 text-right font-number text-sm">
-                  {formatTHB(totals.totalAmount)}
-                </td>
-                <td className="px-4 text-right font-number text-sm">
-                  {formatTHB(
-                    Math.round(totals.totalAmount / totals.totalRequests),
-                  )}
+                  {formatTHB(totals.totalRequests > 0 ? Math.round(totals.totalAmount / totals.totalRequests) : 0)}
                 </td>
               </tr>
             </tbody>
@@ -287,9 +340,7 @@ export function ReportsPageContent() {
 
         <section className="overflow-hidden rounded-lg border border-border bg-bg-canvas shadow-card">
           <div className="border-b border-border px-5 py-3.5">
-            <h2 className="text-section-title text-text-primary">
-              {tc("transferStatus")}
-            </h2>
+            <h2 className="text-section-title text-text-primary">{tc("transferStatus")}</h2>
           </div>
           <div className="divide-y divide-border-light">
             {reconciliationItems.map((item) => {
@@ -298,16 +349,11 @@ export function ReportsPageContent() {
               return (
                 <div
                   key={item.referenceNumber}
-                  className={cn(
-                    "p-4",
-                    item.status === "failed" && !retried && "bg-red-50/60",
-                  )}
+                  className={cn("p-4", item.status === "failed" && !retried && "bg-red-50/60")}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-number text-sm font-semibold">
-                        {item.referenceNumber}
-                      </p>
+                      <p className="font-number text-sm font-semibold">{item.referenceNumber}</p>
                       <p className="mt-1 text-caption text-text-muted">
                         {item.employeeId} · {formatTHB(item.amount)}
                       </p>
@@ -317,13 +363,8 @@ export function ReportsPageContent() {
                   {item.status === "failed" && !retried && (
                     <button
                       onClick={() => {
-                        setFailedRetried((current) =>
-                          current.concat(item.referenceNumber),
-                        );
-                        toast({
-                          variant: "info",
-                          message: tc("retryingTransfer"),
-                        });
+                        setFailedRetried((cur) => cur.concat(item.referenceNumber));
+                        toast({ variant: "info", message: tc("retryingTransfer") });
                       }}
                       className="mt-3 inline-flex h-8 items-center gap-2 rounded-md border border-red-300 bg-bg-canvas px-3 text-xs font-medium text-red-700"
                     >
@@ -333,6 +374,9 @@ export function ReportsPageContent() {
                 </div>
               );
             })}
+            {reconciliationItems.length === 0 && (
+              <p className="px-4 py-6 text-center text-sm text-text-muted">{t("common.noData")}</p>
+            )}
           </div>
         </section>
       </div>
@@ -340,15 +384,15 @@ export function ReportsPageContent() {
   );
 }
 
-function ToggleButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
+export function ReportsPageContent() {
+  return (
+    <ApiErrorBoundary>
+      <ReportsContent />
+    </ApiErrorBoundary>
+  );
+}
+
+function ToggleButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       onClick={onClick}
@@ -362,11 +406,7 @@ function ToggleButton({
   );
 }
 
-function TransferBadge({
-  status,
-}: {
-  status: "processing" | "settled" | "failed";
-}) {
+function TransferBadge({ status }: { status: "processing" | "settled" | "failed" }) {
   if (status === "settled") return <StatusBadge status="disbursed" />;
   if (status === "failed") return <StatusBadge status="rejected" />;
   return <StatusBadge status="pending" />;
