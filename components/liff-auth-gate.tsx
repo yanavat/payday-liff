@@ -27,6 +27,19 @@ export function useLiffProfile() {
   return useContext(LiffProfileContext);
 }
 
+export function useLinkedEmployeeId(): string {
+  const profile = useLiffProfile();
+  if (!profile?.userId) return "";
+  try {
+    const links = JSON.parse(
+      localStorage.getItem(EMPLOYEE_LINKS_STORAGE_KEY) ?? "{}"
+    ) as Record<string, string>;
+    return links[profile.userId] ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export function LIFFAuthGate({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>("loading");
   const [profile, setProfile] = useState<LiffProfile | null>(null);
