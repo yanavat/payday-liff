@@ -1,24 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import { AlertTriangle, WalletCards } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
-import { useLiffProfile } from "@/components/liff-auth-gate";
+import { useLiffProfile, useLinkedEmployeeId } from "@/components/liff-auth-gate";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { withLiffLocale } from "@/lib/liff-routes";
-import { currentEmployee } from "@/lib/mock/currentUser";
-import { payCycles } from "@/lib/mock/payrollCycles";
-import { getRequestsByEmployee } from "@/lib/mock/requests";
 import { formatTHB } from "@/lib/utils/format";
+import { useEmployeeCurrentPeriod } from "@/lib/api/hooks/use-employees";
+import { useEWARequests } from "@/lib/api/hooks/use-ewa-requests";
 import type { EWAStatus } from "@/types";
-
-const earnedWage = 9200;
-const maxAllowed = 4600;
-const previousAdvance = 1100;
-const available = maxAllowed - previousAdvance;
 
 const dateLocales: Record<string, string> = {
   th: "th-TH",
@@ -31,6 +26,13 @@ function formatRequestDate(value: string, locale: string) {
     day: "2-digit",
     month: "short",
   }).format(new Date(value));
+}
+
+function daysUntil(dateStr: string): number {
+  return Math.max(
+    0,
+    Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+  );
 }
 
 const statusClasses: Record<EWAStatus, string> = {
@@ -47,20 +49,43 @@ export function LiffHomePage() {
   const t = useTranslations("home");
   const nav = useTranslations("nav");
   const status = useTranslations("status");
-  const cycle = payCycles[currentEmployee.payCycle];
-  const recentRequests = getRequestsByEmployee(currentEmployee.id)
-    .sort(
-      (a, b) =>
-        new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime(),
-    )
-    .slice(0, 3);
+
+  const employeeId = useLinkedEmployeeId();
+  const { data: currentPeriod, loading: periodLoading, refetch: refetchPeriod } =
+    useEmployeeCurrentPeriod(employeeId);
+  const { data: requestsData, loading: requestsLoading, refetch: refetchRequests } =
+    useEWARequests({ employeeId, limit: 3 });
+
+  useEffect(() => {
+    if (!employeeId) return;
+    const id = setInterval(() => {
+      void refetchPeriod();
+      void refetchRequests();
+    }, 30_000);
+    return () => clearInterval(id);
+  }, [employeeId, refetchPeriod, refetchRequests]);
+
+  const available = currentPeriod
+    ? currentPeriod.maxWithdrawable - currentPeriod.previousEWAThisPeriod
+    : 0;
+  const earnedWage = currentPeriod?.earnedToDate ?? 0;
+  const maxAllowed = currentPeriod?.maxWithdrawable ?? 0;
+  const previousAdvance = currentPeriod?.previousEWAThisPeriod ?? 0;
+  const daysElapsed = currentPeriod?.daysElapsed ?? 0;
+  const totalDays = currentPeriod?.totalDays ?? 1;
+  const daysToPayday = currentPeriod ? daysUntil(currentPeriod.paydayDate) : 0;
+  const daysToCutoff = currentPeriod ? daysUntil(currentPeriod.cutoffDate) : 0;
+
+  const recentRequests = requestsData?.data?.slice(0, 3) ?? [];
+  const showBalanceSkeleton = periodLoading && !currentPeriod;
+  const showRequestsSkeleton = requestsLoading && !requestsData;
 
   return (
     <div className="bg-bg-page pb-5">
       <header className="flex items-center justify-between px-4 py-4">
         <div>
           <h1 className="text-[18px] font-semibold leading-tight text-text-primary">
-            {t("greeting", { name: profile?.displayName || currentEmployee.nameTh })}
+            {t("greeting", { name: profile?.displayName ?? '' })}
           </h1>
           <p className="mt-1 text-[16px] text-text-muted">
             {new Intl.DateTimeFormat(dateLocales[locale] ?? "en-US", {
@@ -86,7 +111,7 @@ export function LiffHomePage() {
             />
           ) : (
             <span className="text-sm font-semibold text-primary-dark">
-              {currentEmployee.nameTh.slice(0, 2)}
+              {(profile?.displayName ?? '').slice(0, 2)}
             </span>
           )}
         </Link>
@@ -94,9 +119,13 @@ export function LiffHomePage() {
 
       <section className="mx-4 rounded-xl bg-gradient-to-br from-primary to-primary-dark p-5 text-white shadow-hover">
         <p className="text-[16px] text-white/80">{t("heroTitle")}</p>
-        <div className="mt-1 font-sans text-[36px] font-bold leading-tight">
-          {formatTHB(available)}
-        </div>
+        {showBalanceSkeleton ? (
+          <div className="mt-1 h-10 w-32 animate-pulse rounded bg-white/20" />
+        ) : (
+          <div className="mt-1 font-sans text-[36px] font-bold leading-tight">
+            {formatTHB(available)}
+          </div>
+        )}
         <div className="my-4 h-px bg-white/20" />
         <div className="grid grid-cols-2 gap-3 text-[16px]">
           <div>
@@ -131,27 +160,20 @@ export function LiffHomePage() {
             {t("payPeriod")}
           </h2>
           <span className="text-[16px] font-medium text-primary">
-            {t("paydayCountdown", { days: 17 })}
+            {t("paydayCountdown", { days: daysToPayday })}
           </span>
         </div>
-        <ProgressBar
-          value={cycle.daysElapsed}
-          max={cycle.totalDays}
-          height="8px"
-        />
+        <ProgressBar value={daysElapsed} max={totalDays} height="8px" />
         <div className="mt-2 flex items-center justify-between text-[16px] text-text-muted">
-          <span>
-            {t("dayProgress", {
-              elapsed: cycle.daysElapsed,
-              total: cycle.totalDays,
-            })}
-          </span>
-          <span>{t("cutoffWarning", { days: 17 })}</span>
+          <span>{t("dayProgress", { elapsed: daysElapsed, total: totalDays })}</span>
+          <span>{t("cutoffWarning", { days: daysToCutoff })}</span>
         </div>
-        <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[16px] text-amber-800">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
-          <span>{t("cutoffWarning", { days: 24 })}</span>
-        </div>
+        {daysToCutoff <= 3 && (
+          <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[16px] text-amber-800">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+            <span>{t("cutoffWarning", { days: daysToCutoff })}</span>
+          </div>
+        )}
       </section>
 
       <section className="mx-4 mt-4">
@@ -166,48 +188,41 @@ export function LiffHomePage() {
             {t("viewAllHistory")}
           </Link>
         </div>
-        <div className="space-y-2">
-          {recentRequests.map((request) => {
-            const [day, month] = formatRequestDate(request.requestedAt, locale).split(
-              " ",
-            );
-
-            return (
-              <Link
-                className="flex items-center gap-3 rounded-lg border border-border bg-white p-3 shadow-card transition-shadow duration-200 hover:shadow-hover"
-                href={withLiffLocale(pathname, `/history?id=${request.id}`)}
-                key={request.id}
-              >
-                <div className="w-11 text-center">
-                  <div className="font-sans text-[20px] font-bold leading-none text-primary">
-                    {day}
+        {showRequestsSkeleton ? (
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 animate-pulse rounded-lg bg-bg-secondary" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {recentRequests.map((request) => {
+              const [day, month] = formatRequestDate(request.requestedAt, locale).split(" ");
+              return (
+                <Link
+                  className="flex items-center gap-3 rounded-lg border border-border bg-white p-3 shadow-card transition-shadow duration-200 hover:shadow-hover"
+                  href={withLiffLocale(pathname, `/history?id=${request.id}`)}
+                  key={request.id}
+                >
+                  <div className="w-11 text-center">
+                    <div className="font-sans text-[20px] font-bold leading-none text-primary">{day}</div>
+                    <div className="mt-1 text-[16px] text-text-muted">{month}</div>
                   </div>
-                  <div className="mt-1 text-[16px] text-text-muted">
-                    {month}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[16px] font-medium text-text-primary">{t("requestItemTitle")}</p>
+                    <p className="truncate font-mono text-[14px] text-text-muted">{request.referenceNumber}</p>
                   </div>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[16px] font-medium text-text-primary">
-                    {t("requestItemTitle")}
-                  </p>
-                  <p className="truncate font-mono text-[14px] text-text-muted">
-                    {request.referenceNumber}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-sans text-[16px] font-bold text-text-primary">
-                    {formatTHB(request.amount)}
-                  </p>
-                  <span
-                    className={`inline-flex rounded-full px-2 py-1 text-[11px] font-medium ${statusClasses[request.status]}`}
-                  >
-                    {status(request.status)}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                  <div className="text-right">
+                    <p className="font-sans text-[16px] font-bold text-text-primary">{formatTHB(request.amount)}</p>
+                    <span className={`inline-flex rounded-full px-2 py-1 text-[11px] font-medium ${statusClasses[request.status]}`}>
+                      {status(request.status)}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );
