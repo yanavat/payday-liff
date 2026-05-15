@@ -30,14 +30,7 @@ export function useLiffProfile() {
 export function useLinkedEmployeeId(): string {
   const profile = useLiffProfile();
   if (!profile?.userId) return "";
-  try {
-    const links = JSON.parse(
-      localStorage.getItem(EMPLOYEE_LINKS_STORAGE_KEY) ?? "{}"
-    ) as Record<string, string>;
-    return links[profile.userId] ?? "";
-  } catch {
-    return "";
-  }
+  return readEmployeeLinks()[profile.userId] ?? "";
 }
 
 export function LIFFAuthGate({ children }: { children: ReactNode }) {
