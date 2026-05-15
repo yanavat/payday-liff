@@ -13,6 +13,8 @@ import { formatTHB } from '@/lib/utils/format'
 import { DEFAULT_TRANSFER_FEE_THB, getNetTransferAmount } from '@/lib/utils/fees'
 import { loadLiffClient } from '@/lib/liff-client'
 import { withLiffLocale } from '@/lib/liff-routes'
+import { sendCode, verifyCode } from '@/lib/api/services/otp'
+import { useLinkedEmployeeId } from '@/components/liff-auth-gate'
 
 const available = 3500
 const quickAmounts = [1000, 2000, 3000]
@@ -31,6 +33,9 @@ export function LiffRequestPage() {
   const [otp, setOtp] = useState('')
   const [otpError, setOtpError] = useState('')
   const [isInClient, setIsInClient] = useState(false)
+  const [codeId, setCodeId] = useState('')
+  const [otpLoading, setOtpLoading] = useState(false)
+  const employeeId = useLinkedEmployeeId()
 
   const amountValid = amount > 0 && amount <= available
   const remaining = Math.max(available - amount, 0)
@@ -83,13 +88,29 @@ export function LiffRequestPage() {
     return () => { cancelled = true }
   }, [step])
 
-  function confirmRequest() {
-    if (otp !== '000000') {
-      setOtp('')
-      setOtpError(t('invalidOtp'))
-      return
+  useEffect(() => {
+    if (step !== 2 || !employeeId) return
+    let cancelled = false
+    sendCode(employeeId).then(({ codeId: id }) => {
+      if (!cancelled) setCodeId(id)
+    })
+    return () => { cancelled = true }
+  }, [step, employeeId])
+
+  async function confirmRequest() {
+    if (!codeId) return
+    setOtpLoading(true)
+    try {
+      const result = await verifyCode(codeId, otp)
+      if (!result.valid) {
+        setOtp('')
+        setOtpError(t('invalidOtp'))
+        return
+      }
+      setStep(3)
+    } finally {
+      setOtpLoading(false)
     }
-    setStep(3)
   }
 
   async function handleShare() {
@@ -260,8 +281,8 @@ export function LiffRequestPage() {
 
           <button
             type="button"
-            disabled={otp.length < 6}
-            onClick={confirmRequest}
+            disabled={otp.length < 6 || otpLoading || !codeId}
+            onClick={() => { void confirmRequest() }}
             className="flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {tc('confirm')}

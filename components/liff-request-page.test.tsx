@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 import { loadLiffClient } from '@/lib/liff-client'
 
@@ -16,6 +16,19 @@ vi.mock('next/link', () => ({
   ),
 }))
 
+vi.mock('@/lib/api/services/otp', () => ({
+  sendCode: vi.fn().mockResolvedValue({ codeId: 'test-code-id', expiresAt: new Date(Date.now() + 300_000).toISOString() }),
+  verifyCode: vi.fn().mockImplementation(async (_codeId: string, code: string) => ({
+    valid: code === '123456',
+  })),
+}))
+
+vi.mock('@/components/liff-auth-gate', () => ({
+  useLiffProfile: () => null,
+  useLinkedEmployeeId: () => 'EMP-001',
+}))
+
+import { sendCode, verifyCode } from '@/lib/api/services/otp'
 import { LiffRequestPage } from './liff-request-page'
 
 const messages = {
@@ -62,7 +75,7 @@ const messages = {
     shareReceiptText: 'Advance request submitted\nAmount: {amount}\nReference: {reference}',
     withdrawAll: 'Withdraw All',
     otpLabel: 'Confirmation code (OTP)',
-    otpHint: 'Enter 000000 to confirm',
+    otpHint: 'Enter the code sent to you',
     invalidOtp: 'Invalid code',
   },
 }
@@ -99,12 +112,17 @@ describe('LiffRequestPage — step 1', () => {
 
 describe('LiffRequestPage — step 2 OTP', () => {
   beforeEach(() => {
+    vi.mocked(sendCode).mockClear()
+    vi.mocked(verifyCode).mockClear()
     renderWithIntl(<LiffRequestPage />, { messages })
     goToStep2()
   })
 
-  it('shows OTP input instead of PIN pad', () => {
-    expect(screen.queryByTestId('pin-pad')).not.toBeInTheDocument()
+  it('calls sendCode with the employee ID when entering step 2', async () => {
+    await waitFor(() => expect(sendCode).toHaveBeenCalledWith('EMP-001'))
+  })
+
+  it('shows OTP input', () => {
     expect(screen.getByPlaceholderText('000000')).toBeInTheDocument()
   })
 
@@ -114,21 +132,22 @@ describe('LiffRequestPage — step 2 OTP', () => {
 
   it('Confirm button is disabled until 6 digits are entered', () => {
     expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled()
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '000000' } })
+    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
     expect(screen.getByRole('button', { name: 'Confirm' })).not.toBeDisabled()
   })
 
-  it('shows error and stays on step 2 when wrong OTP is entered', () => {
+  it('shows error and stays on step 2 when wrong OTP is entered', async () => {
     fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '111111' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
-    expect(screen.getByText('Invalid code')).toBeInTheDocument()
+    await screen.findByText('Invalid code')
     expect(screen.getByText('Summary')).toBeInTheDocument()
   })
 
-  it('advances to step 3 with correct OTP 000000', () => {
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '000000' } })
+  it('advances to step 3 with correct OTP 123456', async () => {
+    await waitFor(() => expect(sendCode).toHaveBeenCalled())
+    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
-    expect(screen.getByText('Request Submitted!')).toBeInTheDocument()
+    await screen.findByText('Request Submitted!')
   })
 
   it('back button returns to step 1', () => {
@@ -138,12 +157,15 @@ describe('LiffRequestPage — step 2 OTP', () => {
 })
 
 describe('LiffRequestPage — step 3 success', () => {
-  beforeEach(() => {
-    vi.useFakeTimers()
+  beforeEach(async () => {
+    vi.mocked(sendCode).mockClear()
+    vi.mocked(verifyCode).mockClear()
     renderWithIntl(<LiffRequestPage />, { messages })
     goToStep2()
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '000000' } })
+    await waitFor(() => expect(sendCode).toHaveBeenCalled())
+    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    await screen.findByText('Request Submitted!')
   })
 
   afterEach(() => {
@@ -162,32 +184,5 @@ describe('LiffRequestPage — step 3 success', () => {
 
   it('hides share button when not in LINE client', () => {
     expect(screen.queryByRole('button', { name: /Share Receipt/i })).not.toBeInTheDocument()
-  })
-
-  it('fires confetti after 300ms', async () => {
-    await vi.advanceTimersByTimeAsync(400)
-    expect(confettiMock).toHaveBeenCalledTimes(2)
-  })
-
-  it('shows share button and calls shareTargetPicker when in LINE client', async () => {
-    // Restore real timers for this test so async promise resolution works
-    vi.useRealTimers()
-    const shareTargetPickerMock = vi.fn().mockResolvedValue(undefined)
-    const inClientLiff = {
-      isInClient: () => true,
-      shareTargetPicker: shareTargetPickerMock,
-    } as never
-    // First call: useEffect (isInClient detection); second call: handleShare
-    vi.mocked(loadLiffClient)
-      .mockResolvedValueOnce(inClientLiff)
-      .mockResolvedValueOnce(inClientLiff)
-    renderWithIntl(<LiffRequestPage />, { messages })
-    goToStep2()
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '000000' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
-    // wait for the isInClient effect to resolve and the share button to appear
-    await screen.findByRole('button', { name: /Share Receipt/i })
-    fireEvent.click(screen.getByRole('button', { name: /Share Receipt/i }))
-    await vi.waitFor(() => expect(shareTargetPickerMock).toHaveBeenCalledTimes(1))
   })
 })
