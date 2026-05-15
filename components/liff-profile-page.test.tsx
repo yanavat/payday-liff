@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
 vi.mock('@/components/liff-auth-gate', () => ({
@@ -8,6 +8,7 @@ vi.mock('@/components/liff-auth-gate', () => ({
     displayName: 'Mock LINE User',
     pictureUrl: 'https://profile.line.example/avatar.jpg',
   })),
+  useLinkedEmployeeId: vi.fn(() => 'EMP-001'),
 }))
 
 vi.mock('@/components/shared/locale-switcher', () => ({
@@ -28,6 +29,43 @@ vi.mock('@/lib/liff-client', () => ({
 
 vi.mock('next/image', () => ({
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
+}))
+
+vi.mock('@/lib/api/hooks/use-employees', () => ({
+  useEmployee: vi.fn(() => ({
+    data: {
+      id: 'EMP-001',
+      name: 'Somchai Smith',
+      nameTh: 'สมชาย สมิธ',
+      employeeCode: 'E001',
+      department: 'Production',
+      position: 'Operator',
+      payCycle: 'monthly' as const,
+      workType: 'onsite' as const,
+      baseSalary: 18000,
+      bankAccountMasked: 'xxx-x-xx123-4',
+      bankName: 'KBANK',
+      ewaStatus: 'eligible' as const,
+      enrolledAt: '2024-01-01',
+      isActive: true,
+      createdAt: '2024-01-01',
+      updatedAt: '2024-01-01',
+    },
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+}))
+
+const updateNotificationsMock = vi.fn().mockResolvedValue({})
+vi.mock('@/lib/api/hooks/use-settings', () => ({
+  useSettingsActions: vi.fn(() => ({
+    updateNotifications: updateNotificationsMock,
+    updateSettings: vi.fn(),
+    updatePolicy: vi.fn(),
+    loading: false,
+    error: null,
+  })),
 }))
 
 import { useLiffProfile } from '@/components/liff-auth-gate'
@@ -63,6 +101,7 @@ describe('LiffProfilePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     localStorage.clear()
+    updateNotificationsMock.mockResolvedValue({})
   })
 
   it('shows the LINE profile picture', () => {
@@ -99,13 +138,36 @@ describe('LiffProfilePage', () => {
   })
 
   it('falls back to Avatar initials when pictureUrl is absent', () => {
-    vi.mocked(useLiffProfile).mockReturnValueOnce({
+    vi.mocked(useLiffProfile).mockReturnValue({
       userId: 'U9999',
       displayName: 'No Picture',
       pictureUrl: undefined,
     } as never)
     renderWithIntl(<LiffProfilePage />, { messages })
     // next/image is mocked to render <img>, so absence of <img> confirms Avatar is shown instead
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
+
+  it('shows employee bank account from API', () => {
+    renderWithIntl(<LiffProfilePage />, { messages })
+    expect(screen.getByText('xxx-x-xx123-4')).toBeInTheDocument()
+  })
+
+  it('calls updateNotifications when approval toggle changes', async () => {
+    renderWithIntl(<LiffProfilePage />, { messages })
+    const approvalToggle = screen.getByRole('button', { name: /Notify on approval/i })
+    fireEvent.click(approvalToggle)
+    await waitFor(() => expect(updateNotificationsMock).toHaveBeenCalledOnce())
+  })
+
+  it('uses employee name for Avatar when pictureUrl is absent', () => {
+    vi.mocked(useLiffProfile).mockReturnValue({
+      userId: 'U9999',
+      displayName: 'No Picture',
+      pictureUrl: undefined,
+    } as never)
+    renderWithIntl(<LiffProfilePage />, { messages })
+    // next/image is mocked to render <img>, so no <img> = Avatar is shown
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 })
