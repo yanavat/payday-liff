@@ -158,11 +158,11 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 
 - [x] Update E-2 Home screen to use real API for balance hero and recent requests
 - [x] Update E-3 Request screen to use real API for amount validation and request submission
-- [ ] Replace PIN confirmation with backend-issued one-time confirmation code flow
+- [x] Replace PIN confirmation with backend-issued one-time confirmation code flow
 - [x] Update E-4 History screen to use real API for request history with filters
-- [ ] Update E-5 Profile screen to use real API for employee profile and settings
-- [ ] Replace LINE profile picture with backend employee data if LINE profile unavailable
-- [ ] Implement real-time balance updates via polling or WebSocket
+- [x] Update E-5 Profile screen to use real API for employee profile and settings
+- [x] Replace LINE profile picture with backend employee data if LINE profile unavailable
+- [x] Implement real-time balance updates via polling or WebSocket
 
 ### Phase 9.6 — HR Screen Integration
 
@@ -238,5 +238,5 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 | 6 · Polish         | 10          | 10      | 100%     |
 | 7 · Deploy         | 6           | 3       | 50%      |
 | 8 · LIFF Migration | 64          | 49      | 77%      |
-| 9 · Backend API    | 52          | 43      | 83%      |
-| **Total**          | **278**     | **251** | **90%**  |
+| 9 · Backend API    | 52          | 47      | 90%      |
+| **Total**          | **278**     | **255** | **92%**  |
