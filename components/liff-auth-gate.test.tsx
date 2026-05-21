@@ -7,9 +7,34 @@ import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
 import { LIFFAuthGate, useLiffProfile } from "./liff-auth-gate";
 
 const loadLiffClientMock = vi.fn();
+const onboardingRenderMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/liff-client", () => ({
   loadLiffClient: () => loadLiffClientMock(),
+}));
+
+vi.mock("@/components/liff-onboarding-page", () => ({
+  LiffOnboardingPage: ({
+    lineProfile,
+    onComplete,
+  }: {
+    lineProfile: {
+      userId: string;
+      displayName: string;
+      pictureUrl?: string;
+    };
+    onComplete: (companyId: string, employeeId: string) => void;
+  }) => {
+    onboardingRenderMock(lineProfile);
+    return (
+      <button
+        type="button"
+        onClick={() => onComplete("company-smpc", "EMP-0041")}
+      >
+        Onboarding Mock
+      </button>
+    );
+  },
 }));
 
 function createLiffClient(overrides: Partial<LiffClient> = {}): LiffClient {
@@ -57,6 +82,7 @@ describe("LIFFAuthGate", () => {
     vi.stubEnv("NEXT_PUBLIC_LIFF_ID", "test-liff-id");
     vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "false");
     loadLiffClientMock.mockResolvedValue(createLiffClient());
+    onboardingRenderMock.mockClear();
   });
 
   afterEach(() => {
@@ -64,23 +90,31 @@ describe("LIFFAuthGate", () => {
     vi.clearAllMocks();
   });
 
-  it("asks first-time LINE users to link an employee ID", async () => {
+  it("renders LiffOnboardingPage when authState is linking", async () => {
     renderGate();
 
-    expect(
-      await screen.findByRole("heading", { name: "Link employee account" }),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Employee ID")).toBeInTheDocument();
+    expect(await screen.findByText("Onboarding Mock")).toBeInTheDocument();
     expect(screen.queryByText("Employee app")).not.toBeInTheDocument();
   });
 
-  it("saves the employee link and then shows the app", async () => {
+  it("passes lineProfile to onboarding component", async () => {
     renderGate();
 
-    fireEvent.change(await screen.findByLabelText("Employee ID"), {
-      target: { value: "EMP-0041" },
+    await screen.findByText("Onboarding Mock");
+
+    expect(onboardingRenderMock).toHaveBeenCalledWith({
+      userId: "U1234567890",
+      displayName: "Mock LINE User",
+      pictureUrl: undefined,
+      statusMessage: undefined,
+      email: undefined,
     });
-    fireEvent.click(screen.getByRole("button", { name: "Link account" }));
+  });
+
+  it("saves the employee link and company ID and then shows the app", async () => {
+    renderGate();
+
+    fireEvent.click(await screen.findByText("Onboarding Mock"));
 
     await waitFor(() => {
       expect(screen.getByText("Employee app")).toBeInTheDocument();
@@ -90,6 +124,7 @@ describe("LIFFAuthGate", () => {
     ).toEqual({
       U1234567890: "EMP-0041",
     });
+    expect(localStorage.getItem("payday-company-id")).toBe("company-smpc");
   });
 
   it("starts LINE Login with the current URL as the redirect target", async () => {
