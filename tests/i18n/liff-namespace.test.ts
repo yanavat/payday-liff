@@ -29,7 +29,7 @@ describe('liff i18n namespace', () => {
 
     for (const key of REQUIRED_LIFF_KEYS) {
       it(`${lang.code}.liff.${key} is a non-empty string`, () => {
-        const ns = (lang.messages as Record<string, Record<string, string>>)['liff']
+        const ns = (lang.messages as unknown as Record<string, Record<string, string>>)['liff']
         expect(ns).toBeDefined()
         expect(typeof ns[key]).toBe('string')
         expect(ns[key].length).toBeGreaterThan(0)

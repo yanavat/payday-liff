@@ -2,6 +2,8 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 
+type TestMessages = Record<string, unknown>;
+
 const defaultMessages = {
   common: {
     ok: "OK",
@@ -72,7 +74,10 @@ const defaultMessages = {
 
 export function renderWithIntl(
   ui: React.ReactElement,
-  { locale = "en", messages = defaultMessages } = {},
+  {
+    locale = "en",
+    messages = defaultMessages,
+  }: { locale?: string; messages?: TestMessages } = {},
 ) {
   return render(
     <NextIntlClientProvider locale={locale} messages={messages}>

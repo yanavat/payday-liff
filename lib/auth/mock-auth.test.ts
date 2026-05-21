@@ -11,9 +11,10 @@ describe("mock auth", () => {
     const result = await authenticateHR("hr@paydayplus.co", "123456");
 
     expect(result.ok).toBe(true);
-    expect(result.user?.role).toBe("hr_manager");
+    if (!result.ok) throw new Error("Expected HR authentication to succeed");
+    expect(result.user.role).toBe("hr_manager");
     expect(result.token).toMatch(/^[^.]+\.[^.]+\.[^.]+$/);
-    expect(await decodeSessionToken(result.token ?? "")).toMatchObject({
+    expect(await decodeSessionToken(result.token)).toMatchObject({
       sub: "HR-0001",
       scope: "hr",
     });
@@ -23,6 +24,7 @@ describe("mock auth", () => {
     const result = await authenticateEmployee("EMP-0001", "0000");
 
     expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("Expected employee authentication to fail");
     expect(result.reason).toBe("invalid_credentials");
   });
 

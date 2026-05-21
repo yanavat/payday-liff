@@ -468,6 +468,7 @@
           { id: 'x12', title: 'Test: saves companyId to localStorage', meta: 'Key "payday-company-id" written after completion', tag: 'test', file: 'components/liff-onboarding-page.test.tsx' },
           { id: 'x13', title: 'Test: auth gate renders LiffOnboardingPage when linking', meta: 'New component used instead of old form', tag: 'test', file: 'components/liff-auth-gate.test.tsx' },
           { id: 'x14', title: 'Test: auth gate passes lineProfile prop correctly', meta: 'Profile data forwarded to onboarding component', tag: 'test', file: 'components/liff-auth-gate.test.tsx' },
+          { id: 'x15', title: 'Verify requested onboarding test and typecheck commands', meta: 'Focused Vitest suites + npx tsc --noEmit pass', tag: 'test', file: 'verification' },
         ]
       },
     ];
@@ -517,6 +518,7 @@
       x12: true,
       x13: true,
       x14: true,
+      x15: true,
     };
 
     function loadState() {

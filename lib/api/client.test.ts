@@ -33,7 +33,7 @@ describe("ApiClient fetchWithRetry behaviour", () => {
 
     const { getApiClient } = await import("./client");
     // Reset singleton so fresh fetch is used
-    (getApiClient as unknown).__cache = undefined;
+    (getApiClient as unknown as { __cache?: undefined }).__cache = undefined;
     const client = getApiClient();
 
     // Use a timeout to avoid real 1s wait in tests
