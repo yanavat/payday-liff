@@ -17,6 +17,14 @@ class ApiClient {
     this.config = config;
   }
 
+  setCompanyId(companyId: string) {
+    this.config.companyId = companyId;
+  }
+
+  getCompanyId(): string | undefined {
+    return this.config.companyId;
+  }
+
   private getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -149,7 +157,10 @@ export function getApiClient(): ApiClient {
   if (!apiClientInstance) {
     const baseURL =
       process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
-    const companyId = process.env.NEXT_PUBLIC_COMPANY_ID;
+    const companyId =
+      (typeof window !== "undefined"
+        ? localStorage.getItem("payday-company-id")
+        : null) ?? process.env.NEXT_PUBLIC_COMPANY_ID;
 
     // Simple token storage in localStorage (will be replaced with HttpOnly cookies in production)
     const getAuthToken = () => {
