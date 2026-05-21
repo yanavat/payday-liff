@@ -7,7 +7,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
-import { useLiffProfile, useLinkedEmployeeId } from "@/components/liff-auth-gate";
+import {
+  useLiffProfile,
+  useLinkedEmployeeId,
+} from "@/components/liff-auth-gate";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { withLiffLocale } from "@/lib/liff-routes";
 import { formatTHB } from "@/lib/utils/format";
@@ -22,6 +25,7 @@ const dateLocales: Record<string, string> = {
 };
 
 function formatRequestDate(value: string, locale: string) {
+  if (!value) return "-";
   return new Intl.DateTimeFormat(dateLocales[locale] ?? "en-US", {
     day: "2-digit",
     month: "short",
@@ -31,7 +35,9 @@ function formatRequestDate(value: string, locale: string) {
 function daysUntil(dateStr: string): number {
   return Math.max(
     0,
-    Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    Math.ceil(
+      (new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+    ),
   );
 }
 
@@ -51,10 +57,16 @@ export function LiffHomePage() {
   const status = useTranslations("status");
 
   const employeeId = useLinkedEmployeeId();
-  const { data: currentPeriod, loading: periodLoading, refetch: refetchPeriod } =
-    useEmployeeCurrentPeriod(employeeId);
-  const { data: requestsData, loading: requestsLoading, refetch: refetchRequests } =
-    useEWARequests({ employeeId, limit: 3 });
+  const {
+    data: currentPeriod,
+    loading: periodLoading,
+    refetch: refetchPeriod,
+  } = useEmployeeCurrentPeriod(employeeId);
+  const {
+    data: requestsData,
+    loading: requestsLoading,
+    refetch: refetchRequests,
+  } = useEWARequests({ employeeId, limit: 3 });
 
   useEffect(() => {
     if (!employeeId) return;
@@ -85,7 +97,7 @@ export function LiffHomePage() {
       <header className="flex items-center justify-between px-4 py-4">
         <div>
           <h1 className="text-[18px] font-semibold leading-tight text-text-primary">
-            {t("greeting", { name: profile?.displayName ?? '' })}
+            {t("greeting", { name: profile?.displayName ?? "" })}
           </h1>
           <p className="mt-1 text-[16px] text-text-muted">
             {new Intl.DateTimeFormat(dateLocales[locale] ?? "en-US", {
@@ -111,7 +123,7 @@ export function LiffHomePage() {
             />
           ) : (
             <span className="text-sm font-semibold text-primary-dark">
-              {(profile?.displayName ?? '').slice(0, 2)}
+              {(profile?.displayName ?? "").slice(0, 2)}
             </span>
           )}
         </Link>
@@ -165,7 +177,9 @@ export function LiffHomePage() {
         </div>
         <ProgressBar value={daysElapsed} max={totalDays} height="8px" />
         <div className="mt-2 flex items-center justify-between text-[16px] text-text-muted">
-          <span>{t("dayProgress", { elapsed: daysElapsed, total: totalDays })}</span>
+          <span>
+            {t("dayProgress", { elapsed: daysElapsed, total: totalDays })}
+          </span>
           <span>{t("cutoffWarning", { days: daysToCutoff })}</span>
         </div>
         {daysToCutoff <= 3 && (
@@ -191,36 +205,62 @@ export function LiffHomePage() {
         {showRequestsSkeleton ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 animate-pulse rounded-lg bg-bg-secondary" />
+              <div
+                key={i}
+                className="h-16 animate-pulse rounded-lg bg-bg-secondary"
+              />
             ))}
           </div>
         ) : (
           <div className="space-y-2">
-            {recentRequests.map((request) => {
-              const [day, month] = formatRequestDate(request.requestedAt, locale).split(" ");
-              return (
-                <Link
-                  className="flex items-center gap-3 rounded-lg border border-border bg-white p-3 shadow-card transition-shadow duration-200 hover:shadow-hover"
-                  href={withLiffLocale(pathname, `/history?id=${request.id}`)}
-                  key={request.id}
-                >
-                  <div className="w-11 text-center">
-                    <div className="font-sans text-[20px] font-bold leading-none text-primary">{day}</div>
-                    <div className="mt-1 text-[16px] text-text-muted">{month}</div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[16px] font-medium text-text-primary">{t("requestItemTitle")}</p>
-                    <p className="truncate font-mono text-[14px] text-text-muted">{request.referenceNumber}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-sans text-[16px] font-bold text-text-primary">{formatTHB(request.amount)}</p>
-                    <span className={`inline-flex rounded-full px-2 py-1 text-[11px] font-medium ${statusClasses[request.status]}`}>
-                      {status(request.status)}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
+            {recentRequests?.length > 0 &&
+              recentRequests.map((request) => {
+                const [day, month] = formatRequestDate(
+                  request.requestedAt,
+                  locale,
+                ).split(" ");
+                return (
+                  <Link
+                    className="flex items-center gap-3 rounded-lg border border-border bg-white p-3 shadow-card transition-shadow duration-200 hover:shadow-hover"
+                    href={withLiffLocale(pathname, `/history?id=${request.id}`)}
+                    key={request.id}
+                  >
+                    <div className="w-11 text-center">
+                      <div className="font-sans text-[20px] font-bold leading-none text-primary">
+                        {day}
+                      </div>
+                      <div className="mt-1 text-[16px] text-text-muted">
+                        {month}
+                      </div>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[16px] font-medium text-text-primary">
+                        {t("requestItemTitle")}
+                      </p>
+                      <p className="truncate font-mono text-[14px] text-text-muted">
+                        {request.referenceNumber}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-sans text-[16px] font-bold text-text-primary">
+                        {formatTHB(request.amount)}
+                      </p>
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-[11px] font-medium ${statusClasses[request.status]}`}
+                      >
+                        {status(request.status)}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            {recentRequests?.length === 0 && (
+              <div className="rounded-lg border border-dashed border-border bg-white px-6 py-10 text-center">
+                <p className="text-[16px] font-semibold text-text-primary">
+                  {t("noData")}
+                </p>
+              </div>
+            )}
           </div>
         )}
       </section>

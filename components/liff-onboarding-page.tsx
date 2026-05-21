@@ -47,7 +47,8 @@ export function LiffOnboardingPage({
   const [error, setError] = useState("");
 
   const companyLocked = companyFromQr.length > 0;
-  const canVerify = companyCode.trim().length > 0 && employeeCode.trim().length > 0;
+  const canVerify =
+    companyCode.trim().length > 0 && employeeCode.trim().length > 0;
   const canSubmitOtp = otp.length === 6 && !loading;
 
   const stepNumber = useMemo(() => {
@@ -147,8 +148,8 @@ export function LiffOnboardingPage({
   }
 
   return (
-    <main className="employee-screen min-h-screen bg-bg-page p-5">
-      <section className="rounded-lg border border-border bg-bg-canvas p-5 shadow-card">
+    <main className="employee-screen justify-center px-5 py-8">
+      <section className="w-full rounded-lg border border-border bg-bg-canvas p-5 shadow-card">
         <div className="mb-5 flex items-center gap-3">
           {lineProfile.pictureUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -198,7 +199,9 @@ export function LiffOnboardingPage({
                 className="h-12 w-full rounded-md border border-border bg-bg-canvas px-4 text-base uppercase outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:bg-primary-bg disabled:text-text-secondary"
                 disabled={companyLocked}
                 id="company-code"
-                onChange={(event) => setCompanyCode(event.target.value.toUpperCase())}
+                onChange={(event) =>
+                  setCompanyCode(event.target.value.toUpperCase())
+                }
                 placeholder={t("companyCodePlaceholder")}
                 value={companyCode}
               />
@@ -319,7 +322,10 @@ export function LiffOnboardingPage({
             </div>
 
             <dl className="rounded-md border border-border">
-              <SummaryRow label={t("summaryCompany")} value={employee.companyName} />
+              <SummaryRow
+                label={t("summaryCompany")}
+                value={employee.companyName}
+              />
               <SummaryRow label={t("summaryEmployeeId")} value={employeeCode} />
               <SummaryRow label={t("summaryName")} value={employee.nameTh} />
               <SummaryRow
@@ -330,7 +336,9 @@ export function LiffOnboardingPage({
 
             <button
               className="h-12 w-full rounded-md bg-primary px-5 font-medium text-white"
-              onClick={() => onComplete(employee.companyId, employee.employeeId)}
+              onClick={() =>
+                onComplete(employee.companyId, employee.employeeId)
+              }
               type="button"
             >
               {t("enterAppButton")}
@@ -346,7 +354,9 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between border-b border-border px-4 py-3 last:border-b-0">
       <dt className="text-sm text-text-secondary">{label}</dt>
-      <dd className="text-right text-sm font-medium text-text-primary">{value}</dd>
+      <dd className="text-right text-sm font-medium text-text-primary">
+        {value}
+      </dd>
     </div>
   );
 }

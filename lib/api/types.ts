@@ -1,6 +1,6 @@
 // ============================================================
 // API Types - Generated from Backend OpenAPI Spec
-// Backend: http://localhost:3001/docs-json
+// Backend: http://localhost:4000/docs-json
 // ============================================================
 
 export interface ApiError {

@@ -111,40 +111,52 @@ class ApiClient {
   }
 
   async post<T>(path: string, body?: unknown): Promise<T> {
-    const response = await this.fetchWithRetry(`${this.config.baseURL}${path}`, {
-      method: "POST",
-      headers: this.getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    const response = await this.fetchWithRetry(
+      `${this.config.baseURL}${path}`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: body ? JSON.stringify(body) : undefined,
+      },
+    );
 
     return this.handleResponse<T>(response);
   }
 
   async patch<T>(path: string, body?: unknown): Promise<T> {
-    const response = await this.fetchWithRetry(`${this.config.baseURL}${path}`, {
-      method: "PATCH",
-      headers: this.getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    const response = await this.fetchWithRetry(
+      `${this.config.baseURL}${path}`,
+      {
+        method: "PATCH",
+        headers: this.getHeaders(),
+        body: body ? JSON.stringify(body) : undefined,
+      },
+    );
 
     return this.handleResponse<T>(response);
   }
 
   async delete<T>(path: string): Promise<T> {
-    const response = await this.fetchWithRetry(`${this.config.baseURL}${path}`, {
-      method: "DELETE",
-      headers: this.getHeaders(),
-    });
+    const response = await this.fetchWithRetry(
+      `${this.config.baseURL}${path}`,
+      {
+        method: "DELETE",
+        headers: this.getHeaders(),
+      },
+    );
 
     return this.handleResponse<T>(response);
   }
 
   async put<T>(path: string, body?: unknown): Promise<T> {
-    const response = await this.fetchWithRetry(`${this.config.baseURL}${path}`, {
-      method: "PUT",
-      headers: this.getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    const response = await this.fetchWithRetry(
+      `${this.config.baseURL}${path}`,
+      {
+        method: "PUT",
+        headers: this.getHeaders(),
+        body: body ? JSON.stringify(body) : undefined,
+      },
+    );
 
     return this.handleResponse<T>(response);
   }
@@ -156,7 +168,7 @@ let apiClientInstance: ApiClient | null = null;
 export function getApiClient(): ApiClient {
   if (!apiClientInstance) {
     const baseURL =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
     const companyId =
       (typeof window !== "undefined"
         ? localStorage.getItem("payday-company-id")
