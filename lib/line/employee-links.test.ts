@@ -25,7 +25,7 @@ describe('employee-links', () => {
   })
 
   it('links and unlinks employees', () => {
-    linkEmployee('new-line-user', 'EMP-0002')
+    linkEmployee('new-line-user', 'EMP-0002', 'company-test')
     expect(isLinked('new-line-user')).toBe(true)
     expect(getEmployeeIdByLineUserId('new-line-user')).toBe('EMP-0002')
 

@@ -432,6 +432,7 @@
           { id: 's2', title: 'Update serverLinks record type', meta: 'Record<string, EmployeeLink> instead of Record<string, string>', tag: 'modify', file: 'lib/line/employee-links.ts' },
           { id: 's3', title: 'Update linkEmployee() signature', meta: 'Add companyId parameter: linkEmployee(lineUserId, employeeId, companyId)', tag: 'modify', file: 'lib/line/employee-links.ts' },
           { id: 's4', title: 'Update getEmployeeIdByLineUserId() return', meta: 'Return EmployeeLink object or extract employeeId from new shape', tag: 'modify', file: 'lib/line/employee-links.ts' },
+          { id: 's5', title: 'Update employee-links test linkEmployee call', meta: 'Pass companyId while preserving existing assertions', tag: 'test', file: 'lib/line/employee-links.test.ts' },
         ]
       },
       {
@@ -487,6 +488,7 @@
       s2: true,
       s3: true,
       s4: true,
+      s5: true,
     };
 
     function loadState() {
