@@ -6,7 +6,8 @@ import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
 
 import { LiffOnboardingPage } from "./liff-onboarding-page";
 
-const { postMock, setCompanyIdMock, setAuthTokenMock } = vi.hoisted(() => ({
+const { getMock, postMock, setCompanyIdMock, setAuthTokenMock } = vi.hoisted(() => ({
+  getMock: vi.fn(),
   postMock: vi.fn(),
   setCompanyIdMock: vi.fn(),
   setAuthTokenMock: vi.fn(),
@@ -18,6 +19,7 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/lib/api/client", () => ({
   getApiClient: () => ({
+    get: getMock,
     post: postMock,
     setCompanyId: setCompanyIdMock,
   }),
@@ -107,6 +109,32 @@ async function fillAndVerifyEmployee() {
 describe("LiffOnboardingPage", () => {
   beforeEach(() => {
     localStorage.clear();
+    getMock.mockReset();
+    getMock.mockResolvedValue({
+      data: [
+        {
+          id: "company-smpc",
+          name: "Siam Manufacturing",
+          nameEn: "Siam Manufacturing",
+          code: "SMPC",
+          active: true,
+          createdAt: "2026-05-01T00:00:00.000Z",
+          updatedAt: "2026-05-01T00:00:00.000Z",
+        },
+        {
+          id: "company-cpall",
+          name: "CPALL Logistics",
+          nameEn: "CPALL Logistics",
+          code: "CPALL",
+          active: true,
+          createdAt: "2026-05-01T00:00:00.000Z",
+          updatedAt: "2026-05-01T00:00:00.000Z",
+        },
+      ],
+      total: 2,
+      limit: 100,
+      offset: 0,
+    });
     postMock.mockReset();
     setCompanyIdMock.mockReset();
     setAuthTokenMock.mockReset();
@@ -118,6 +146,43 @@ describe("LiffOnboardingPage", () => {
 
     expect(screen.getByLabelText("Company Code")).toBeInTheDocument();
     expect(screen.getByLabelText("Employee ID")).toBeInTheDocument();
+  });
+
+  it("loads company codes from backend for autocomplete choices", async () => {
+    renderPage();
+
+    await waitFor(() => {
+      expect(getMock).toHaveBeenCalledWith("/companies", { limit: 100, offset: 0 });
+    });
+
+    const options = Array.from(
+      document.querySelectorAll<HTMLDataListElement>("#company-code-options option"),
+    ).map((option) => option.value);
+    expect(options).toEqual(["SMPC", "CPALL"]);
+  });
+
+  it("submits the selected backend company code during employee verification", async () => {
+    postMock
+      .mockResolvedValueOnce(employeeResponse)
+      .mockResolvedValueOnce({ sent: true, expiresInSeconds: 300 });
+    renderPage();
+
+    fireEvent.change(screen.getByLabelText("Company Code"), {
+      target: { value: "CPALL" },
+    });
+    fireEvent.change(screen.getByLabelText("Employee ID"), {
+      target: { value: "EMP-0001" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Connect Employee Account" }),
+    );
+
+    await waitFor(() => {
+      expect(postMock).toHaveBeenCalledWith("/employees/verify", {
+        companyCode: "CPALL",
+        employeeCode: "EMP-0001",
+      });
+    });
   });
 
   it("auto-fills company code from URL ?company=SMPC", () => {

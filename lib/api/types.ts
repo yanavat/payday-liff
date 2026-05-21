@@ -14,8 +14,11 @@ export interface ApiError {
 export interface CompanyDto {
   id: string;
   name: string;
-  nameTh: string;
-  taxId: string;
+  nameEn?: string | null;
+  code?: string | null;
+  active?: boolean;
+  nameTh?: string;
+  taxId?: string;
   address?: string;
   createdAt: string;
   updatedAt: string;

@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { getApiClient, setAuthToken } from "@/lib/api/client";
+import type { CompanyDto, PaginatedResponse } from "@/lib/api/types";
 import type {
   OnboardingStep,
   SendOtpResponse,
@@ -26,6 +27,11 @@ interface LiffOnboardingPageProps {
 const COMPANY_ID_STORAGE_KEY = "payday-company-id";
 const DEFAULT_OTP_SECONDS = 300;
 
+type CompanyCodeOption = {
+  code: string;
+  label: string;
+};
+
 export function LiffOnboardingPage({
   lineProfile,
   onComplete,
@@ -37,6 +43,7 @@ export function LiffOnboardingPage({
 
   const [step, setStep] = useState<OnboardingStep>("company_verify");
   const [companyCode, setCompanyCode] = useState(companyFromQr);
+  const [companyOptions, setCompanyOptions] = useState<CompanyCodeOption[]>([]);
   const [employeeCode, setEmployeeCode] = useState("");
   const [employee, setEmployee] = useState<VerifyEmployeeResponse | null>(null);
   const [otp, setOtp] = useState("");
@@ -64,6 +71,37 @@ export function LiffOnboardingPage({
     }, 1000);
     return () => window.clearInterval(timer);
   }, [otpSeconds, step]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCompanies() {
+      try {
+        const response = await getApiClient().get<PaginatedResponse<CompanyDto>>(
+          "/companies",
+          { limit: 100, offset: 0 },
+        );
+        if (!active) return;
+
+        setCompanyOptions(
+          response.data
+            .filter((company) => company.active && company.code)
+            .map((company) => ({
+              code: company.code,
+              label: company.nameEn || company.name,
+            })),
+        );
+      } catch {
+        if (active) setCompanyOptions([]);
+      }
+    }
+
+    loadCompanies();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function sendOtp(employeeId: string) {
     setLoading("send");
@@ -199,12 +237,18 @@ export function LiffOnboardingPage({
                 className="h-12 w-full rounded-md border border-border bg-bg-canvas px-4 text-base uppercase outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:bg-primary-bg disabled:text-text-secondary"
                 disabled={companyLocked}
                 id="company-code"
+                list="company-code-options"
                 onChange={(event) =>
                   setCompanyCode(event.target.value.toUpperCase())
                 }
                 placeholder={t("companyCodePlaceholder")}
                 value={companyCode}
               />
+              <datalist id="company-code-options">
+                {companyOptions.map((company) => (
+                  <option key={company.code} label={company.label} value={company.code} />
+                ))}
+              </datalist>
               {companyLocked ? (
                 <span className="inline-flex rounded-sm bg-primary-bg px-2 py-1 text-xs font-medium text-primary-dark">
                   {t("companyCodeAutoFilled")}
