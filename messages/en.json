@@ -321,5 +321,32 @@
     "linkButton": "Link account",
     "offlineMessage": "No internet connection",
     "externalBrowserMessage": "Open in LINE for the full experience"
+  },
+  "onboarding": {
+    "stepIndicator": "Step {current} of {total}",
+    "step1Title": "Connect Employee Account",
+    "step1Description": "Verify your employee ID to link your LINE account with the company.",
+    "companyCodeLabel": "Company Code",
+    "companyCodePlaceholder": "e.g. SMPC, CPALL",
+    "companyCodeAutoFilled": "Auto-filled from factory sign",
+    "employeeCodeLabel": "Employee ID",
+    "employeeCodePlaceholder": "e.g. EMP-0001",
+    "verifyButton": "Connect Employee Account",
+    "verifyError": "Employee not found with the provided company code and employee ID.",
+    "step2Title": "Verify Security Code (OTP)",
+    "step2Description": "Enter the 6-digit code sent to {phone}.",
+    "otpLabel": "6-digit OTP",
+    "otpPlaceholder": "000000",
+    "otpButton": "Verify Security Code",
+    "otpError": "Invalid or expired OTP. Please try again.",
+    "otpResend": "Resend Code",
+    "step3Title": "Connection Successful!",
+    "step3Description": "Your LINE account has been linked to PayDay+ successfully.",
+    "summaryCompany": "Company",
+    "summaryEmployeeId": "Employee ID",
+    "summaryName": "Employee Name",
+    "summaryPayCycle": "Pay Cycle",
+    "enterAppButton": "Enter App",
+    "lineConnected": "LINE Connected"
   }
 }

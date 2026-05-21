@@ -317,5 +317,32 @@
     "linkButton": "เชื่อมต่อบัญชี",
     "offlineMessage": "ไม่มีอินเทอร์เน็ต",
     "externalBrowserMessage": "เปิดใน LINE เพื่อใช้งานได้ครบถ้วน"
+  },
+  "onboarding": {
+    "stepIndicator": "ขั้นตอนที่ {current} จาก {total}",
+    "step1Title": "เชื่อมต่อบัญชีพนักงาน",
+    "step1Description": "ยืนยันรหัสพนักงานเพื่อผูกบัญชี LINE กับสิทธิ์เบิกเงินของบริษัท",
+    "companyCodeLabel": "รหัสบริษัท (Company Code)",
+    "companyCodePlaceholder": "เช่น SMPC, CPALL",
+    "companyCodeAutoFilled": "กรอกอัตโนมัติจากป้ายโรงงาน",
+    "employeeCodeLabel": "รหัสพนักงาน (Employee ID)",
+    "employeeCodePlaceholder": "เช่น EMP-0001",
+    "verifyButton": "เชื่อมต่อบัญชีพนักงาน",
+    "verifyError": "ไม่พบบัญชีพนักงานในรหัสบริษัทและรหัสพนักงานดังกล่าว",
+    "step2Title": "ยืนยันรหัสความปลอดภัย (OTP)",
+    "step2Description": "กรอกรหัสยืนยัน 6 หลักที่เราส่งไปยังเบอร์โทรศัพท์ {phone}",
+    "otpLabel": "รหัส OTP 6 หลัก",
+    "otpPlaceholder": "000000",
+    "otpButton": "ยืนยันรหัสความปลอดภัย",
+    "otpError": "รหัส OTP ไม่ถูกต้องหรือหมดอายุ กรุณาลองอีกครั้ง",
+    "otpResend": "ส่งรหัสอีกครั้ง",
+    "step3Title": "เชื่อมต่อสำเร็จ!",
+    "step3Description": "บัญชี LINE ของคุณผูกเข้ากับระบบสิทธิ์เบิกเงิน PayDay+ เรียบร้อยแล้ว",
+    "summaryCompany": "บริษัท",
+    "summaryEmployeeId": "รหัสพนักงาน",
+    "summaryName": "ชื่อพนักงาน",
+    "summaryPayCycle": "รอบการจ่ายเงิน",
+    "enterAppButton": "เข้าสู่หน้าหลักแอป",
+    "lineConnected": "LINE Connected"
   }
 }

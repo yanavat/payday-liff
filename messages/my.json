@@ -317,5 +317,32 @@
     "linkButton": "အကောင့်ချိတ်ဆက်မည်",
     "offlineMessage": "အင်တာနက်ချိတ်ဆက်မှုမရှိ",
     "externalBrowserMessage": "LINE တွင်ဖွင့်မှသာ အပြည့်အဝသုံးနိုင်သည်"
+  },
+  "onboarding": {
+    "stepIndicator": "အဆင့် {current} / {total}",
+    "step1Title": "ဝန်ထမ်းအကောင့်ချိတ်ဆက်မည်",
+    "step1Description": "သင့် LINE အကောင့်ကို ကုမ္ပဏီနှင့်ချိတ်ဆက်ရန် ဝန်ထမ်း ID ကိုစစ်ဆေးပါ။",
+    "companyCodeLabel": "ကုမ္ပဏီကုဒ်",
+    "companyCodePlaceholder": "ဥပမာ SMPC, CPALL",
+    "companyCodeAutoFilled": "စက်ရုံဆိုင်းဘုတ်မှ အလိုအလျောက်ဖြည့်ထားသည်",
+    "employeeCodeLabel": "ဝန်ထမ်း ID",
+    "employeeCodePlaceholder": "ဥပမာ EMP-0001",
+    "verifyButton": "ဝန်ထမ်းအကောင့်ချိတ်ဆက်မည်",
+    "verifyError": "ထည့်ထားသော ကုမ္ပဏီကုဒ်နှင့် ဝန်ထမ်း ID ဖြင့် ဝန်ထမ်းအကောင့်မတွေ့ပါ။",
+    "step2Title": "လုံခြုံရေးကုဒ် (OTP) စစ်ဆေးမည်",
+    "step2Description": "{phone} သို့ပေးပို့ထားသော ဂဏန်း ၆ လုံးကုဒ်ကို ထည့်ပါ။",
+    "otpLabel": "ဂဏန်း ၆ လုံး OTP",
+    "otpPlaceholder": "000000",
+    "otpButton": "လုံခြုံရေးကုဒ်စစ်ဆေးမည်",
+    "otpError": "OTP မမှန်ကန်ပါ သို့မဟုတ် သက်တမ်းကုန်သွားပါပြီ။ ထပ်မံကြိုးစားပါ။",
+    "otpResend": "ကုဒ်ပြန်ပို့မည်",
+    "step3Title": "ချိတ်ဆက်မှုအောင်မြင်ပါပြီ!",
+    "step3Description": "သင့် LINE အကောင့်ကို PayDay+ နှင့် အောင်မြင်စွာချိတ်ဆက်ပြီးပါပြီ။",
+    "summaryCompany": "ကုမ္ပဏီ",
+    "summaryEmployeeId": "ဝန်ထမ်း ID",
+    "summaryName": "ဝန်ထမ်းအမည်",
+    "summaryPayCycle": "လစာကာလ",
+    "enterAppButton": "အက်ပ်ထဲဝင်မည်",
+    "lineConnected": "LINE ချိတ်ဆက်ပြီး"
   }
 }
