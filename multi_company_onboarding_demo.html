@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayDay+ Multi-Company Onboarding Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-primary: #2dbd8f;
+      --color-primary-dark: #1e9e74;
+      --color-primary-light: #3dd4a0;
+      --color-primary-bg: #e8f5f0;
+      --color-text-primary: #1a1d1b;
+      --color-text-secondary: #6b7280;
+      --color-text-muted: #9ca3af;
+      --color-bg-page: #e4edea;
+      --color-bg-canvas: #ffffff;
+      --color-border: #e5e7eb;
+      --color-error: #dc2626;
+      --color-error-bg: #fef2f2;
+      --color-error-border: #fecaca;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.06);
+      --font-sans: 'Inter', sans-serif;
+      --font-thai: 'Noto Sans Thai', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-thai), var(--font-sans);
+      background: linear-gradient(135deg, #0a1510 0%, #0f1f18 50%, #0a1510 100%);
+      color: #f0fdf4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+      max-width: 760px;
+    }
+
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    header p b { color: #cbd5e1; }
+
+    /* ── Main Layout ────────────────────────────────── */
+    .main-container {
+      display: flex;
+      gap: 40px;
+      max-width: 1020px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    /* ── Control Panel ──────────────────────────────── */
+    .control-panel {
+      flex: 1;
+      min-width: 320px;
+      max-width: 440px;
+      background: linear-gradient(180deg, #162420 0%, #121e19 100%);
+      border: 1px solid #243830;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .panel-section {
+      margin-bottom: 24px;
+    }
+
+    .panel-section:last-child { margin-bottom: 0; }
+
+    .panel-section h2 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-section h2::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: var(--color-primary);
+      border-radius: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      background: #0d1812;
+      border: 1px solid #243830;
+      color: #e2e8f0;
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .form-group select:focus {
+      border-color: var(--color-primary);
+    }
+
+    .info-box {
+      background: #0d1812;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #243830;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .info-box b { color: #94a3b8; }
+    .info-box .mono { font-family: 'SF Mono', 'Fira Code', monospace; color: var(--color-primary-light); }
+
+    /* DB Table */
+    .db-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #243830;
+    }
+
+    .db-table th, .db-table td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid #1c2e26;
+    }
+
+    .db-table th {
+      background: #0d1812;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .db-table td { color: #cbd5e1; }
+
+    .db-table tbody tr {
+      background: #121e19;
+      transition: background 0.15s;
+    }
+
+    .db-table tbody tr:hover { background: #182a23; }
+
+    .db-table tbody tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+    }
+
+    .badge-smpc { background: #064e3b; color: #6ee7b7; }
+    .badge-cpall { background: #1e3a5f; color: #7dd3fc; }
+
+    .help-box {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+      background: #0d1812;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #243830;
+    }
+
+    .help-box b { color: #e2e8f0; }
+
+    /* Event log */
+    .event-log {
+      background: #0d1812;
+      border: 1px solid #243830;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: #64748b;
+      max-height: 140px;
+      overflow-y: auto;
+      line-height: 1.7;
+    }
+
+    .event-log .ev { margin-bottom: 2px; }
+    .event-log .ev-time { color: #475569; }
+    .event-log .ev-action { color: var(--color-primary-light); }
+    .event-log .ev-data { color: #94a3b8; }
+    .event-log .ev-error { color: #f87171; }
+    .event-log .ev-ok { color: #34d399; }
+
+    /* ── Mobile Simulator ───────────────────────────── */
+    .mobile-simulator {
+      width: 375px;
+      min-width: 375px;
+      height: 780px;
+      background: var(--color-bg-page);
+      border-radius: 44px;
+      border: 10px solid #1e293b;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 0 0 2px #334155;
+      color: var(--color-text-primary);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Notch */
+    .mobile-simulator::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 28px;
+      background: #1e293b;
+      border-radius: 0 0 18px 18px;
+      z-index: 100;
+    }
+
+    .status-bar {
+      height: 44px;
+      background: #1a2e25;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 24px 6px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+    }
+
+    .line-header {
+      background: #253d33;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      border-bottom: 1px solid #1c3129;
+    }
+
+    .line-header .close-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+
+    .line-header .close-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .line-header .logo {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ── Content Area ───────────────────────────────── */
+    .sim-content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--color-primary-bg) 0%, transparent 70%);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .blob-1 { width: 260px; height: 260px; top: -80px; right: -60px; }
+    .blob-2 { width: 200px; height: 200px; bottom: -60px; left: -40px; }
+
+    /* ── Step Views ─────────────────────────────────── */
+    .step-view {
+      position: absolute;
+      inset: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      z-index: 1;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+      overflow-y: auto;
+    }
+
+    .step-view.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+    .step-view.left { transform: translateX(-100%); }
+    .step-view.right { transform: translateX(100%); }
+
+    /* ── Card ───────────────────────────────────────── */
+    .card {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      text-align: center;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .brand .tag {
+      background: var(--color-primary);
+      color: white;
+      padding: 1px 7px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Step indicator */
+    .steps-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .step-pip {
+      height: 6px;
+      border-radius: 3px;
+      background: #cbd5e1;
+      transition: all 0.35s ease;
+      width: 6px;
+    }
+
+    .step-pip.active {
+      background: var(--color-primary);
+      width: 24px;
+    }
+
+    .step-pip.done {
+      background: var(--color-primary);
+      width: 6px;
+    }
+
+    .step-label {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    /* Form elements */
+    .form-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .form-desc {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* LINE Profile */
+    .line-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 18px;
+    }
+
+    .line-profile .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #94a3b8, #64748b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      border: 2px solid white;
+    }
+
+    .line-profile .meta { flex: 1; }
+
+    .line-profile .name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .line-profile .connected {
+      font-size: 11px;
+      color: #059669;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .line-profile .connected::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #059669;
+      border-radius: 50%;
+    }
+
+    /* Input groups */
+    .input-group {
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      height: 46px;
+      border-radius: 10px;
+      border: 1.5px solid var(--color-border);
+      padding: 0 14px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      background: #ffffff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      color: var(--color-text-primary);
+    }
+
+    .input-group input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(45,189,143,0.12);
+    }
+
+    .input-group input:disabled {
+      background: #f1f5f9;
+      color: var(--color-text-secondary);
+      cursor: not-allowed;
+      border-color: #e2e8f0;
+    }
+
+    .input-group input.otp-input {
+      text-align: center;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 22px;
+      letter-spacing: 8px;
+      font-weight: 600;
+    }
+
+    .auto-tag {
+      position: absolute;
+      right: 10px;
+      top: 28px;
+      background: var(--color-primary-bg);
+      color: var(--color-primary-dark);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    /* Error message */
+    .error-msg {
+      background: var(--color-error-bg);
+      border: 1px solid var(--color-error-border);
+      color: var(--color-error);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      margin-bottom: 14px;
+      display: none;
+      text-align: center;
+      line-height: 1.4;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    /* Submit button */
+    .btn {
+      width: 100%;
+      height: 48px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, opacity 0.2s;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) { background: var(--color-primary-dark); }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn.loading {
+      pointer-events: none;
+      color: transparent;
+    }
+
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Secondary / text button */
+    .btn-text {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 8px;
+      transition: opacity 0.15s;
+    }
+
+    .btn-text:hover { opacity: 0.7; }
+    .btn-text:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Back button */
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 6px 0;
+      margin-bottom: 12px;
+      transition: color 0.15s;
+    }
+
+    .btn-back:hover { color: var(--color-text-primary); }
+
+    .btn-back svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.15s;
+    }
+
+    .btn-back:hover svg { transform: translateX(-2px); }
+
+    /* ── OTP Section ────────────────────────────────── */
+    .otp-hero {
+      width: 80px;
+      height: 80px;
+      margin: 8px auto 16px;
+      background: var(--color-primary-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .resend-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .countdown { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* ── Success Screen ─────────────────────────────── */
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--color-primary-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 16px auto;
+      animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .success-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .summary-list {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .summary-row + .summary-row {
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .summary-row .label { color: var(--color-text-secondary); }
+    .summary-row .value { font-weight: 600; color: var(--color-text-primary); text-align: right; }
+
+    .success-note {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    /* ── Confetti ────────────────────────────────────── */
+    .confetti-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      top: -10px;
+      animation: confetti-fall 2.5s ease-in forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(700px) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 860px) {
+      .main-container { flex-direction: column; align-items: center; }
+      .control-panel { max-width: 375px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Multi-Tenant Onboarding Simulator</h1>
+    <p>จำลองการเชื่อมต่อพนักงานหลายบริษัทผ่าน LINE OA บัญชีเดียว — ทดสอบทั้ง <b>การกรอกรหัสบริษัทปกติ (Rich Menu)</b> และ <b>การสแกน QR Code โรงงาน (?company=SMPC)</b></p>
+  </header>
+
+  <div class="main-container">
+
+    <!-- ════════ Left: Control Panel ════════ -->
+    <div class="control-panel">
+
+      <div class="panel-section">
+        <h2>จำลองเหตุการณ์</h2>
+        <div class="form-group">
+          <label>URL Simulation</label>
+          <select id="sim-url" onchange="simulateURLChange()">
+            <option value="none">Rich Menu ปกติ (ไม่มี ?company)</option>
+            <option value="SMPC">QR Code โรงงาน SMPC (?company=SMPC)</option>
+            <option value="CPALL">QR Code โรงงาน CPALL (?company=CPALL)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h2>LINE Profile (จาก LIFF SDK)</h2>
+        <div class="info-box">
+          <div><b>User ID:</b> <span class="mono">U102938475654</span></div>
+          <div style="margin-top: 3px;"><b>Display Name:</b> Somchai (สมชาย)</div>
+          <div style="margin-top: 3px;"><b>Picture URL:</b> <span class="mono" style="font-size:11px;">—</span></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h2>Mock Database</h2>
+        <table class="db-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Emp Code</th>
+              <th>ชื่อ</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-smpc">SMPC</span></td>
+              <td>EMP-0001</td>
+              <td>นายสมชาย ดีใจ</td>
+              <td style="font-family:monospace;font-size:11px;color:#94a3b8;">08x-xxx-1234</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-smpc">SMPC</span></td>
+              <td>EMP-0002</td>
+              <td>นางสาววิภา ใจดี</td>
+              <td style="font-family:monospace;font-size:11px;color:#94a3b8;">08x-xxx-5678</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-cpall">CPALL</span></td>
+              <td>EMP-0001</td>
+              <td>นายสุรชัย มั่นคง</td>
+              <td style="font-family:monospace;font-size:11px;color:#94a3b8;">08x-xxx-9876</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-cpall">CPALL</span></td>
+              <td>EMP-0002</td>
+              <td>นางสาวสมหญิง สวยงาม</td>
+              <td style="font-family:monospace;font-size:11px;color:#94a3b8;">08x-xxx-4321</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel-section">
+        <h2>Event Log</h2>
+        <div class="event-log" id="event-log">
+          <div class="ev"><span class="ev-time">[init]</span> <span class="ev-data">Simulator ready. OTP = 000000</span></div>
+        </div>
+      </div>
+
+      <div class="help-box">
+        <b>วิธีทดสอบ:</b><br>
+        1. เลือก URL Simulation ด้านบน<br>
+        2. กรอก Company Code + Employee ID ในมือถือ<br>
+        3. ใช้ OTP <b>000000</b> เพื่อยืนยัน<br>
+        4. ดู Event Log เพื่อดู API request/response จำลอง
+      </div>
+    </div>
+
+    <!-- ════════ Right: Mobile Simulator ════════ -->
+    <div class="mobile-simulator">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:12px;">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="6" width="3" height="6" rx="0.5"/><rect x="4.5" y="4" width="3" height="8" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" opacity="0.3"/></svg>
+          <svg width="22" height="12" viewBox="0 0 22 12" fill="white"><rect x="0" y="1" width="19" height="10" rx="2" stroke="white" stroke-width="1" fill="none"/><rect x="19.5" y="4" width="2" height="4" rx="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="white"/></svg>
+        </span>
+      </div>
+
+      <div class="line-header">
+        <div class="close-btn" onclick="resetOnboarding()">✕</div>
+        <div class="logo">P+</div>
+        <span>PayDay+ Official</span>
+      </div>
+
+      <div class="sim-content">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
+
+        <!-- ──── STEP 1: Verify Employee ──── -->
+        <div class="step-view active" id="step1">
+          <div class="card">
+            <div class="brand">PayDay<span class="tag">LIFF</span></div>
+            <p class="subtitle">ระบบเบิกเงินเดือนสะสมล่วงหน้าสำหรับพนักงาน</p>
+
+            <div class="steps-bar">
+              <span class="step-pip active"></span>
+              <span class="step-pip"></span>
+              <span class="step-pip"></span>
+            </div>
+            <div class="step-label">ขั้นตอนที่ 1 จาก 3</div>
+
+            <h4 class="form-title">เชื่อมต่อบัญชีพนักงาน</h4>
+            <p class="form-desc">ยืนยันรหัสพนักงานเพื่อผูกบัญชี LINE กับสิทธิ์เบิกเงินของบริษัท</p>
+
+            <div class="line-profile">
+              <div class="avatar">S</div>
+              <div class="meta">
+                <div class="name">Somchai (สมชาย)</div>
+                <div class="connected">LINE Connected</div>
+              </div>
+            </div>
+
+            <div class="error-msg" id="step1-error"></div>
+
+            <div class="input-group">
+              <label>รหัสบริษัท (Company Code)</label>
+              <input type="text" id="m-company" placeholder="เช่น SMPC, CPALL" oninput="validateStep1()">
+              <span class="auto-tag" id="auto-tag">กรอกอัตโนมัติจากป้ายโรงงาน</span>
+            </div>
+
+            <div class="input-group">
+              <label>รหัสพนักงาน (Employee ID)</label>
+              <input type="text" id="m-empid" placeholder="เช่น EMP-0001" oninput="validateStep1()">
+            </div>
+
+            <button class="btn" id="btn-step1" onclick="submitStep1()" disabled>
+              เชื่อมต่อบัญชีพนักงาน
+            </button>
+          </div>
+        </div>
+
+        <!-- ──── STEP 2: OTP Verify ──── -->
+        <div class="step-view right" id="step2">
+          <div class="card">
+            <button class="btn-back" onclick="goBackToStep1()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              ย้อนกลับ
+            </button>
+
+            <div class="brand">PayDay<span class="tag">LIFF</span></div>
+            <p class="subtitle">ระบบเบิกเงินเดือนสะสมล่วงหน้าสำหรับพนักงาน</p>
+
+            <div class="steps-bar">
+              <span class="step-pip done"></span>
+              <span class="step-pip active"></span>
+              <span class="step-pip"></span>
+            </div>
+            <div class="step-label">ขั้นตอนที่ 2 จาก 3</div>
+
+            <h4 class="form-title">ยืนยันรหัสความปลอดภัย (OTP)</h4>
+            <p class="form-desc">กรอกรหัสยืนยัน 6 หลักที่เราส่งไปยังเบอร์โทรศัพท์ <span id="m-phone" style="font-weight:600;">08x-xxx-1234</span></p>
+
+            <div class="otp-hero">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2dbd8f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+
+            <div class="error-msg" id="step2-error"></div>
+
+            <div class="input-group">
+              <label>รหัส OTP 6 หลัก</label>
+              <input type="text" id="m-otp" class="otp-input" placeholder="000000" maxlength="6" oninput="validateOtp()" autocomplete="one-time-code" inputmode="numeric">
+            </div>
+
+            <div class="resend-row">
+              <span>ไม่ได้รับรหัส?</span>
+              <button class="btn-text" id="btn-resend" onclick="resendOtp()" disabled>ส่งรหัสอีกครั้ง</button>
+              <span class="countdown" id="countdown">(5:00)</span>
+            </div>
+
+            <button class="btn" id="btn-step2" onclick="submitStep2()" disabled>
+              ยืนยันรหัสความปลอดภัย
+            </button>
+          </div>
+        </div>
+
+        <!-- ──── STEP 3: Success ──── -->
+        <div class="step-view right" id="step3">
+          <div class="card">
+            <div class="brand">PayDay<span class="tag">LIFF</span></div>
+            <p class="subtitle">ยินดีต้อนรับสู่ระบบสิทธิ์เบิกเงินสะสม</p>
+
+            <div class="steps-bar">
+              <span class="step-pip done"></span>
+              <span class="step-pip done"></span>
+              <span class="step-pip active"></span>
+            </div>
+
+            <div class="success-icon">
+              <svg viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="17" stroke="#2dbd8f" stroke-width="2"/>
+                <path d="M11 18.5L16 23.5L25.5 13" stroke="#2dbd8f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <h4 class="form-title" style="color:var(--color-primary-dark);font-size:20px;">เชื่อมต่อสำเร็จ!</h4>
+            <p class="form-desc">บัญชี LINE ของคุณผูกเข้ากับระบบสิทธิ์เบิกเงิน PayDay+ เรียบร้อยแล้ว</p>
+
+            <div class="summary-list">
+              <div class="summary-row">
+                <span class="label">บริษัท</span>
+                <span class="value" id="res-company">—</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">รหัสพนักงาน</span>
+                <span class="value" id="res-empcode">—</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">ชื่อพนักงาน</span>
+                <span class="value" id="res-name">—</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">รอบการจ่ายเงิน</span>
+                <span class="value" id="res-paycycle">—</span>
+              </div>
+            </div>
+
+            <p class="success-note">คุณสามารถตรวจสอบยอดสะสมและยื่นคำขอเบิกเงินล่วงหน้าได้ผ่าน LINE OA ตลอด 24 ชม.</p>
+
+            <button class="btn" onclick="resetOnboarding()">
+              เข้าสู่หน้าหลักแอป
+            </button>
+          </div>
+        </div>
+
+        <div class="confetti-container" id="confetti"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ════════════════════════════════════════════════════
+    // Mock Database — matches plan's VerifyEmployeeResponse shape
+    // ════════════════════════════════════════════════════
+    const MOCK_DB = {
+      SMPC: {
+        companyId: 'company-uuid-smpc-001',
+        companyName: 'SMPC Factory Ltd.',
+        payCycle: 'monthly',
+        employees: {
+          'EMP-0001': { employeeId: 'emp-uuid-001', nameTh: 'นายสมชาย ดีใจ', phoneMasked: '08x-xxx-1234' },
+          'EMP-0002': { employeeId: 'emp-uuid-002', nameTh: 'นางสาววิภา ใจดี', phoneMasked: '08x-xxx-5678' },
+        }
+      },
+      CPALL: {
+        companyId: 'company-uuid-cpall-001',
+        companyName: 'CPALL Logistics Co.',
+        payCycle: 'weekly',
+        employees: {
+          'EMP-0001': { employeeId: 'emp-uuid-003', nameTh: 'นายสุรชัย มั่นคง', phoneMasked: '08x-xxx-9876' },
+          'EMP-0002': { employeeId: 'emp-uuid-004', nameTh: 'นางสาวสมหญิง สวยงาม', phoneMasked: '08x-xxx-4321' },
+        }
+      }
+    };
+
+    const VALID_OTP = '000000';
+    const OTP_EXPIRES_SECONDS = 300;
+
+    // ════════════════════════════════════════════════════
+    // State
+    // ════════════════════════════════════════════════════
+    let state = {
+      companyCode: '',
+      employeeCode: '',
+      employeeId: '',
+      employeeName: '',
+      phoneMasked: '',
+      companyName: '',
+      companyId: '',
+      payCycle: '',
+      lineUserId: 'U102938475654',
+    };
+
+    let otpTimer = null;
+    let otpSecondsLeft = 0;
+    let otpAttempts = 0;
+    const MAX_OTP_ATTEMPTS = 5;
+
+    // ════════════════════════════════════════════════════
+    // Event Log
+    // ════════════════════════════════════════════════════
+    function log(action, data, type = 'data') {
+      const el = document.getElementById('event-log');
+      const now = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const cls = type === 'error' ? 'ev-error' : type === 'ok' ? 'ev-ok' : 'ev-data';
+      el.innerHTML += `<div class="ev"><span class="ev-time">[${now}]</span> <span class="ev-action">${action}</span> <span class="${cls}">${data}</span></div>`;
+      el.scrollTop = el.scrollHeight;
+    }
+
+    // ════════════════════════════════════════════════════
+    // URL Simulation
+    // ════════════════════════════════════════════════════
+    function simulateURLChange() {
+      const val = document.getElementById('sim-url').value;
+      const input = document.getElementById('m-company');
+      const tag = document.getElementById('auto-tag');
+
+      if (val !== 'none') {
+        input.value = val;
+        input.disabled = true;
+        tag.style.display = 'block';
+        log('URL', `?company=${val} → auto-filled`, 'ok');
+      } else {
+        input.value = '';
+        input.disabled = false;
+        tag.style.display = 'none';
+        log('URL', 'No ?company param (Rich Menu)', 'data');
+      }
+      validateStep1();
+    }
+
+    // ════════════════════════════════════════════════════
+    // Step 1: Verify Employee
+    // ════════════════════════════════════════════════════
+    function validateStep1() {
+      const c = document.getElementById('m-company').value.trim();
+      const e = document.getElementById('m-empid').value.trim();
+      document.getElementById('btn-step1').disabled = !(c && e);
+    }
+
+    async function submitStep1() {
+      const companyCode = document.getElementById('m-company').value.trim().toUpperCase();
+      const employeeCode = document.getElementById('m-empid').value.trim().toUpperCase();
+      const btn = document.getElementById('btn-step1');
+      const err = document.getElementById('step1-error');
+
+      // Show loading
+      btn.classList.add('loading');
+      btn.disabled = true;
+      err.style.display = 'none';
+
+      log('POST', `/employees/verify { companyCode: "${companyCode}", employeeCode: "${employeeCode}" }`);
+
+      // Simulate network delay
+      await delay(800);
+
+      // Mock API: POST /employees/verify
+      const company = MOCK_DB[companyCode];
+      const employee = company?.employees?.[employeeCode];
+
+      if (!company || !employee) {
+        // 404 response
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        err.textContent = 'ไม่พบบัญชีพนักงานในรหัสบริษัทและรหัสพนักงานดังกล่าว';
+        err.style.display = 'block';
+        log('404', `Employee not found`, 'error');
+        return;
+      }
+
+      // 200 response — shape matches VerifyEmployeeResponse
+      const response = {
+        employeeId: employee.employeeId,
+        nameTh: employee.nameTh,
+        phoneMasked: employee.phoneMasked,
+        companyName: company.companyName,
+        companyId: company.companyId,
+      };
+
+      log('200', `{ employeeId: "${response.employeeId}", nameTh: "${response.nameTh}", phoneMasked: "${response.phoneMasked}" }`, 'ok');
+
+      // Save to state
+      state.companyCode = companyCode;
+      state.employeeCode = employeeCode;
+      state.employeeId = response.employeeId;
+      state.employeeName = response.nameTh;
+      state.phoneMasked = response.phoneMasked;
+      state.companyName = response.companyName;
+      state.companyId = response.companyId;
+      state.payCycle = company.payCycle;
+
+      // Update Step 2 UI
+      document.getElementById('m-phone').textContent = response.phoneMasked;
+
+      btn.classList.remove('loading');
+
+      // Auto-send OTP
+      await sendOtp();
+
+      // Transition
+      transitionTo('step1', 'step2');
+    }
+
+    // ════════════════════════════════════════════════════
+    // OTP: Send
+    // ════════════════════════════════════════════════════
+    async function sendOtp() {
+      log('POST', `/auth/otp/send { employeeId: "${state.employeeId}" }`);
+      await delay(400);
+      log('200', `{ sent: true, expiresInSeconds: ${OTP_EXPIRES_SECONDS} }`, 'ok');
+
+      otpAttempts = 0;
+      startOtpCountdown();
+    }
+
+    function startOtpCountdown() {
+      clearInterval(otpTimer);
+      otpSecondsLeft = OTP_EXPIRES_SECONDS;
+      document.getElementById('btn-resend').disabled = true;
+      updateCountdown();
+
+      otpTimer = setInterval(() => {
+        otpSecondsLeft--;
+        updateCountdown();
+        if (otpSecondsLeft <= 0) {
+          clearInterval(otpTimer);
+          document.getElementById('btn-resend').disabled = false;
+          document.getElementById('countdown').textContent = '';
+        }
+      }, 1000);
+    }
+
+    function updateCountdown() {
+      const m = Math.floor(otpSecondsLeft / 60);
+      const s = otpSecondsLeft % 60;
+      document.getElementById('countdown').textContent = `(${m}:${String(s).padStart(2, '0')})`;
+    }
+
+    async function resendOtp() {
+      log('RESEND', 'User requested OTP resend');
+      document.getElementById('m-otp').value = '';
+      document.getElementById('btn-step2').disabled = true;
+      document.getElementById('step2-error').style.display = 'none';
+      await sendOtp();
+    }
+
+    // ════════════════════════════════════════════════════
+    // Step 2: Verify OTP
+    // ════════════════════════════════════════════════════
+    function validateOtp() {
+      const val = document.getElementById('m-otp').value.replace(/\D/g, '');
+      document.getElementById('m-otp').value = val;
+      document.getElementById('btn-step2').disabled = val.length !== 6;
+    }
+
+    async function submitStep2() {
+      const otp = document.getElementById('m-otp').value.trim();
+      const btn = document.getElementById('btn-step2');
+      const err = document.getElementById('step2-error');
+
+      btn.classList.add('loading');
+      btn.disabled = true;
+      err.style.display = 'none';
+
+      log('POST', `/auth/otp/verify { employeeId: "${state.employeeId}", otp: "${otp}", lineUserId: "${state.lineUserId}" }`);
+
+      await delay(600);
+
+      // Rate limit check
+      otpAttempts++;
+      if (otpAttempts > MAX_OTP_ATTEMPTS) {
+        btn.classList.remove('loading');
+        err.textContent = 'คุณกรอก OTP ผิดเกินจำนวนครั้งที่กำหนด กรุณาส่งรหัสใหม่';
+        err.style.display = 'block';
+        log('429', `Too many attempts (${otpAttempts}/${MAX_OTP_ATTEMPTS})`, 'error');
+        return;
+      }
+
+      if (otp !== VALID_OTP) {
+        // 401 response
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        err.textContent = `รหัส OTP ไม่ถูกต้องหรือหมดอายุ กรุณาลองอีกครั้ง (${otpAttempts}/${MAX_OTP_ATTEMPTS})`;
+        err.style.display = 'block';
+        log('401', `Invalid or expired OTP (attempt ${otpAttempts}/${MAX_OTP_ATTEMPTS})`, 'error');
+        return;
+      }
+
+      // 200 response — shape matches VerifyOtpResponse
+      const response = {
+        success: true,
+        authToken: 'jwt-mock-' + Date.now(),
+        companyId: state.companyId,
+      };
+
+      log('200', `{ success: true, authToken: "jwt-mock-..." }`, 'ok');
+
+      // Simulate localStorage save
+      log('localStorage', `payday-company-id = "${state.companyId}"`);
+      log('localStorage', `payday-liff-employee-links[${state.lineUserId}] = "${state.employeeId}"`);
+      log('localStorage', `auth_token = "${response.authToken.substring(0, 20)}..."`);
+
+      clearInterval(otpTimer);
+      btn.classList.remove('loading');
+
+      // Fill Step 3
+      document.getElementById('res-company').textContent = state.companyName;
+      document.getElementById('res-empcode').textContent = state.employeeCode;
+      document.getElementById('res-name').textContent = state.employeeName;
+      document.getElementById('res-paycycle').textContent =
+        state.payCycle === 'monthly' ? 'รายเดือน (หักยอดสิ้นเดือน)' : 'รายสัปดาห์ (หักยอดทุกศุกร์)';
+
+      transitionTo('step2', 'step3');
+      spawnConfetti();
+    }
+
+    // ════════════════════════════════════════════════════
+    // Navigation
+    // ════════════════════════════════════════════════════
+    function transitionTo(fromId, toId) {
+      const from = document.getElementById(fromId);
+      const to = document.getElementById(toId);
+      from.classList.remove('active');
+      from.classList.add('left');
+      to.classList.remove('right');
+      to.classList.add('active');
+    }
+
+    function transitionBack(fromId, toId) {
+      const from = document.getElementById(fromId);
+      const to = document.getElementById(toId);
+      from.classList.remove('active');
+      from.classList.add('right');
+      to.classList.remove('left');
+      to.classList.add('active');
+    }
+
+    function goBackToStep1() {
+      clearInterval(otpTimer);
+      document.getElementById('m-otp').value = '';
+      document.getElementById('btn-step2').disabled = true;
+      document.getElementById('step2-error').style.display = 'none';
+      otpAttempts = 0;
+
+      transitionBack('step2', 'step1');
+      log('NAV', 'User navigated back to Step 1');
+    }
+
+    function resetOnboarding() {
+      state = {
+        companyCode: '', employeeCode: '', employeeId: '',
+        employeeName: '', phoneMasked: '', companyName: '',
+        companyId: '', payCycle: '', lineUserId: 'U102938475654',
+      };
+      otpAttempts = 0;
+      clearInterval(otpTimer);
+
+      document.getElementById('m-empid').value = '';
+      document.getElementById('m-otp').value = '';
+      document.getElementById('step1-error').style.display = 'none';
+      document.getElementById('step2-error').style.display = 'none';
+      document.getElementById('btn-step1').disabled = true;
+      document.getElementById('btn-step2').disabled = true;
+      document.getElementById('btn-step1').classList.remove('loading');
+      document.getElementById('btn-step2').classList.remove('loading');
+      document.getElementById('confetti').innerHTML = '';
+
+      document.getElementById('sim-url').value = 'none';
+      simulateURLChange();
+
+      document.getElementById('step1').className = 'step-view active';
+      document.getElementById('step2').className = 'step-view right';
+      document.getElementById('step3').className = 'step-view right';
+
+      log('RESET', 'Onboarding reset', 'data');
+    }
+
+    // ════════════════════════════════════════════════════
+    // Confetti
+    // ════════════════════════════════════════════════════
+    function spawnConfetti() {
+      const container = document.getElementById('confetti');
+      container.innerHTML = '';
+      const colors = ['#2dbd8f', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
+      for (let i = 0; i < 40; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + '%';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDelay = Math.random() * 0.8 + 's';
+        c.style.animationDuration = (2 + Math.random()) + 's';
+        c.style.width = (5 + Math.random() * 6) + 'px';
+        c.style.height = (5 + Math.random() * 6) + 'px';
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        container.appendChild(c);
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // Helpers
+    // ════════════════════════════════════════════════════
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+  </script>
+</body>
+</html>
