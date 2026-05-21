@@ -164,3 +164,53 @@ export interface ReconciliationItem {
   settledAt?: string
   failureReason?: string
 }
+
+// ── Onboarding ──────────────────────────────────────────────
+
+export type OnboardingStep = 'company_verify' | 'otp_verify' | 'complete'
+
+export interface OnboardingState {
+  step: OnboardingStep
+  companyCode: string
+  employeeCode: string
+  employeeId?: string
+  employeeName?: string
+  phoneMasked?: string
+  companyName?: string
+  companyId?: string
+  lineUserId: string
+}
+
+export interface VerifyEmployeeRequest {
+  companyCode: string
+  employeeCode: string
+}
+
+export interface VerifyEmployeeResponse {
+  employeeId: string
+  nameTh: string
+  phoneMasked: string
+  companyName: string
+  companyId: string
+}
+
+export interface SendOtpRequest {
+  employeeId: string
+}
+
+export interface SendOtpResponse {
+  sent: boolean
+  expiresInSeconds: number
+}
+
+export interface VerifyOtpRequest {
+  employeeId: string
+  otp: string
+  lineUserId: string
+}
+
+export interface VerifyOtpResponse {
+  success: boolean
+  authToken: string
+  companyId: string
+}
