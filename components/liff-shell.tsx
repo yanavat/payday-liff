@@ -1,13 +1,12 @@
-import type { ReactNode } from 'react'
-import { LiffBottomTabBar } from './liff-bottom-tab-bar'
-import { LiffOfflineBanner } from './liff-offline-banner'
+import type { ReactNode } from "react";
+import { LiffBottomTabBar } from "./liff-bottom-tab-bar";
 
 export function LiffShell({ children }: { children: ReactNode }) {
   return (
     <div className="employee-screen">
-      <LiffOfflineBanner />
+      {/* <LiffOfflineBanner /> */}
       <main className="liff-content-area">{children}</main>
       <LiffBottomTabBar />
     </div>
-  )
+  );
 }

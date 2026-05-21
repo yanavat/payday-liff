@@ -337,7 +337,7 @@
     "step2Description": "Enter the 6-digit code sent to {phone}.",
     "otpLabel": "6-digit OTP",
     "otpPlaceholder": "000000",
-    "otpButton": "Verify Security Code",
+    "otpButton": "Verify OTP Code",
     "otpError": "Invalid or expired OTP. Please try again.",
     "otpResend": "Resend Code",
     "step3Title": "Connection Successful!",

@@ -19,7 +19,10 @@ import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { Avatar } from "@/components/ui/avatar";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { useLiffProfile, useLinkedEmployeeId } from "@/components/liff-auth-gate";
+import {
+  useLiffProfile,
+  useLinkedEmployeeId,
+} from "@/components/liff-auth-gate";
 import { useEmployee } from "@/lib/api/hooks/use-employees";
 import { useSettingsActions } from "@/lib/api/hooks/use-settings";
 import { loadLiffClient } from "@/lib/liff-client";
@@ -63,9 +66,9 @@ export function LiffProfilePage() {
   const [line, setLine] = useState(true);
   const [showEditBank, setShowEditBank] = useState(false);
 
-  const [bankCode, setBankCode] = useState('');
-  const [accountMasked, setAccountMasked] = useState('');
-  const [holderName, setHolderName] = useState('');
+  const [bankCode, setBankCode] = useState("");
+  const [accountMasked, setAccountMasked] = useState("");
+  const [holderName, setHolderName] = useState("");
 
   useEffect(() => {
     if (!employee) return;
@@ -118,20 +121,20 @@ export function LiffProfilePage() {
             />
           ) : (
             <Avatar
-              initials={employee?.nameTh ?? profile?.displayName ?? ''}
+              initials={employee?.nameTh ?? profile?.displayName ?? ""}
               size="xl"
               color="teal"
               className="mx-auto shadow-lg ring-4 ring-white/50"
             />
           )}
           <h1 className="mt-3 text-[22px] font-bold leading-tight text-white">
-            {profile?.displayName || employee?.nameTh || ''}
+            {profile?.displayName || employee?.nameTh || ""}
           </h1>
           {profile?.email && (
             <p className="mt-0.5 text-[14px] text-white/70">{profile.email}</p>
           )}
           <p className="mt-1 text-[15px] text-white/80">
-            {employee?.employeeCode ?? ''} · {employee?.department ?? ''}
+            {employee?.employeeCode ?? ""} · {employee?.department ?? ""}
           </p>
           <div className="mt-3 flex">
             {employee && (
@@ -151,14 +154,14 @@ export function LiffProfilePage() {
                 {t("profile.bankAccount")}
               </h2>
             </div>
-            <button
+            {/* <button
               type="button"
               onClick={() => setShowEditBank(true)}
               className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-primary transition hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
               <Pencil className="h-3.5 w-3.5" aria-hidden />
               {t("profile.edit")}
-            </button>
+            </button> */}
           </div>
           <p className="text-[16px] font-semibold text-text-primary">
             {getBankDisplayName(bankCode, locale)}
@@ -200,14 +203,16 @@ export function LiffProfilePage() {
           <h2 className="mb-2 text-[16px] font-semibold text-text-primary">
             {t("profile.notifications")}
           </h2>
-          <ToggleRow
+          {/* <ToggleRow
             icon={<Bell className="h-5 w-5" />}
             label={t("profile.notifyApproved")}
             checked={approval}
             onChange={(v) => {
               setApproval(v);
-              void updateNotifications({ onApproval: { line: v }, onRejection: { line: v } })
-                .catch(() => setApproval(!v));
+              void updateNotifications({
+                onApproval: { line: v },
+                onRejection: { line: v },
+              }).catch(() => setApproval(!v));
             }}
           />
           <ToggleRow
@@ -216,10 +221,12 @@ export function LiffProfilePage() {
             checked={payday}
             onChange={(v) => {
               setPayday(v);
-              void updateNotifications({ onPaydayReminder: { line: v }, onCutoffWarning: { line: v } })
-                .catch(() => setPayday(!v));
+              void updateNotifications({
+                onPaydayReminder: { line: v },
+                onCutoffWarning: { line: v },
+              }).catch(() => setPayday(!v));
             }}
-          />
+          /> */}
           <ToggleRow
             icon={<MessageCircle className="h-5 w-5" />}
             label={t("profile.notifyLine")}
