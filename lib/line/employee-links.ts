@@ -7,39 +7,44 @@
  * - Notification dispatch (server-side in-memory map for demo)
  */
 
+interface EmployeeLink {
+  employeeId: string
+  companyId: string
+}
+
 // Server-side in-memory map for API routes / server functions
-const serverLinks: Record<string, string> = {
-  'mock-line-user': 'EMP-0001',
-  'U00000000000000000000000000000001': 'EMP-0002',
-  'U00000000000000000000000000000002': 'EMP-0003',
-  'U00000000000000000000000000000003': 'EMP-0005',
-  'U00000000000000000000000000000004': 'EMP-0007',
-  'U00000000000000000000000000000005': 'EMP-0008',
-  'U00000000000000000000000000000006': 'EMP-0009',
-  'U00000000000000000000000000000007': 'EMP-0010',
-  'U00000000000000000000000000000008': 'EMP-0012',
-  'U00000000000000000000000000000009': 'EMP-0013',
-  'U0000000000000000000000000000000a': 'EMP-0014',
-  'U0000000000000000000000000000000b': 'EMP-0015',
-  'U0000000000000000000000000000000c': 'EMP-0016',
-  'U0000000000000000000000000000000d': 'EMP-0017',
-  'U0000000000000000000000000000000e': 'EMP-0018',
-  'U0000000000000000000000000000000f': 'EMP-0020',
+const serverLinks: Record<string, EmployeeLink> = {
+  'mock-line-user': { employeeId: 'EMP-0001', companyId: 'company-smpc' },
+  'U00000000000000000000000000000001': { employeeId: 'EMP-0002', companyId: 'company-smpc' },
+  'U00000000000000000000000000000002': { employeeId: 'EMP-0003', companyId: 'company-smpc' },
+  'U00000000000000000000000000000003': { employeeId: 'EMP-0005', companyId: 'company-smpc' },
+  'U00000000000000000000000000000004': { employeeId: 'EMP-0007', companyId: 'company-smpc' },
+  'U00000000000000000000000000000005': { employeeId: 'EMP-0008', companyId: 'company-smpc' },
+  'U00000000000000000000000000000006': { employeeId: 'EMP-0009', companyId: 'company-smpc' },
+  'U00000000000000000000000000000007': { employeeId: 'EMP-0010', companyId: 'company-smpc' },
+  'U00000000000000000000000000000008': { employeeId: 'EMP-0012', companyId: 'company-smpc' },
+  'U00000000000000000000000000000009': { employeeId: 'EMP-0013', companyId: 'company-smpc' },
+  'U0000000000000000000000000000000a': { employeeId: 'EMP-0014', companyId: 'company-smpc' },
+  'U0000000000000000000000000000000b': { employeeId: 'EMP-0015', companyId: 'company-smpc' },
+  'U0000000000000000000000000000000c': { employeeId: 'EMP-0016', companyId: 'company-smpc' },
+  'U0000000000000000000000000000000d': { employeeId: 'EMP-0017', companyId: 'company-smpc' },
+  'U0000000000000000000000000000000e': { employeeId: 'EMP-0018', companyId: 'company-smpc' },
+  'U0000000000000000000000000000000f': { employeeId: 'EMP-0020', companyId: 'company-smpc' },
 }
 
 export function getEmployeeIdByLineUserId(lineUserId: string): string | null {
-  return serverLinks[lineUserId] ?? null
+  return serverLinks[lineUserId]?.employeeId ?? null
 }
 
 export function getLineUserIdByEmployeeId(employeeId: string): string | null {
-  for (const [lineUserId, empId] of Object.entries(serverLinks)) {
-    if (empId === employeeId) return lineUserId
+  for (const [lineUserId, link] of Object.entries(serverLinks)) {
+    if (link.employeeId === employeeId) return lineUserId
   }
   return null
 }
 
-export function linkEmployee(lineUserId: string, employeeId: string): void {
-  serverLinks[lineUserId] = employeeId
+export function linkEmployee(lineUserId: string, employeeId: string, companyId: string): void {
+  serverLinks[lineUserId] = { employeeId, companyId }
 }
 
 export function unlinkEmployee(lineUserId: string): void {
