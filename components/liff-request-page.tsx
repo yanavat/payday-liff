@@ -23,6 +23,7 @@ import {
 import type {
   CreateRequestDto,
   EWARequestDto,
+  PreviewRequestDto,
   PreviewResultDto,
 } from "@/lib/api/types"
 import { formatTHB } from "@/lib/utils/format"
@@ -188,7 +189,7 @@ export function LiffRequestPage() {
     preview({
       employeeId,
       amount,
-      reason: reason as CreateRequestDto["reason"],
+      reason: reason as PreviewRequestDto["reason"],
     })
       .then((result) => {
         if (!cancelled) setPreviewData(result)
@@ -216,9 +217,9 @@ export function LiffRequestPage() {
       }
 
       const request = await create({
-        employeeId,
         amount,
         reason: reason as CreateRequestDto["reason"],
+        employeeNote: "",
       })
 
       if (!request) {

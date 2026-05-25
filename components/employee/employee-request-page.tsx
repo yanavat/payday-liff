@@ -1,77 +1,77 @@
-"use client";
+"use client"
 
-import { useMemo, useState, useEffect } from "react";
-import confetti from "canvas-confetti";
-import { Check, Share2, AlertTriangle } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { PINPad } from "@/components/ui/pin-pad";
-import { QuickAmountButton } from "@/components/ui/quick-amount-button";
-import { RequestStatus, StatusBadge } from "@/components/ui/status-badge";
-import { StepIndicator } from "@/components/ui/step-indicator";
-import { currentEmployee } from "@/lib/mock/currentUser";
+import { useMemo, useState, useEffect } from "react"
+import confetti from "canvas-confetti"
+import { Check, Share2, AlertTriangle } from "lucide-react"
+import { Link } from "@/i18n/navigation"
+import { useTranslations } from "next-intl"
+import { PINPad } from "@/components/ui/pin-pad"
+import { QuickAmountButton } from "@/components/ui/quick-amount-button"
+import { RequestStatus, StatusBadge } from "@/components/ui/status-badge"
+import { StepIndicator } from "@/components/ui/step-indicator"
+import { currentEmployee } from "@/lib/mock/currentUser"
 import {
   useEmployeeCurrentPeriod,
   useEWARequestActions,
   usePreviewEWARequest,
-} from "@/lib/api/hooks";
-import { formatTHB } from "@/lib/utils/format";
+} from "@/lib/api/hooks"
+import { formatTHB } from "@/lib/utils/format"
 import {
   DEFAULT_TRANSFER_FEE_THB,
   getNetTransferAmount,
-} from "@/lib/utils/fees";
-import { EWARequestDto } from "@/lib/api/types";
+} from "@/lib/utils/fees"
+import { CreateRequestDto, EWARequestDto } from "@/lib/api/types"
 
-const quickAmounts = [1000, 2000, 3000];
+const quickAmounts = [1000, 2000, 3000]
 const reasonChips = [
   { value: "emergency" },
   { value: "medical" },
   { value: "education" },
   { value: "utility" },
   { value: "other" },
-];
+]
 
 export function EmployeeRequestPage() {
-  const [step, setStep] = useState(1);
-  const [amount, setAmount] = useState(3000);
-  const [reason, setReason] = useState("medical");
-  const [pin, setPin] = useState("");
-  const [pinError, setPinError] = useState("");
-  const [confirmationCode, setConfirmationCode] = useState("");
+  const [step, setStep] = useState(1)
+  const [amount, setAmount] = useState(3000)
+  const [reason, setReason] = useState("medical")
+  const [pin, setPin] = useState("")
+  const [pinError, setPinError] = useState("")
+  const [confirmationCode, setConfirmationCode] = useState("")
   const [createdRequest, setCreatedRequest] = useState<EWARequestDto | null>(
     null,
-  );
+  )
 
   // Fetch current period data
   const {
     data: currentPeriod,
     loading: periodLoading,
     error: periodError,
-  } = useEmployeeCurrentPeriod(currentEmployee.id);
+  } = useEmployeeCurrentPeriod(currentEmployee.id)
 
   // API actions
   const {
     create,
     loading: createLoading,
     error: createError,
-  } = useEWARequestActions();
-  const { preview, loading: previewLoading } = usePreviewEWARequest();
+  } = useEWARequestActions()
+  const { preview, loading: previewLoading } = usePreviewEWARequest()
 
-  const available = currentPeriod?.maxWithdrawable ?? 3500;
-  const amountValid = amount > 0 && amount <= available;
-  const remaining = Math.max(available - amount, 0);
-  const transferFee = DEFAULT_TRANSFER_FEE_THB;
-  const netTransferAmount = getNetTransferAmount(amount, transferFee);
-  const t = useTranslations("requestWizard");
-  const tc = useTranslations("common");
+  const available = currentPeriod?.maxWithdrawable ?? 3500
+  const amountValid = amount > 0 && amount <= available
+  const remaining = Math.max(available - amount, 0)
+  const transferFee = DEFAULT_TRANSFER_FEE_THB
+  const netTransferAmount = getNetTransferAmount(amount, transferFee)
+  const t = useTranslations("requestWizard")
+  const tc = useTranslations("common")
 
   const reasonLabel = useMemo(
     () => t(`reasons.${reason}` as keyof typeof t),
     [reason, t],
-  );
+  )
 
   useEffect(() => {
-    if (step !== 3) return;
+    if (step !== 3) return
     const shoot = (origin: { x: number; y: number }) =>
       confetti({
         particleCount: 80,
@@ -81,50 +81,44 @@ export function EmployeeRequestPage() {
         scalar: 1.1,
         gravity: 1.2,
         ticks: 200,
-      });
+      })
     const t1 = setTimeout(() => {
-      shoot({ x: 0.3, y: 0.5 });
-      shoot({ x: 0.7, y: 0.5 });
-    }, 300);
+      shoot({ x: 0.3, y: 0.5 })
+      shoot({ x: 0.7, y: 0.5 })
+    }, 300)
     const t2 = setTimeout(() => {
-      shoot({ x: 0.5, y: 0.4 });
-    }, 600);
+      shoot({ x: 0.5, y: 0.4 })
+    }, 600)
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [step]);
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
+  }, [step])
 
   async function confirmRequest() {
-    if (pin.length < 4) return;
+    if (pin.length < 4) return
 
     // In a real implementation, this would verify the confirmation code
     // For now, we'll accept any 4-digit code
-    setConfirmationCode(pin);
+    setConfirmationCode(pin)
 
     try {
       const result = await create({
-        employeeId: currentEmployee.id,
         amount,
-        reason: reason as unknown as
-          | "emergency"
-          | "medical"
-          | "education"
-          | "utility"
-          | "other",
+        reason: reason as CreateRequestDto["reason"],
         employeeNote: "",
-      });
+      })
 
       if (result) {
-        setCreatedRequest(result);
-        setStep(3);
+        setCreatedRequest(result)
+        setStep(3)
       } else {
-        setPin("");
-        setPinError(tc("error"));
+        setPin("")
+        setPinError(tc("error"))
       }
     } catch (error) {
-      setPin("");
-      setPinError(tc("error"));
+      setPin("")
+      setPinError(tc("error"))
     }
   }
 
@@ -319,8 +313,8 @@ export function EmployeeRequestPage() {
             <PINPad
               value={pin}
               onChange={(value) => {
-                setPin(value);
-                setPinError("");
+                setPin(value)
+                setPinError("")
               }}
               onComplete={setPin}
             />
@@ -429,7 +423,7 @@ export function EmployeeRequestPage() {
         </section>
       )}
     </div>
-  );
+  )
 }
 
 function SummaryRow({
@@ -437,9 +431,9 @@ function SummaryRow({
   value,
   highlight = false,
 }: {
-  label: string;
-  value: string;
-  highlight?: boolean;
+  label: string
+  value: string
+  highlight?: boolean
 }) {
   return (
     <div className="mt-3 flex items-start justify-between gap-3 first:mt-0">
@@ -454,5 +448,5 @@ function SummaryRow({
         {value}
       </span>
     </div>
-  );
+  )
 }
