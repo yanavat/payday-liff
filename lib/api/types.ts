@@ -102,24 +102,29 @@ export interface EwaOverridesDto {
 
 export interface EWARequestDto {
   id: string;
+  companyId: string;
   employeeId: string;
   employee?: EmployeeDto;
-  amount: number;
+  status: "pending" | "approved" | "rejected" | "disbursed" | "cancelled";
+  requestedAmount: number;
   transferFee: number;
-  netTransferAmount: number;
-  reason: "medical" | "education" | "emergency" | "utility" | "other";
-  status: "pending" | "approved" | "rejected" | "disbursed";
-  requestedAt: string;
-  approvedAt?: string;
-  rejectedAt?: string;
-  disbursedAt?: string;
-  approvedBy?: string;
-  employeeNote?: string;
-  hrNote?: string;
-  payCycle: "monthly" | "weekly";
+  netAmount: number;
+  earnedToDate: number;
+  maxWithdrawable: number;
+  periodLabel: string;
+  periodStart: string;
+  periodEnd: string;
+  workedDays: number;
   isOnBehalf: boolean;
-  onBehalfBy?: string;
-  referenceNumber: string;
+  autoApproved: boolean;
+  actorId: string;
+  actorName: string | null;
+  approvedBy: string | null;
+  approvedAt: string | null;
+  rejectedBy: string | null;
+  rejectedAt: string | null;
+  rejectionReason: string | null;
+  disbursedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

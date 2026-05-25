@@ -8,7 +8,12 @@ export type PayCycle = 'monthly' | 'weekly'
 
 export type WorkType = 'remote' | 'onsite' | 'hybrid'
 
-export type EWAStatus = 'pending' | 'approved' | 'rejected' | 'disbursed'
+export type EWAStatus =
+  | 'pending'
+  | 'approved'
+  | 'rejected'
+  | 'disbursed'
+  | 'cancelled'
 
 export type EmployeeEWAStatus = 'eligible' | 'limit_reached' | 'suspended'
 

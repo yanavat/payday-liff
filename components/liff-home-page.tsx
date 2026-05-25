@@ -46,6 +46,7 @@ const statusClasses: Record<EWAStatus, string> = {
   approved: "bg-status-approved-bg text-status-approved-text",
   rejected: "bg-status-rejected-bg text-status-rejected-text",
   disbursed: "bg-status-disbursed-bg text-status-disbursed-text",
+  cancelled: "bg-status-rejected-bg text-status-rejected-text",
 };
 
 export function LiffHomePage() {
@@ -213,10 +214,10 @@ export function LiffHomePage() {
           </div>
         ) : (
           <div className="space-y-2">
-            {recentRequests?.length > 0 &&
+            {recentRequests.length > 0 &&
               recentRequests.map((request) => {
                 const [day, month] = formatRequestDate(
-                  request.requestedAt,
+                  request.createdAt,
                   locale,
                 ).split(" ");
                 return (
@@ -238,12 +239,12 @@ export function LiffHomePage() {
                         {t("requestItemTitle")}
                       </p>
                       <p className="truncate font-mono text-[14px] text-text-muted">
-                        {request.referenceNumber}
+                        {request.id}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-sans text-[16px] font-bold text-text-primary">
-                        {formatTHB(request.amount)}
+                        {formatTHB(request.requestedAmount)}
                       </p>
                       <span
                         className={`inline-flex rounded-full px-2 py-1 text-[11px] font-medium ${statusClasses[request.status]}`}
@@ -254,7 +255,7 @@ export function LiffHomePage() {
                   </Link>
                 );
               })}
-            {recentRequests?.length === 0 && (
+            {recentRequests.length === 0 && (
               <div className="rounded-lg border border-dashed border-border bg-white px-6 py-10 text-center">
                 <p className="text-[16px] font-semibold text-text-primary">
                   {t("noData")}
