@@ -1,9 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
-import { loadLiffClient } from '@/lib/liff-client'
 
-const { confettiMock } = vi.hoisted(() => ({ confettiMock: vi.fn() }))
+const { confettiMock, createMock, previewMock } = vi.hoisted(() => ({
+  confettiMock: vi.fn(),
+  createMock: vi.fn(),
+  previewMock: vi.fn(),
+}))
 vi.mock('canvas-confetti', () => ({ default: confettiMock }))
 
 vi.mock('@/lib/liff-client', () => ({
@@ -16,6 +19,10 @@ vi.mock('next/link', () => ({
   ),
 }))
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/en',
+}))
+
 vi.mock('@/lib/api/services/otp', () => ({
   sendCode: vi.fn().mockResolvedValue({ codeId: 'test-code-id', expiresAt: new Date(Date.now() + 300_000).toISOString() }),
   verifyCode: vi.fn().mockImplementation(async (_codeId: string, code: string) => ({
@@ -24,12 +31,94 @@ vi.mock('@/lib/api/services/otp', () => ({
 }))
 
 vi.mock('@/components/liff-auth-gate', () => ({
-  useLiffProfile: () => null,
+  useLiffProfile: () => ({
+    userId: 'U123',
+    displayName: 'Test User',
+  }),
   useLinkedEmployeeId: () => 'EMP-001',
+}))
+
+vi.mock('@/lib/api/hooks/use-employees', () => ({
+  useEmployeeCurrentPeriod: vi.fn(() => ({
+    data: {
+      label: 'May 2026',
+      startDate: '2026-05-01',
+      endDate: '2026-05-31',
+      payDate: '2026-05-31',
+      cutoffDate: '2026-05-25',
+      workedDays: 14,
+      totalWorkDays: 22,
+      earnedToDate: 9200,
+      previousEWAThisPeriod: 1100,
+      maxWithdrawable: 4600,
+      usedRequests: 1,
+      remainingRequests: 1,
+    },
+    loading: false,
+    error: null,
+  })),
+  useEmployee: vi.fn(() => ({
+    data: {
+      id: 'EMP-001',
+      nameTh: 'สมชาย ใจดี',
+      employeeCode: 'EMP-001',
+      bankAccountMasked: 'xxx-x-xx123-4',
+    },
+    loading: false,
+    error: null,
+  })),
+}))
+
+vi.mock('@/lib/api/hooks/use-ewa-requests', () => ({
+  usePreviewEWARequest: vi.fn(() => ({
+    preview: previewMock,
+    loading: false,
+    error: null,
+  })),
+  useEWARequestActions: vi.fn(() => ({
+    create: createMock,
+    loading: false,
+    error: null,
+  })),
 }))
 
 import { sendCode, verifyCode } from '@/lib/api/services/otp'
 import { LiffRequestPage } from './liff-request-page'
+
+const previewResult = {
+  requestedAmount: 3000,
+  transferFee: 15,
+  netAmount: 2985,
+  policy: { minAmount: 500, maxAmount: 10000, maxPercent: 50, maxRequests: 2 },
+}
+
+const createdRequest = {
+  id: 'EWA-20260525-001',
+  companyId: 'co-1',
+  employeeId: 'EMP-001',
+  status: 'pending' as const,
+  requestedAmount: 3000,
+  transferFee: 15,
+  netAmount: 2985,
+  earnedToDate: 9200,
+  maxWithdrawable: 4600,
+  periodLabel: 'May 2026',
+  periodStart: '2026-05-01',
+  periodEnd: '2026-05-31',
+  workedDays: 14,
+  isOnBehalf: false,
+  autoApproved: false,
+  actorId: 'EMP-001',
+  actorName: null,
+  approvedBy: null,
+  approvedAt: null,
+  rejectedBy: null,
+  rejectedAt: null,
+  rejectionReason: null,
+  disbursedAt: null,
+  createdAt: '2026-05-25T09:32:00.000Z',
+  updatedAt: '2026-05-25T09:32:00.000Z',
+}
 
 const messages = {
   ...defaultMessages,
@@ -37,6 +126,7 @@ const messages = {
     ...defaultMessages.common,
     next: 'Next',
     error: 'An error occurred',
+    errorLoadingData: 'Could not load data',
     confirm: 'Confirm',
     employeeName: 'Employee Name',
     employeeId: 'Employee ID',
@@ -85,9 +175,12 @@ function goToStep2() {
 }
 
 describe('LiffRequestPage — step 1', () => {
-  beforeEach(() => renderWithIntl(<LiffRequestPage />, { messages }))
+  beforeEach(() => {
+    previewMock.mockResolvedValue(previewResult)
+    renderWithIntl(<LiffRequestPage />, { messages })
+  })
 
-  it('shows available balance', () => {
+  it('shows available balance from current period', () => {
     expect(screen.getByText('Available Balance')).toBeInTheDocument()
     expect(screen.getByText('฿3,500')).toBeInTheDocument()
   })
@@ -104,22 +197,38 @@ describe('LiffRequestPage — step 1', () => {
     expect(screen.getByRole('button', { name: /Next →/i })).toBeDisabled()
   })
 
-  it('advances to step 2 with valid amount', () => {
+  it('advances to step 2 with valid amount', async () => {
     goToStep2()
-    expect(screen.getByText('Summary')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Summary')).toBeInTheDocument())
   })
 })
 
 describe('LiffRequestPage — step 2 OTP', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.mocked(sendCode).mockClear()
     vi.mocked(verifyCode).mockClear()
+    createMock.mockReset()
+    previewMock.mockResolvedValue(previewResult)
+    createMock.mockResolvedValue(createdRequest)
     renderWithIntl(<LiffRequestPage />, { messages })
     goToStep2()
+    await waitFor(() => expect(previewMock).toHaveBeenCalled())
   })
 
   it('calls sendCode with the employee ID when entering step 2', async () => {
     await waitFor(() => expect(sendCode).toHaveBeenCalledWith('EMP-001'))
+  })
+
+  it('previews the request with employeeId and amount', () => {
+    expect(previewMock).toHaveBeenCalledWith(
+      expect.objectContaining({ employeeId: 'EMP-001', amount: 3000 }),
+    )
+  })
+
+  it('shows employee name from API in summary', async () => {
+    await waitFor(() => {
+      expect(screen.getByText('สมชาย ใจดี')).toBeInTheDocument()
+    })
   })
 
   it('shows OTP input', () => {
@@ -141,12 +250,16 @@ describe('LiffRequestPage — step 2 OTP', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
     await screen.findByText('Invalid code')
     expect(screen.getByText('Summary')).toBeInTheDocument()
+    expect(createMock).not.toHaveBeenCalled()
   })
 
-  it('advances to step 3 with correct OTP 123456', async () => {
+  it('creates EWA request and advances to step 3 with correct OTP', async () => {
     await waitFor(() => expect(sendCode).toHaveBeenCalled())
     fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    await waitFor(() => expect(createMock).toHaveBeenCalledWith(
+      expect.objectContaining({ employeeId: 'EMP-001', amount: 3000 }),
+    ))
     await screen.findByText('Request Submitted!')
   })
 
@@ -160,6 +273,9 @@ describe('LiffRequestPage — step 3 success', () => {
   beforeEach(async () => {
     vi.mocked(sendCode).mockClear()
     vi.mocked(verifyCode).mockClear()
+    createMock.mockReset()
+    previewMock.mockResolvedValue(previewResult)
+    createMock.mockResolvedValue(createdRequest)
     renderWithIntl(<LiffRequestPage />, { messages })
     goToStep2()
     await waitFor(() => expect(sendCode).toHaveBeenCalled())
@@ -173,13 +289,13 @@ describe('LiffRequestPage — step 3 success', () => {
     confettiMock.mockClear()
   })
 
-  it('shows success title and receipt', () => {
+  it('shows success title and receipt with API reference id', () => {
     expect(screen.getByText('Request Submitted!')).toBeInTheDocument()
-    expect(screen.getByText('Reference Number')).toBeInTheDocument()
+    expect(screen.getByText('EWA-20260525-001')).toBeInTheDocument()
   })
 
   it('back-to-home link points to LIFF root', () => {
-    expect(screen.getByRole('link', { name: 'Back to Home' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'Back to Home' })).toHaveAttribute('href', '/en')
   })
 
   it('hides share button when not in LINE client', () => {

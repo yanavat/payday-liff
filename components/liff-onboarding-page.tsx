@@ -77,17 +77,16 @@ export function LiffOnboardingPage({
 
     async function loadCompanies() {
       try {
-        const response = await getApiClient().get<PaginatedResponse<CompanyDto>>(
-          "/companies",
-          { limit: 100, offset: 0 },
-        );
+        const response = await getApiClient().get<
+          PaginatedResponse<CompanyDto>
+        >("/companies", { limit: 100, offset: 0 });
         if (!active) return;
 
         setCompanyOptions(
           response.data
             .filter((company) => company.active && company.code)
             .map((company) => ({
-              code: company.code,
+              code: company.code!,
               label: company.nameEn || company.name,
             })),
         );
@@ -246,7 +245,11 @@ export function LiffOnboardingPage({
               />
               <datalist id="company-code-options">
                 {companyOptions.map((company) => (
-                  <option key={company.code} label={company.label} value={company.code} />
+                  <option
+                    key={company.code}
+                    label={company.label}
+                    value={company.code}
+                  />
                 ))}
               </datalist>
               {companyLocked ? (

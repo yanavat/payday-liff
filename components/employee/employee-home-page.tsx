@@ -48,8 +48,8 @@ export function EmployeeHomePage() {
   // Get cycle info from API or fallback
   const cycle = currentPeriod
     ? {
-        daysElapsed: currentPeriod.daysElapsed,
-        totalDays: currentPeriod.totalDays,
+        daysElapsed: currentPeriod.workedDays,
+        totalDays: currentPeriod.totalWorkDays,
       }
     : { daysElapsed: 14, totalDays: 31 };
 

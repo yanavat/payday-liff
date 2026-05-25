@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-export type RequestStatus = "pending" | "approved" | "rejected" | "disbursed";
+export type RequestStatus = "pending" | "approved" | "rejected" | "disbursed" | "cancelled";
 
 interface StatusBadgeProps {
   status: RequestStatus;
@@ -14,6 +14,7 @@ const statusClassMap: Record<RequestStatus, string> = {
   approved: "bg-status-approved-bg text-status-approved-text",
   rejected: "bg-status-rejected-bg text-status-rejected-text",
   disbursed: "bg-status-disbursed-bg text-status-disbursed-text",
+  cancelled: "bg-status-rejected-bg text-status-rejected-text",
 };
 
 export function StatusBadge({

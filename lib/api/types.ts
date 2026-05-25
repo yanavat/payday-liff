@@ -101,6 +101,13 @@ export interface EwaOverridesDto {
 // ── EWA Requests ─────────────────────────────────────────────
 
 export interface EWARequestDto {
+  requestedAt: string;
+  amount: number;
+  referenceNumber: string;
+  reason: "medical" | "education" | "emergency" | "utility" | "other";
+  netTransferAmount: number;
+  hrNote: string;
+  employeeNote: string;
   id: string;
   companyId: string;
   employeeId: string;
@@ -115,16 +122,17 @@ export interface EWARequestDto {
   periodStart: string;
   periodEnd: string;
   workedDays: number;
+  payCycle: "monthly" | "weekly";
   isOnBehalf: boolean;
   autoApproved: boolean;
   actorId: string;
   actorName: string | null;
-  approvedBy: string | null;
-  approvedAt: string | null;
-  rejectedBy: string | null;
-  rejectedAt: string | null;
-  rejectionReason: string | null;
-  disbursedAt: string | null;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectedBy?: string;
+  rejectedAt?: string;
+  rejectionReason?: string;
+  disbursedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -151,15 +159,35 @@ export interface PreviewRequestDto {
 }
 
 export interface PreviewResultDto {
-  isValid: boolean;
-  errors?: string[];
-  earnedWage: number;
-  previousAdvance: number;
-  maxAllowed: number;
+  employeeId?: string;
+  payCycle?: string;
+  periodLabel?: string;
+  workedDays?: number;
+  totalWorkDays?: number;
+  earnedToDate?: number;
+  previousEWAThisPeriod?: number;
+  maxWithdrawable?: number;
   requestedAmount: number;
   transferFee: number;
-  netTransferAmount: number;
-  remainingAfterRequest: number;
+  netAmount: number;
+  autoApproved?: boolean;
+  remainingRequests?: number;
+  policy?: {
+    maxPercent: number;
+    maxRequests: number;
+    minAmount: number;
+    maxAmount: number;
+  };
+  /** @deprecated use earnedToDate */
+  earnedWage?: number;
+  /** @deprecated use previousEWAThisPeriod */
+  previousAdvance?: number;
+  /** @deprecated use maxWithdrawable */
+  maxAllowed?: number;
+  netTransferAmount?: number;
+  remainingAfterRequest?: number;
+  isValid?: boolean;
+  errors?: string[];
   violationReason?: string;
 }
 
