@@ -32,6 +32,14 @@ function formatRequestDate(value: string, locale: string) {
   }).format(new Date(value));
 }
 
+function formatPeriodRange(start: string, end: string, locale: string) {
+  const fmt = new Intl.DateTimeFormat(dateLocales[locale] ?? "en-US", {
+    day: "2-digit",
+    month: "short",
+  });
+  return `${fmt.format(new Date(start))} – ${fmt.format(new Date(end))}`;
+}
+
 function daysUntil(dateStr: string): number {
   return Math.max(
     0,
@@ -84,13 +92,14 @@ export function LiffHomePage() {
   const earnedWage = currentPeriod?.earnedToDate ?? 0;
   const maxAllowed = currentPeriod?.maxWithdrawable ?? 0;
   const previousAdvance = currentPeriod?.previousEWAThisPeriod ?? 0;
-  const daysElapsed = currentPeriod?.daysElapsed ?? 0;
-  const totalDays = currentPeriod?.totalDays ?? 1;
-  const daysToPayday = currentPeriod ? daysUntil(currentPeriod.paydayDate) : 0;
+  const workedDays = currentPeriod?.workedDays ?? 0;
+  const totalWorkDays = currentPeriod?.totalWorkDays ?? 1;
+  const daysToPayday = currentPeriod ? daysUntil(currentPeriod.payDate) : 0;
   const daysToCutoff = currentPeriod ? daysUntil(currentPeriod.cutoffDate) : 0;
 
   const recentRequests = requestsData?.data?.slice(0, 3) ?? [];
   const showBalanceSkeleton = periodLoading && !currentPeriod;
+  const showPeriodSkeleton = periodLoading && !currentPeriod;
   const showRequestsSkeleton = requestsLoading && !requestsData;
 
   return (
@@ -168,26 +177,60 @@ export function LiffHomePage() {
       </section>
 
       <section className="mx-4 mt-4 rounded-lg border border-border bg-white p-4 shadow-card">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[16px] font-semibold text-text-primary">
-            {t("payPeriod")}
-          </h2>
-          <span className="text-[16px] font-medium text-primary">
-            {t("paydayCountdown", { days: daysToPayday })}
-          </span>
-        </div>
-        <ProgressBar value={daysElapsed} max={totalDays} height="8px" />
-        <div className="mt-2 flex items-center justify-between text-[16px] text-text-muted">
-          <span>
-            {t("dayProgress", { elapsed: daysElapsed, total: totalDays })}
-          </span>
-          <span>{t("cutoffWarning", { days: daysToCutoff })}</span>
-        </div>
-        {daysToCutoff <= 3 && (
-          <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[16px] text-amber-800">
-            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
-            <span>{t("cutoffWarning", { days: daysToCutoff })}</span>
+        {showPeriodSkeleton ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-5 w-28 animate-pulse rounded bg-bg-secondary" />
+              <div className="h-5 w-32 animate-pulse rounded bg-bg-secondary" />
+            </div>
+            <div className="h-2 animate-pulse rounded-full bg-bg-secondary" />
+            <div className="flex justify-between">
+              <div className="h-4 w-24 animate-pulse rounded bg-bg-secondary" />
+              <div className="h-4 w-28 animate-pulse rounded bg-bg-secondary" />
+            </div>
           </div>
+        ) : currentPeriod ? (
+          <>
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-[16px] font-semibold text-text-primary">
+                  {currentPeriod.label}
+                </h2>
+                <p className="mt-0.5 text-[14px] text-text-muted">
+                  {formatPeriodRange(
+                    currentPeriod.startDate,
+                    currentPeriod.endDate,
+                    locale,
+                  )}
+                </p>
+              </div>
+              <span className="shrink-0 text-[16px] font-medium text-primary">
+                {t("paydayCountdown", { days: daysToPayday })}
+              </span>
+            </div>
+            <ProgressBar
+              value={workedDays}
+              max={totalWorkDays}
+              height="8px"
+            />
+            <div className="mt-2 flex items-center justify-between text-[16px] text-text-muted">
+              <span>
+                {t("dayProgress", {
+                  elapsed: workedDays,
+                  total: totalWorkDays,
+                })}
+              </span>
+              <span>{t("cutoffWarning", { days: daysToCutoff })}</span>
+            </div>
+            {daysToCutoff <= 3 && daysToCutoff >= 0 && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[16px] text-amber-800">
+                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+                <span>{t("cutoffWarning", { days: daysToCutoff })}</span>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-center text-[16px] text-text-muted">{t("noData")}</p>
         )}
       </section>
 

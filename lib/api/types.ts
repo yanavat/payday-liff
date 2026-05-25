@@ -437,16 +437,16 @@ export interface EffectivePolicyResponse {
 // ── Current Period Response ─────────────────────────────────
 
 export interface CurrentPeriodResponse {
-  type: "monthly" | "weekly";
-  periodStart: string;
-  periodEnd: string;
-  paydayDate: string;
+  label: string;
+  startDate: string;
+  endDate: string;
+  payDate: string;
   cutoffDate: string;
-  daysElapsed: number;
-  totalDays: number;
-  earnedToDate: number;
   workedDays: number;
   totalWorkDays: number;
+  earnedToDate: number;
   previousEWAThisPeriod: number;
   maxWithdrawable: number;
+  usedRequests: number;
+  remainingRequests: number;
 }

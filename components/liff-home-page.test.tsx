@@ -17,18 +17,18 @@ vi.mock('@/components/liff-auth-gate', () => ({
 vi.mock('@/lib/api/hooks/use-employees', () => ({
   useEmployeeCurrentPeriod: vi.fn(() => ({
     data: {
-      type: 'monthly',
-      periodStart: '2026-05-01',
-      periodEnd: '2026-05-31',
-      paydayDate: '2026-05-31',
+      label: 'May 2026',
+      startDate: '2026-05-01',
+      endDate: '2026-05-31',
+      payDate: '2026-05-31',
       cutoffDate: '2026-05-25',
-      daysElapsed: 14,
-      totalDays: 31,
-      earnedToDate: 9200,
       workedDays: 14,
-      totalWorkDays: 31,
+      totalWorkDays: 22,
+      earnedToDate: 9200,
       previousEWAThisPeriod: 1100,
       maxWithdrawable: 4600,
+      usedRequests: 1,
+      remainingRequests: 1,
     },
     loading: false,
     error: null,
@@ -119,7 +119,8 @@ describe('LiffHomePage', () => {
 
   it('renders pay period progress from currentPeriod data', () => {
     renderWithIntl(<LiffHomePage />, { locale: 'en', messages })
-    expect(screen.getByText('Day 14 / 31')).toBeInTheDocument()
+    expect(screen.getByText('May 2026')).toBeInTheDocument()
+    expect(screen.getByText('Day 14 / 22')).toBeInTheDocument()
   })
 
   it('sets up a 30-second polling interval on mount', () => {
