@@ -327,6 +327,8 @@
     "identifierLabel": "Phone or email",
     "identifierPlaceholder": "name@example.com",
     "invitationCodeLabel": "Invitation code",
+    "lineLinkButton": "Connect account",
+    "lineLinkGreeting": "Hello {name}! Connect your employee account to continue securely.",
     "lineLoginButton": "Log in with LINE",
     "lineLinkTitle": "Link LINE account",
     "loginButton": "Sign in",

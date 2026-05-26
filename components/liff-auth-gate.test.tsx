@@ -49,6 +49,8 @@ const messages = {
     identifierLabel: "Phone or email",
     identifierPlaceholder: "name@example.com",
     invitationCodeLabel: "Invitation code",
+    lineLinkButton: "Connect account",
+    lineLinkGreeting: "Hello {name}",
     lineLinkTitle: "Link LINE account",
     lineLoginButton: "Log in with LINE",
     loading: "Checking session...",

@@ -323,6 +323,8 @@
     "identifierLabel": "เบอร์โทรหรืออีเมล",
     "identifierPlaceholder": "name@example.com",
     "invitationCodeLabel": "รหัสคำเชิญ",
+    "lineLinkButton": "เชื่อมต่อบัญชี",
+    "lineLinkGreeting": "สวัสดีคุณ {name}! เชื่อมต่อบัญชีพนักงานเพื่อใช้งานต่ออย่างปลอดภัย",
     "lineLoginButton": "เข้าสู่ระบบด้วย LINE",
     "lineLinkTitle": "เชื่อมต่อบัญชี LINE",
     "loginButton": "เข้าสู่ระบบ",

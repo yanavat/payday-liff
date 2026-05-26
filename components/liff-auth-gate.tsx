@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 
 import { ActivationScreen } from "@/components/activation-screen";
 import { BrowserLoginScreen } from "@/components/browser-login-screen";
+import { LinkLineScreen } from "@/components/link-line-screen";
 import { loadLiffClient } from "@/lib/liff-client";
 
 type AuthState = "loading" | "ready" | "login" | "activation" | "linking" | "error";
@@ -248,14 +249,7 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
           />
         ) : null}
         {authState === "linking" ? (
-          <AuthShell>
-            <h1 className="text-[22px] font-semibold text-text-primary">
-              {t("lineLinkTitle")}
-            </h1>
-            {profile?.displayName ? (
-              <p className="mt-2 text-text-muted">{profile.displayName}</p>
-            ) : null}
-          </AuthShell>
+          profile ? <LinkLineScreen lineProfile={profile} onLinked={refreshSession} /> : null
         ) : null}
         {authState === "error" ? (
           <AuthShell>

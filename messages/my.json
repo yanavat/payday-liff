@@ -323,6 +323,8 @@
     "identifierLabel": "ဖုန်း သို့မဟုတ် အီးမေးလ်",
     "identifierPlaceholder": "name@example.com",
     "invitationCodeLabel": "ဖိတ်ကြားကုဒ်",
+    "lineLinkButton": "အကောင့်ချိတ်ဆက်မည်",
+    "lineLinkGreeting": "မင်္ဂလာပါ {name}! လုံခြုံစွာဆက်သုံးရန် ဝန်ထမ်းအကောင့်ကိုချိတ်ဆက်ပါ။",
     "lineLoginButton": "LINE ဖြင့်ဝင်မည်",
     "lineLinkTitle": "LINE အကောင့်ချိတ်ဆက်မည်",
     "loginButton": "ဝင်မည်",
