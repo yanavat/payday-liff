@@ -8,15 +8,17 @@ type RouterLike = {
 const sessionStorageKey = "payday-session";
 
 export async function signOut(scope: AuthScope, router: RouterLike) {
-  try {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-  } catch {
-    // Local cleanup and navigation should still happen if the network drops.
-  }
+  const logoutRequest =
+    typeof fetch === "function"
+      ? fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        }).catch(() => undefined)
+      : Promise.resolve();
+
   window.localStorage.removeItem(sessionStorageKey);
   router.push(scope === "hr" ? "/hr/login" : "/employee/login");
   router.refresh?.();
+
+  await logoutRequest;
 }

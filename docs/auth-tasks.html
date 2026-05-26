@@ -344,7 +344,7 @@
         <div class="label">Total Tasks</div>
       </div>
       <div class="stat-card pending">
-        <div class="number" id="stat-pending">1</div>
+        <div class="number" id="stat-pending">0</div>
         <div class="label">Pending</div>
       </div>
       <div class="stat-card progress">
@@ -352,13 +352,13 @@
         <div class="label">In Progress</div>
       </div>
       <div class="stat-card done">
-        <div class="number" id="stat-done">29</div>
+        <div class="number" id="stat-done">30</div>
         <div class="label">Completed</div>
       </div>
     </div>
 
     <div class="progress-bar-container">
-      <div class="progress-bar-done" id="bar-done" style="width:96.67%"></div>
+      <div class="progress-bar-done" id="bar-done" style="width:100%"></div>
       <div class="progress-bar-progress" id="bar-progress" style="width:0%"></div>
     </div>
   </header>
@@ -874,18 +874,21 @@
   <div class="phase-group">
     <div class="phase-header" onclick="toggleSection('fe-p4')">
       <h3>Phase 4 — Final Test</h3>
-      <div><span class="phase-count" id="count-fe-p4">0/1</span> <span class="toggle-arrow" id="arrow-fe-p4">▼</span></div>
+      <div><span class="phase-count" id="count-fe-p4">1/1</span> <span class="toggle-arrow" id="arrow-fe-p4">▼</span></div>
     </div>
     <div class="collapsible-content" id="section-fe-p4">
       <ul class="task-list">
-        <li class="task-item pending" data-id="FE-11" data-group="frontend" data-phase="fe-p4">
+        <li class="task-item completed" data-id="FE-11" data-group="frontend" data-phase="fe-p4">
           <div class="task-checkbox" onclick="cycleStatus(this)"></div>
           <div class="task-content">
             <div class="task-title"><span class="task-id">FE-11</span>E2E smoke test — full auth flow</div>
-            <div class="task-desc">Browser: activate → login → request with PIN. Browser LINE OAuth: auto-login. LIFF mock: auto-login linked, link-line unlinked. HR: email+password. Verify cookies, /auth/me, logout.</div>
+            <div class="task-desc">Completed final auth smoke coverage across AuthGate states, activation errors, PIN step-up request submission, HR email/password login, auth cookie credentials, logout, and no JWT token storage.</div>
             <div class="task-meta">
-              <span class="tag tag-checkpoint">GATE — auth feature complete</span>
-              <span class="tag tag-blocked">blocked by all FE tasks</span>
+              <span class="tag tag-file">components/liff-auth-gate.test.tsx</span>
+              <span class="tag tag-file">components/activation-screen.test.tsx</span>
+              <span class="tag tag-file">components/liff-request-page.test.tsx</span>
+              <span class="tag tag-file">components/hr/hr-login-page.test.tsx</span>
+              <span class="tag tag-checkpoint">verified: npm test + build</span>
             </div>
           </div>
         </li>
