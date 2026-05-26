@@ -9,7 +9,7 @@ import { QuickAmountButton } from "@/components/ui/quick-amount-button"
 import { StatusBadge, type RequestStatus } from "@/components/ui/status-badge"
 import { StepIndicator } from "@/components/ui/step-indicator"
 import {
-  useLinkedEmployeeId,
+  useAuth,
   useLiffProfile,
 } from "@/components/liff-auth-gate"
 import {
@@ -84,7 +84,8 @@ export function LiffRequestPage() {
     null,
   )
 
-  const employeeId = useLinkedEmployeeId()
+  const { employee: authEmployee, isInLiff } = useAuth()
+  const employeeId = getAuthEmployeeId(authEmployee)
   const profile = useLiffProfile()
   const locale = useLocale()
   const pathname = usePathname()
@@ -133,14 +134,8 @@ export function LiffRequestPage() {
     : ""
 
   useEffect(() => {
-    let cancelled = false
-    loadLiffClient().then((liff) => {
-      if (!cancelled) setIsInClient(liff.isInClient())
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    setIsInClient(isInLiff)
+  }, [isInLiff])
 
   useEffect(() => {
     if (step !== 3) return
@@ -600,6 +595,10 @@ export function LiffRequestPage() {
       )}
     </div>
   )
+}
+
+function getAuthEmployeeId(employee: Record<string, unknown> | null) {
+  return String(employee?.employeeCode ?? employee?.id ?? "")
 }
 
 function SummaryRow({

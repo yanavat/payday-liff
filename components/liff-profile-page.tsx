@@ -3,12 +3,10 @@
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
-  Bell,
   ChevronDown,
   CreditCard,
   Link2Off,
   MessageCircle,
-  Pencil,
   WalletCards,
   X,
 } from "lucide-react";
@@ -20,14 +18,12 @@ import { Avatar } from "@/components/ui/avatar";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import {
+  useAuth,
   useLiffProfile,
-  useLinkedEmployeeId,
 } from "@/components/liff-auth-gate";
 import { useEmployee } from "@/lib/api/hooks/use-employees";
 import { useSettingsActions } from "@/lib/api/hooks/use-settings";
 import { loadLiffClient } from "@/lib/liff-client";
-
-const EMPLOYEE_LINKS_STORAGE_KEY = "payday-liff-employee-links";
 
 const THAI_BANKS = [
   { code: "KBANK", nameTh: "กสิกรไทย", nameEn: "Kasikorn Bank" },
@@ -57,12 +53,11 @@ export function LiffProfilePage() {
   const t = useTranslations();
   const locale = useLocale();
   const profile = useLiffProfile();
-  const employeeId = useLinkedEmployeeId();
+  const { employee: authEmployee, logout } = useAuth();
+  const employeeId = getAuthEmployeeId(authEmployee);
   const { data: employee } = useEmployee(employeeId);
   const { updateNotifications } = useSettingsActions();
 
-  const [approval, setApproval] = useState(true);
-  const [payday, setPayday] = useState(true);
   const [line, setLine] = useState(true);
   const [showEditBank, setShowEditBank] = useState(false);
 
@@ -89,21 +84,15 @@ export function LiffProfilePage() {
   }
 
   function handleUnlink() {
-    if (!profile?.userId) return;
-    try {
-      const links = JSON.parse(
-        localStorage.getItem(EMPLOYEE_LINKS_STORAGE_KEY) ?? "{}",
-      ) as Record<string, string>;
-      delete links[profile.userId];
-      localStorage.setItem(EMPLOYEE_LINKS_STORAGE_KEY, JSON.stringify(links));
-      void loadLiffClient().then((liff) => {
-        liff.logout();
-        liff.closeWindow();
+    void logout()
+      .catch(() => undefined)
+      .finally(() => {
+        void loadLiffClient().then((liff) => {
+          liff.logout();
+          liff.closeWindow();
+        });
+        window.location.reload();
       });
-    } catch {
-      // ignore parse errors
-    }
-    window.location.reload();
   }
 
   return (
@@ -274,6 +263,10 @@ export function LiffProfilePage() {
       />
     </div>
   );
+}
+
+function getAuthEmployeeId(employee: Record<string, unknown> | null) {
+  return String(employee?.employeeCode ?? employee?.id ?? "");
 }
 
 interface BankAccountSheetProps {

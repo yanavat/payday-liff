@@ -6,7 +6,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { getApiClient, setAuthToken } from "@/lib/api/client";
+import { getApiClient } from "@/lib/api/client";
 import type { CompanyDto, PaginatedResponse } from "@/lib/api/types";
 import type {
   OnboardingStep,
@@ -162,7 +162,6 @@ export function LiffOnboardingPage({
         },
       );
       const companyId = response.companyId || employee.companyId;
-      setAuthToken(response.authToken);
       localStorage.setItem(COMPANY_ID_STORAGE_KEY, companyId);
       getApiClient().setCompanyId(companyId);
       setStep("complete");

@@ -122,6 +122,18 @@ describe("ApiClient fetchWithRetry behaviour", () => {
     const result = await client.delete("/resource/1");
     expect(result).toBeUndefined();
   });
+
+  it("does not store JWT auth tokens in localStorage", async () => {
+    const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+    const removeItemSpy = vi.spyOn(Storage.prototype, "removeItem");
+    const { clearAuthToken, setAuthToken } = await import("./client");
+
+    setAuthToken("jwt");
+    clearAuthToken();
+
+    expect(setItemSpy).not.toHaveBeenCalledWith("auth_token", expect.any(String));
+    expect(removeItemSpy).not.toHaveBeenCalledWith("auth_token");
+  });
 });
 
 describe("getApiErrorMessage — error code mapping", () => {

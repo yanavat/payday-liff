@@ -344,7 +344,7 @@
         <div class="label">Total Tasks</div>
       </div>
       <div class="stat-card pending">
-        <div class="number" id="stat-pending">5</div>
+        <div class="number" id="stat-pending">4</div>
         <div class="label">Pending</div>
       </div>
       <div class="stat-card progress">
@@ -352,13 +352,13 @@
         <div class="label">In Progress</div>
       </div>
       <div class="stat-card done">
-        <div class="number" id="stat-done">25</div>
+        <div class="number" id="stat-done">26</div>
         <div class="label">Completed</div>
       </div>
     </div>
 
     <div class="progress-bar-container">
-      <div class="progress-bar-done" id="bar-done" style="width:83.33%"></div>
+      <div class="progress-bar-done" id="bar-done" style="width:86.67%"></div>
       <div class="progress-bar-progress" id="bar-progress" style="width:0%"></div>
     </div>
   </header>
@@ -777,7 +777,7 @@
   <div class="phase-group">
     <div class="phase-header" onclick="toggleSection('fe-p2')">
       <h3>Phase 2 — LIFF Integration</h3>
-      <div><span class="phase-count" id="count-fe-p2">2/3</span> <span class="toggle-arrow" id="arrow-fe-p2">▼</span></div>
+      <div><span class="phase-count" id="count-fe-p2">3/3</span> <span class="toggle-arrow" id="arrow-fe-p2">▼</span></div>
     </div>
     <div class="collapsible-content" id="section-fe-p2">
       <ul class="task-list">
@@ -803,16 +803,16 @@
             </div>
           </div>
         </li>
-        <li class="task-item pending" data-id="FE-6" data-group="frontend" data-phase="fe-p2">
+        <li class="task-item completed" data-id="FE-6" data-group="frontend" data-phase="fe-p2">
           <div class="task-checkbox" onclick="cycleStatus(this)"></div>
           <div class="task-content">
             <div class="task-title"><span class="task-id">FE-6</span>Replace useLiffProfile/useLinkedEmployeeId with JWT auth</div>
-            <div class="task-desc">Remove localStorage linking. Create useAuth() hook from AuthContext. Update liff-home-page, liff-request-page, liff-profile-page.</div>
+            <div class="task-desc">Updated LIFF Home, Request, and Profile screens to derive employee identity from useAuth(). Removed old localStorage employee-link mutation and JWT auth_token storage from API/onboarding remnants.</div>
             <div class="task-meta">
               <span class="tag tag-file">liff-home-page.tsx</span>
               <span class="tag tag-file">liff-request-page.tsx</span>
               <span class="tag tag-file">liff-profile-page.tsx</span>
-              <span class="tag tag-checkpoint">ready after FE-1</span>
+              <span class="tag tag-checkpoint">verified: affected tests + build</span>
             </div>
           </div>
         </li>

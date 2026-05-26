@@ -6,11 +6,10 @@ import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
 
 import { LiffOnboardingPage } from "./liff-onboarding-page";
 
-const { getMock, postMock, setCompanyIdMock, setAuthTokenMock } = vi.hoisted(() => ({
+const { getMock, postMock, setCompanyIdMock } = vi.hoisted(() => ({
   getMock: vi.fn(),
   postMock: vi.fn(),
   setCompanyIdMock: vi.fn(),
-  setAuthTokenMock: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -23,7 +22,6 @@ vi.mock("@/lib/api/client", () => ({
     post: postMock,
     setCompanyId: setCompanyIdMock,
   }),
-  setAuthToken: setAuthTokenMock,
 }));
 
 const employeeResponse = {
@@ -137,7 +135,6 @@ describe("LiffOnboardingPage", () => {
     });
     postMock.mockReset();
     setCompanyIdMock.mockReset();
-    setAuthTokenMock.mockReset();
     mockSearchParams();
   });
 

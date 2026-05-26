@@ -7,10 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
-import {
-  useLiffProfile,
-  useLinkedEmployeeId,
-} from "@/components/liff-auth-gate";
+import { useAuth, useLiffProfile } from "@/components/liff-auth-gate";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { withLiffLocale } from "@/lib/liff-routes";
 import { formatTHB } from "@/lib/utils/format";
@@ -64,8 +61,9 @@ export function LiffHomePage() {
   const t = useTranslations("home");
   const nav = useTranslations("nav");
   const status = useTranslations("status");
+  const { employee: authEmployee } = useAuth();
 
-  const employeeId = useLinkedEmployeeId();
+  const employeeId = getAuthEmployeeId(authEmployee);
   const {
     data: currentPeriod,
     loading: periodLoading,
@@ -310,4 +308,8 @@ export function LiffHomePage() {
       </section>
     </div>
   );
+}
+
+function getAuthEmployeeId(employee: Record<string, unknown> | null) {
+  return String(employee?.employeeCode ?? employee?.id ?? "");
 }

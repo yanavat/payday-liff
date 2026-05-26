@@ -6,12 +6,15 @@ const refetchPeriodMock = vi.fn()
 const refetchRequestsMock = vi.fn()
 
 vi.mock('@/components/liff-auth-gate', () => ({
+  useAuth: vi.fn(() => ({
+    employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+    isInLiff: true,
+  })),
   useLiffProfile: vi.fn(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
     pictureUrl: 'https://profile.line.example/avatar.jpg',
   })),
-  useLinkedEmployeeId: vi.fn(() => 'EMP-001'),
 }))
 
 vi.mock('@/lib/api/hooks/use-employees', () => ({

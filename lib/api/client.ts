@@ -7,7 +7,6 @@ import type { ApiError } from "./types";
 interface ApiClientConfig {
   baseURL: string;
   companyId?: string;
-  getAuthToken?: () => string | null;
 }
 
 class ApiClient {
@@ -33,12 +32,6 @@ class ApiClient {
     // Add company ID header if available
     if (this.config.companyId) {
       headers["x-company-id"] = this.config.companyId;
-    }
-
-    // Add authorization token if available
-    const token = this.config.getAuthToken?.();
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
     }
 
     return headers;
@@ -105,6 +98,7 @@ class ApiClient {
     const response = await this.fetchWithRetry(url.toString(), {
       method: "GET",
       headers: this.getHeaders(),
+      credentials: "include",
     });
 
     return this.handleResponse<T>(response);
@@ -117,6 +111,7 @@ class ApiClient {
         method: "POST",
         headers: this.getHeaders(),
         body: body ? JSON.stringify(body) : undefined,
+        credentials: "include",
       },
     );
 
@@ -130,6 +125,7 @@ class ApiClient {
         method: "PATCH",
         headers: this.getHeaders(),
         body: body ? JSON.stringify(body) : undefined,
+        credentials: "include",
       },
     );
 
@@ -142,6 +138,7 @@ class ApiClient {
       {
         method: "DELETE",
         headers: this.getHeaders(),
+        credentials: "include",
       },
     );
 
@@ -155,6 +152,7 @@ class ApiClient {
         method: "PUT",
         headers: this.getHeaders(),
         body: body ? JSON.stringify(body) : undefined,
+        credentials: "include",
       },
     );
 
@@ -174,18 +172,9 @@ export function getApiClient(): ApiClient {
         ? localStorage.getItem("payday-company-id")
         : null) ?? process.env.NEXT_PUBLIC_COMPANY_ID;
 
-    // Simple token storage in localStorage (will be replaced with HttpOnly cookies in production)
-    const getAuthToken = () => {
-      if (typeof window !== "undefined") {
-        return localStorage.getItem("auth_token");
-      }
-      return null;
-    };
-
     apiClientInstance = new ApiClient({
       baseURL,
       companyId,
-      getAuthToken,
     });
   }
 
@@ -193,13 +182,9 @@ export function getApiClient(): ApiClient {
 }
 
 export function setAuthToken(token: string): void {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("auth_token", token);
-  }
+  void token;
 }
 
 export function clearAuthToken(): void {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("auth_token");
-  }
+  return;
 }

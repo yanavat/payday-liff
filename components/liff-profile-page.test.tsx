@@ -2,13 +2,19 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
+const logoutMock = vi.hoisted(() => vi.fn().mockResolvedValue(undefined))
+
 vi.mock('@/components/liff-auth-gate', () => ({
+  useAuth: vi.fn(() => ({
+    employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+    isInLiff: true,
+    logout: logoutMock,
+  })),
   useLiffProfile: vi.fn(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
     pictureUrl: 'https://profile.line.example/avatar.jpg',
   })),
-  useLinkedEmployeeId: vi.fn(() => 'EMP-001'),
 }))
 
 vi.mock('@/components/shared/locale-switcher', () => ({
@@ -101,6 +107,7 @@ describe('LiffProfilePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     localStorage.clear()
+    logoutMock.mockResolvedValue(undefined)
     updateNotificationsMock.mockResolvedValue({})
   })
 
@@ -124,17 +131,15 @@ describe('LiffProfilePage', () => {
     expect(screen.getByRole('button', { name: /Unlink LINE account/i })).toBeInTheDocument()
   })
 
-  it('unlink button clears localStorage entry and reloads', () => {
+  it('unlink button logs out through the auth context and reloads', async () => {
     const reloadMock = vi.fn()
     Object.defineProperty(window, 'location', { value: { reload: reloadMock }, writable: true })
-    localStorage.setItem('payday-liff-employee-links', JSON.stringify({ U1234567890: 'EMP-001' }))
 
     renderWithIntl(<LiffProfilePage />, { messages })
     fireEvent.click(screen.getByRole('button', { name: /Unlink LINE account/i }))
 
-    const stored = JSON.parse(localStorage.getItem('payday-liff-employee-links') ?? '{}')
-    expect(stored).not.toHaveProperty('U1234567890')
-    expect(reloadMock).toHaveBeenCalledOnce()
+    await waitFor(() => expect(logoutMock).toHaveBeenCalledOnce())
+    await waitFor(() => expect(reloadMock).toHaveBeenCalledOnce())
   })
 
   it('falls back to Avatar initials when pictureUrl is absent', () => {
@@ -153,10 +158,9 @@ describe('LiffProfilePage', () => {
     expect(screen.getByText('xxx-x-xx123-4')).toBeInTheDocument()
   })
 
-  it('calls updateNotifications when approval toggle changes', async () => {
+  it('calls updateNotifications when LINE notification toggle changes', async () => {
     renderWithIntl(<LiffProfilePage />, { messages })
-    const approvalToggle = screen.getByRole('button', { name: /Notify on approval/i })
-    fireEvent.click(approvalToggle)
+    fireEvent.click(screen.getByRole('button', { name: /Notify via LINE/i }))
     await waitFor(() => expect(updateNotificationsMock).toHaveBeenCalledOnce())
   })
 

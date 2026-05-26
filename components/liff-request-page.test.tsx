@@ -31,11 +31,14 @@ vi.mock('@/lib/api/services/otp', () => ({
 }))
 
 vi.mock('@/components/liff-auth-gate', () => ({
+  useAuth: () => ({
+    employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+    isInLiff: false,
+  }),
   useLiffProfile: () => ({
     userId: 'U123',
     displayName: 'Test User',
   }),
-  useLinkedEmployeeId: () => 'EMP-001',
 }))
 
 vi.mock('@/lib/api/hooks/use-employees', () => ({
@@ -258,8 +261,11 @@ describe('LiffRequestPage — step 2 OTP', () => {
     fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
     await waitFor(() => expect(createMock).toHaveBeenCalledWith(
-      expect.objectContaining({ employeeId: 'EMP-001', amount: 3000 }),
+      expect.objectContaining({ amount: 3000, reason: 'medical' }),
     ))
+    expect(createMock).not.toHaveBeenCalledWith(
+      expect.objectContaining({ employeeId: 'EMP-001' }),
+    )
     await screen.findByText('Request Submitted!')
   })
 
