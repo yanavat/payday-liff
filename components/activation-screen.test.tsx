@@ -5,10 +5,8 @@ import { defaultMessages, renderWithIntl } from "@/tests/i18n/test-utils";
 
 import { LIFFAuthGate } from "./liff-auth-gate";
 
-const loadLiffClientMock = vi.fn();
-
 vi.mock("@/lib/liff-client", () => ({
-  loadLiffClient: () => loadLiffClientMock(),
+  loadLiffClient: vi.fn(),
 }));
 
 const messages = {
@@ -64,10 +62,16 @@ function renderGate(children = <p>Employee app</p>) {
   return renderWithIntl(<LIFFAuthGate>{children}</LIFFAuthGate>, { messages });
 }
 
-describe("Browser login screen", () => {
+async function openActivation() {
+  fireEvent.click(await screen.findByRole("button", { name: "First-time Activation" }));
+  await screen.findByRole("heading", { name: "Activate your account" });
+}
+
+describe("Activation screen", () => {
   beforeEach(() => {
     vi.stubEnv("NEXT_PUBLIC_LIFF_ID", "test-liff-id");
     vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "false");
+    window.history.pushState({}, "", "/en");
   });
 
   afterEach(() => {
@@ -76,26 +80,8 @@ describe("Browser login screen", () => {
     vi.clearAllMocks();
   });
 
-  it("renders LINE login entry, divider, identifier/PIN form, and activation switch", async () => {
-    mockFetch([jsonResponse({ message: "Unauthorized" }, { status: 401 })]);
-
-    renderGate();
-
-    expect(await screen.findByRole("heading", { name: "Sign in to PayDay+" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Log in with LINE" })).toHaveAttribute(
-      "href",
-      "https://liff.line.me/test-liff-id",
-    );
-    expect(screen.getByText("or")).toBeInTheDocument();
-    expect(screen.getByLabelText("Phone or email")).toBeInTheDocument();
-    expect(screen.getByLabelText("6-digit PIN")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "First-time Activation" }));
-
-    expect(await screen.findByText("Activate your account")).toBeInTheDocument();
-  });
-
-  it("logs in through /api/auth/login and renders the app after session refresh", async () => {
+  it("prefills phone from query params and activates through /api/auth/activate", async () => {
+    window.history.pushState({}, "", "/en?phone=0812345678");
     const fetchMock = mockFetch([
       jsonResponse({ message: "Unauthorized" }, { status: 401 }),
       jsonResponse({ success: true }),
@@ -105,20 +91,29 @@ describe("Browser login screen", () => {
     ]);
 
     renderGate();
+    await openActivation();
 
-    fireEvent.change(await screen.findByLabelText("Phone or email"), {
-      target: { value: "somchai@example.com" },
-    });
-    fireEvent.change(screen.getByLabelText("6-digit PIN"), {
+    expect(screen.getByLabelText("Phone number")).toHaveValue("0812345678");
+    fireEvent.change(screen.getByLabelText("Invitation code"), {
       target: { value: "123456" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.change(screen.getByLabelText("New PIN"), {
+      target: { value: "654321" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm new PIN"), {
+      target: { value: "654321" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Activate account" }));
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        "/api/auth/login",
+        "/api/auth/activate",
         expect.objectContaining({
-          body: JSON.stringify({ identifier: "somchai@example.com", pin: "123456" }),
+          body: JSON.stringify({
+            phone: "0812345678",
+            invitationCode: "123456",
+            pin: "654321",
+          }),
           credentials: "include",
           method: "POST",
         }),
@@ -127,34 +122,59 @@ describe("Browser login screen", () => {
     expect(await screen.findByText("Employee app")).toBeInTheDocument();
   });
 
-  it("shows invalid credential and rate-limit errors", async () => {
+  it("shows a local validation error when PIN confirmation does not match", async () => {
     const fetchMock = mockFetch([
       jsonResponse({ message: "Unauthorized" }, { status: 401 }),
-      jsonResponse({ message: "Unauthorized" }, { status: 401 }),
-      jsonResponse(
-        { message: "Too many attempts" },
-        { status: 429, headers: { "Retry-After": "45" } },
-      ),
     ]);
 
     renderGate();
+    await openActivation();
 
-    fireEvent.change(await screen.findByLabelText("Phone or email"), {
-      target: { value: "somchai@example.com" },
+    fireEvent.change(screen.getByLabelText("Phone number"), {
+      target: { value: "0812345678" },
     });
-    fireEvent.change(screen.getByLabelText("6-digit PIN"), {
-      target: { value: "111111" },
+    fireEvent.change(screen.getByLabelText("Invitation code"), {
+      target: { value: "123456" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
-
-    expect(await screen.findByText("Invalid phone/email or PIN")).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("6-digit PIN"), {
-      target: { value: "222222" },
+    fireEvent.change(screen.getByLabelText("New PIN"), {
+      target: { value: "654321" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.change(screen.getByLabelText("Confirm new PIN"), {
+      target: { value: "123456" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Activate account" }));
 
-    expect(await screen.findByText("Too many attempts. Try again in 45s.")).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(await screen.findByText("PINs do not match")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    [410, "Invitation code expired. Please contact HR."],
+    [401, "Invalid invitation code"],
+    [400, "Already activated"],
+  ])("shows activation API error for status %s", async (status, message) => {
+    mockFetch([
+      jsonResponse({ message: "Unauthorized" }, { status: 401 }),
+      jsonResponse({ message }, { status }),
+    ]);
+
+    renderGate();
+    await openActivation();
+
+    fireEvent.change(screen.getByLabelText("Phone number"), {
+      target: { value: "0812345678" },
+    });
+    fireEvent.change(screen.getByLabelText("Invitation code"), {
+      target: { value: "123456" },
+    });
+    fireEvent.change(screen.getByLabelText("New PIN"), {
+      target: { value: "654321" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm new PIN"), {
+      target: { value: "654321" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Activate account" }));
+
+    expect(await screen.findByText(message)).toBeInTheDocument();
   });
 });

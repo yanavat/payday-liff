@@ -11,6 +11,7 @@ import {
 } from "react";
 import { useTranslations } from "next-intl";
 
+import { ActivationScreen } from "@/components/activation-screen";
 import { BrowserLoginScreen } from "@/components/browser-login-screen";
 import { loadLiffClient } from "@/lib/liff-client";
 
@@ -71,7 +72,6 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
   const [hrUser, setHrUser] = useState<AuthActor | null>(null);
   const [isInLiff, setIsInLiff] = useState(false);
   const [profile, setProfile] = useState<LiffProfile | null>(null);
-  const [lineUserId, setLineUserId] = useState("");
   const t = useTranslations("auth");
 
   const applySession = useCallback((session: AuthMeResponse) => {
@@ -188,7 +188,6 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
 
         setIsInLiff(nextIsInLiff);
         setProfile({ ...nextProfile, email });
-        setLineUserId(nextProfile.userId);
 
         const lineLoginResponse = await authFetch("/api/auth/line-login", {
           method: "POST",
@@ -243,12 +242,10 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
           <BrowserLoginScreen onActivate={() => setAuthState("activation")} />
         ) : null}
         {authState === "activation" ? (
-          <AuthShell>
-            <h1 className="text-[22px] font-semibold text-text-primary">
-              {t("activationTitle")}
-            </h1>
-            {lineUserId ? <p className="mt-2 text-text-muted">{lineUserId}</p> : null}
-          </AuthShell>
+          <ActivationScreen
+            onActivated={refreshSession}
+            onBackToLogin={() => setAuthState("login")}
+          />
         ) : null}
         {authState === "linking" ? (
           <AuthShell>
