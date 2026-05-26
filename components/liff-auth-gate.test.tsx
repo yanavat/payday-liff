@@ -32,12 +32,25 @@ function createLiffClient(overrides: Partial<LiffClient> = {}): LiffClient {
 const messages = {
   ...defaultMessages,
   auth: {
+    activationLink: "First-time Activation",
     activationTitle: "Activate your account",
+    dividerOr: "or",
+    errorAlreadyActivated: "Already activated",
+    errorExpiredInvitation: "Invitation code expired. Please contact HR.",
+    errorInvalidCredentials: "Invalid phone/email or PIN",
+    errorInvalidInvitation: "Invalid invitation code",
+    errorTooManyAttempts: "Too many attempts. Try again in {seconds}s.",
     errorTitle: "Authentication unavailable",
     errorDescription: "Please try again.",
+    identifierLabel: "Phone or email",
+    identifierPlaceholder: "name@example.com",
     lineLinkTitle: "Link LINE account",
+    lineLoginButton: "Log in with LINE",
     loading: "Checking session...",
+    loginButton: "Sign in",
     loginTitle: "Sign in to PayDay+",
+    pinLabel: "6-digit PIN",
+    pinPlaceholder: "••••••",
   },
 };
 

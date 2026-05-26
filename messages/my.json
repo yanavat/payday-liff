@@ -306,10 +306,23 @@
     "unlinkLine": "LINE အကောင့်ချိတ်ဆက်မှုဖြုတ်မည်"
   },
   "auth": {
+    "activationLink": "ပထမဆုံးအကြိမ် အကောင့်ဖွင့်မည်",
     "loading": "Session စစ်ဆေးနေသည်...",
     "loginTitle": "PayDay+ ဝင်ရောက်မည်",
     "activationTitle": "အကောင့်ဖွင့်မည်",
+    "dividerOr": "သို့မဟုတ်",
+    "errorAlreadyActivated": "အကောင့်ဖွင့်ပြီးသားဖြစ်သည်",
+    "errorExpiredInvitation": "ဖိတ်ကြားကုဒ် သက်တမ်းကုန်သွားပါပြီ။ HR ကိုဆက်သွယ်ပါ။",
+    "errorInvalidCredentials": "ဖုန်း/အီးမေးလ် သို့မဟုတ် PIN မမှန်ပါ",
+    "errorInvalidInvitation": "ဖိတ်ကြားကုဒ် မမှန်ပါ",
+    "errorTooManyAttempts": "ကြိုးစားမှုများလွန်းသည်။ {seconds}s အကြာတွင်ထပ်ကြိုးစားပါ။",
+    "identifierLabel": "ဖုန်း သို့မဟုတ် အီးမေးလ်",
+    "identifierPlaceholder": "name@example.com",
+    "lineLoginButton": "LINE ဖြင့်ဝင်မည်",
     "lineLinkTitle": "LINE အကောင့်ချိတ်ဆက်မည်",
+    "loginButton": "ဝင်မည်",
+    "pinLabel": "PIN ၆ လုံး",
+    "pinPlaceholder": "••••••",
     "errorTitle": "အတည်ပြု၍မရပါ",
     "errorDescription": "ထပ်မံကြိုးစားပါ"
   },

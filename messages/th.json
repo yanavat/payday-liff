@@ -306,10 +306,23 @@
     "unlinkLine": "ยกเลิกการเชื่อมต่อ LINE"
   },
   "auth": {
+    "activationLink": "เปิดใช้งานบัญชีครั้งแรก",
     "loading": "กำลังตรวจสอบเซสชัน...",
     "loginTitle": "เข้าสู่ระบบ PayDay+",
     "activationTitle": "เปิดใช้งานบัญชี",
+    "dividerOr": "หรือ",
+    "errorAlreadyActivated": "บัญชีนี้เปิดใช้งานไปแล้ว",
+    "errorExpiredInvitation": "รหัสคำเชิญหมดอายุแล้ว กรุณาติดต่อฝ่ายบุคคล",
+    "errorInvalidCredentials": "เบอร์โทร/อีเมล หรือ PIN ไม่ถูกต้อง",
+    "errorInvalidInvitation": "รหัสคำเชิญไม่ถูกต้อง",
+    "errorTooManyAttempts": "พยายามหลายครั้งเกินไป กรุณาลองใหม่ใน {seconds} วินาที",
+    "identifierLabel": "เบอร์โทรหรืออีเมล",
+    "identifierPlaceholder": "name@example.com",
+    "lineLoginButton": "เข้าสู่ระบบด้วย LINE",
     "lineLinkTitle": "เชื่อมต่อบัญชี LINE",
+    "loginButton": "เข้าสู่ระบบ",
+    "pinLabel": "PIN 6 หลัก",
+    "pinPlaceholder": "••••••",
     "errorTitle": "ไม่สามารถยืนยันตัวตนได้",
     "errorDescription": "กรุณาลองใหม่อีกครั้ง"
   },

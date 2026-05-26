@@ -11,6 +11,7 @@ import {
 } from "react";
 import { useTranslations } from "next-intl";
 
+import { BrowserLoginScreen } from "@/components/browser-login-screen";
 import { loadLiffClient } from "@/lib/liff-client";
 
 type AuthState = "loading" | "ready" | "login" | "activation" | "linking" | "error";
@@ -239,11 +240,7 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
           <AuthShell>{t("loading")}</AuthShell>
         ) : null}
         {authState === "login" ? (
-          <AuthShell>
-            <h1 className="text-[22px] font-semibold text-text-primary">
-              {t("loginTitle")}
-            </h1>
-          </AuthShell>
+          <BrowserLoginScreen onActivate={() => setAuthState("activation")} />
         ) : null}
         {authState === "activation" ? (
           <AuthShell>

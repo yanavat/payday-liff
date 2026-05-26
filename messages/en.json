@@ -310,10 +310,23 @@
     "unlinkLine": "Unlink LINE account"
   },
   "auth": {
+    "activationLink": "First-time Activation",
     "loading": "Checking session...",
     "loginTitle": "Sign in to PayDay+",
     "activationTitle": "Activate your account",
+    "dividerOr": "or",
+    "errorAlreadyActivated": "Already activated",
+    "errorExpiredInvitation": "Invitation code expired. Please contact HR.",
+    "errorInvalidCredentials": "Invalid phone/email or PIN",
+    "errorInvalidInvitation": "Invalid invitation code",
+    "errorTooManyAttempts": "Too many attempts. Try again in {seconds}s.",
+    "identifierLabel": "Phone or email",
+    "identifierPlaceholder": "name@example.com",
+    "lineLoginButton": "Log in with LINE",
     "lineLinkTitle": "Link LINE account",
+    "loginButton": "Sign in",
+    "pinLabel": "6-digit PIN",
+    "pinPlaceholder": "••••••",
     "errorTitle": "Authentication unavailable",
     "errorDescription": "Please try again."
   },
