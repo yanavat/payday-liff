@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
-import { authenticateHR } from "@/lib/auth/mock-auth";
 
 export function HRLoginPage() {
   const t = useTranslations("login");
@@ -18,25 +17,33 @@ export function HRLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isLoading) return;
 
     setError("");
     setIsLoading(true);
 
-    window.setTimeout(async () => {
-      const result = await authenticateHR(email, password);
+    try {
+      const response = await fetch("/api/auth/hr/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (result.ok) {
-        window.localStorage.setItem("payday-session", result.token);
+      if (response.ok) {
+        window.localStorage.removeItem("payday-session");
         router.push("/hr/dashboard");
         return;
       }
 
-      setIsLoading(false);
       setError(t("wrongPin", { attempts: 0 }));
-    }, 500);
+    } catch {
+      setError(t("wrongPin", { attempts: 0 }));
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

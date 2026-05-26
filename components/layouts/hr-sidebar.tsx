@@ -11,12 +11,11 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { signOut } from "@/lib/auth/session";
-import { useRouter } from "next/navigation";
 
 const mainNav = [
   { href: "/hr/dashboard", labelKey: "dashboard", icon: Gauge },
@@ -151,16 +150,16 @@ export function HRSidebar() {
           const Icon = item.icon;
 
           return (
-            <Link
+            <button
               key={item.href}
-              href={item.href}
+              type="button"
               title={collapsed ? t(item.labelKey as keyof typeof t) : undefined}
               className={cn(
                 "flex h-[38px] items-center gap-3 rounded-md px-3 text-sm font-medium text-text-secondary transition hover:bg-primary-bg hover:text-primary-dark",
                 collapsed && "justify-center px-0",
               )}
               onClick={() => {
-                signOut("hr", router);
+                void signOut("hr", router);
               }}
             >
               <Icon
@@ -176,7 +175,7 @@ export function HRSidebar() {
               >
                 {t(item.labelKey as keyof typeof t)}
               </span>
-            </Link>
+            </button>
           );
         })}
       </div>

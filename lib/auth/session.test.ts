@@ -1,22 +1,36 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { signOut } from "./session";
 
 describe("session", () => {
-  it("clears the saved session and routes HR users to HR login", () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("logs out through the auth proxy and routes HR users to HR login", async () => {
     const push = vi.fn();
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
     window.localStorage.setItem("payday-session", "token");
 
-    signOut("hr", { push });
+    await signOut("hr", { push });
 
+    expect(fetchMock).toHaveBeenCalledWith("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
     expect(window.localStorage.getItem("payday-session")).toBeNull();
     expect(push).toHaveBeenCalledWith("/hr/login");
   });
 
-  it("clears the saved session and routes employees to employee login", () => {
+  it("clears stale local sessions and routes employees to employee login", async () => {
     const push = vi.fn();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new Error("network")),
+    );
     window.localStorage.setItem("payday-session", "token");
 
-    signOut("employee", { push });
+    await signOut("employee", { push });
 
     expect(window.localStorage.getItem("payday-session")).toBeNull();
     expect(push).toHaveBeenCalledWith("/employee/login");

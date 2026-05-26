@@ -344,7 +344,7 @@
         <div class="label">Total Tasks</div>
       </div>
       <div class="stat-card pending">
-        <div class="number" id="stat-pending">2</div>
+        <div class="number" id="stat-pending">1</div>
         <div class="label">Pending</div>
       </div>
       <div class="stat-card progress">
@@ -352,13 +352,13 @@
         <div class="label">In Progress</div>
       </div>
       <div class="stat-card done">
-        <div class="number" id="stat-done">28</div>
+        <div class="number" id="stat-done">29</div>
         <div class="label">Completed</div>
       </div>
     </div>
 
     <div class="progress-bar-container">
-      <div class="progress-bar-done" id="bar-done" style="width:93.33%"></div>
+      <div class="progress-bar-done" id="bar-done" style="width:96.67%"></div>
       <div class="progress-bar-progress" id="bar-progress" style="width:0%"></div>
     </div>
   </header>
@@ -824,7 +824,7 @@
   <div class="phase-group">
     <div class="phase-header" onclick="toggleSection('fe-p3')">
       <h3>Phase 3 — Features</h3>
-      <div><span class="phase-count" id="count-fe-p3">2/3</span> <span class="toggle-arrow" id="arrow-fe-p3">▼</span></div>
+      <div><span class="phase-count" id="count-fe-p3">3/3</span> <span class="toggle-arrow" id="arrow-fe-p3">▼</span></div>
     </div>
     <div class="collapsible-content" id="section-fe-p3">
       <ul class="task-list">
@@ -853,14 +853,16 @@
             </div>
           </div>
         </li>
-        <li class="task-item pending" data-id="FE-9" data-group="frontend" data-phase="fe-p3">
+        <li class="task-item completed" data-id="FE-9" data-group="frontend" data-phase="fe-p3">
           <div class="task-checkbox" onclick="cycleStatus(this)"></div>
           <div class="task-content">
             <div class="task-title"><span class="task-id">FE-9</span>HR login screen — email + password</div>
-            <div class="task-desc">HRLoginPage at /hr/login. Email + password → POST /auth/hr/login → redirect to dashboard. Add logout to HR sidebar.</div>
+            <div class="task-desc">Converted HR login to the auth proxy with HttpOnly-cookie credentials, added HR dashboard guard via /api/auth/me, and wired HR sidebar/topbar logout through /api/auth/logout without token storage.</div>
             <div class="task-meta">
-              <span class="tag tag-file">app/[locale]/hr/login/</span>
-              <span class="tag tag-checkpoint">ready after FE-1</span>
+              <span class="tag tag-file">components/hr/hr-login-page.tsx</span>
+              <span class="tag tag-file">components/hr/hr-auth-gate.tsx</span>
+              <span class="tag tag-file">components/layouts/hr-sidebar.tsx</span>
+              <span class="tag tag-checkpoint">verified: focused tests + build</span>
             </div>
           </div>
         </li>

@@ -200,7 +200,9 @@ export function HRTopbar() {
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onSelect={() => signOut("hr", router)}
+              onSelect={() => {
+                void signOut("hr", router);
+              }}
               className="text-red-600 focus:text-red-700"
             >
               <LogOut className="h-4 w-4" aria-hidden />

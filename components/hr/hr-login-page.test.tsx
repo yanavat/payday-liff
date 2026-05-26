@@ -20,17 +20,10 @@ vi.mock("@/i18n/navigation", () => ({
   ),
 }));
 
-vi.mock("@/lib/auth/mock-auth", () => ({
-  authenticateHR: vi.fn(),
-}));
-
-import { authenticateHR } from "@/lib/auth/mock-auth";
-
-const mockedAuth = vi.mocked(authenticateHR);
-
 describe("HRLoginPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
     window.localStorage.clear();
   });
 
@@ -85,11 +78,12 @@ describe("HRLoginPage", () => {
   });
 
   it("submits form and navigates on success", async () => {
-    mockedAuth.mockResolvedValueOnce({
-      ok: true,
-      token: "test-token",
-      user: { id: "hr-1", name: "HR Admin", role: "hr" },
-    });
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response(null, { status: 200 }))
+      .mockResolvedValueOnce(
+        Response.json({ hrUser: { id: "hr-1", name: "HR Admin", role: "hr" } }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
 
     renderWithIntl(<HRLoginPage />);
 
@@ -99,21 +93,31 @@ describe("HRLoginPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Login" }));
 
     await waitFor(() => {
-      expect(mockedAuth).toHaveBeenCalledWith("hr@paydayplus.co", "123456");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/auth/hr/login",
+        expect.objectContaining({
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify({
+            email: "hr@paydayplus.co",
+            password: "123456",
+          }),
+        }),
+      );
     });
 
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith("/hr/dashboard");
     });
 
-    expect(window.localStorage.getItem("payday-session")).toBe("test-token");
+    expect(window.localStorage.getItem("payday-session")).toBeNull();
   });
 
   it("shows error on failed authentication", async () => {
-    mockedAuth.mockResolvedValueOnce({
-      ok: false,
-      reason: "invalid_credentials",
-    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValueOnce(new Response(null, { status: 401 })),
+    );
 
     renderWithIntl(<HRLoginPage />);
 
@@ -130,7 +134,7 @@ describe("HRLoginPage", () => {
   });
 
   it("disables inputs while loading", async () => {
-    mockedAuth.mockReturnValue(new Promise(() => {}));
+    vi.stubGlobal("fetch", vi.fn().mockReturnValue(new Promise(() => {})));
 
     renderWithIntl(<HRLoginPage />);
 
