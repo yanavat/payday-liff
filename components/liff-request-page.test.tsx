@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
-const { confettiMock, createMock, previewMock } = vi.hoisted(() => ({
+const { confettiMock, createMock, previewMock, verifyPinMock } = vi.hoisted(() => ({
   confettiMock: vi.fn(),
   createMock: vi.fn(),
   previewMock: vi.fn(),
+  verifyPinMock: vi.fn(),
 }))
 vi.mock('canvas-confetti', () => ({ default: confettiMock }))
 
@@ -23,17 +24,11 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/en',
 }))
 
-vi.mock('@/lib/api/services/otp', () => ({
-  sendCode: vi.fn().mockResolvedValue({ codeId: 'test-code-id', expiresAt: new Date(Date.now() + 300_000).toISOString() }),
-  verifyCode: vi.fn().mockImplementation(async (_codeId: string, code: string) => ({
-    valid: code === '123456',
-  })),
-}))
-
 vi.mock('@/components/liff-auth-gate', () => ({
   useAuth: () => ({
     employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
     isInLiff: false,
+    verifyPin: verifyPinMock,
   }),
   useLiffProfile: () => ({
     userId: 'U123',
@@ -85,7 +80,6 @@ vi.mock('@/lib/api/hooks/use-ewa-requests', () => ({
   })),
 }))
 
-import { sendCode, verifyCode } from '@/lib/api/services/otp'
 import { LiffRequestPage } from './liff-request-page'
 
 const previewResult = {
@@ -160,6 +154,11 @@ const messages = {
     bankAccount: 'Bank Account',
     deductionWarning: 'Will be deducted on {date}',
     enterPin: 'Confirm with PIN',
+    pinConfirmTitle: 'Confirm with PIN',
+    pinConfirmDescription: 'Enter your 6-digit PIN to submit this request.',
+    pinStepUpLabel: 'Transaction PIN',
+    invalidPin: 'Invalid PIN',
+    pinRateLimited: 'Too many attempts. Try again in {seconds}s.',
     editBack: 'Edit',
     successTitle: 'Request Submitted!',
     referenceNumber: 'Reference Number',
@@ -167,9 +166,6 @@ const messages = {
     shareReceipt: 'Share Receipt',
     shareReceiptText: 'Advance request submitted\nAmount: {amount}\nReference: {reference}',
     withdrawAll: 'Withdraw All',
-    otpLabel: 'Confirmation code (OTP)',
-    otpHint: 'Enter the code sent to you',
-    invalidOtp: 'Invalid code',
   },
 }
 
@@ -206,20 +202,16 @@ describe('LiffRequestPage — step 1', () => {
   })
 })
 
-describe('LiffRequestPage — step 2 OTP', () => {
+describe('LiffRequestPage — step 2 PIN step-up', () => {
   beforeEach(async () => {
-    vi.mocked(sendCode).mockClear()
-    vi.mocked(verifyCode).mockClear()
     createMock.mockReset()
+    verifyPinMock.mockReset()
+    verifyPinMock.mockResolvedValue(true)
     previewMock.mockResolvedValue(previewResult)
     createMock.mockResolvedValue(createdRequest)
     renderWithIntl(<LiffRequestPage />, { messages })
     goToStep2()
     await waitFor(() => expect(previewMock).toHaveBeenCalled())
-  })
-
-  it('calls sendCode with the employee ID when entering step 2', async () => {
-    await waitFor(() => expect(sendCode).toHaveBeenCalledWith('EMP-001'))
   })
 
   it('previews the request with employeeId and amount', () => {
@@ -234,32 +226,28 @@ describe('LiffRequestPage — step 2 OTP', () => {
     })
   })
 
-  it('shows OTP input', () => {
-    expect(screen.getByPlaceholderText('000000')).toBeInTheDocument()
-  })
-
-  it('shows OTP label', () => {
-    expect(screen.getByText('Confirmation code (OTP)')).toBeInTheDocument()
-  })
-
-  it('Confirm button is disabled until 6 digits are entered', () => {
-    expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled()
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
-    expect(screen.getByRole('button', { name: 'Confirm' })).not.toBeDisabled()
-  })
-
-  it('shows error and stays on step 2 when wrong OTP is entered', async () => {
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '111111' } })
+  it('opens PIN step-up modal from the confirm button', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
-    await screen.findByText('Invalid code')
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByText('Enter your 6-digit PIN to submit this request.')).toBeInTheDocument()
+  })
+
+  it('shows error and stays on step 2 when PIN is invalid', async () => {
+    verifyPinMock.mockResolvedValue(false)
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    fireEvent.change(await screen.findByLabelText('Transaction PIN'), { target: { value: '111111' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm with PIN' }))
+    await screen.findByText('Invalid PIN')
+    expect(verifyPinMock).toHaveBeenCalledWith('111111')
     expect(screen.getByText('Summary')).toBeInTheDocument()
     expect(createMock).not.toHaveBeenCalled()
   })
 
-  it('creates EWA request and advances to step 3 with correct OTP', async () => {
-    await waitFor(() => expect(sendCode).toHaveBeenCalled())
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
+  it('creates EWA request and advances to step 3 after PIN verification', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    fireEvent.change(await screen.findByLabelText('Transaction PIN'), { target: { value: '123456' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm with PIN' }))
+    await waitFor(() => expect(verifyPinMock).toHaveBeenCalledWith('123456'))
     await waitFor(() => expect(createMock).toHaveBeenCalledWith(
       expect.objectContaining({ amount: 3000, reason: 'medical' }),
     ))
@@ -277,16 +265,17 @@ describe('LiffRequestPage — step 2 OTP', () => {
 
 describe('LiffRequestPage — step 3 success', () => {
   beforeEach(async () => {
-    vi.mocked(sendCode).mockClear()
-    vi.mocked(verifyCode).mockClear()
     createMock.mockReset()
+    verifyPinMock.mockReset()
+    verifyPinMock.mockResolvedValue(true)
     previewMock.mockResolvedValue(previewResult)
     createMock.mockResolvedValue(createdRequest)
     renderWithIntl(<LiffRequestPage />, { messages })
     goToStep2()
-    await waitFor(() => expect(sendCode).toHaveBeenCalled())
-    fireEvent.change(screen.getByPlaceholderText('000000'), { target: { value: '123456' } })
+    await waitFor(() => expect(previewMock).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    fireEvent.change(await screen.findByLabelText('Transaction PIN'), { target: { value: '123456' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm with PIN' }))
     await screen.findByText('Request Submitted!')
   })
 

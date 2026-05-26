@@ -33,7 +33,6 @@ import {
 } from "@/lib/utils/fees"
 import { loadLiffClient } from "@/lib/liff-client"
 import { withLiffLocale } from "@/lib/liff-routes"
-import { sendCode, verifyCode } from "@/lib/api/services/otp"
 
 const quickAmounts = [1000, 2000, 3000]
 const reasonChips = [
@@ -72,19 +71,19 @@ export function LiffRequestPage() {
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState(3000)
   const [reason, setReason] = useState<string>("medical")
-  const [otp, setOtp] = useState("")
-  const [otpError, setOtpError] = useState("")
+  const [pinModalOpen, setPinModalOpen] = useState(false)
+  const [pin, setPin] = useState("")
+  const [pinError, setPinError] = useState("")
+  const [pinLoading, setPinLoading] = useState(false)
   const [submitError, setSubmitError] = useState("")
   const [isInClient, setIsInClient] = useState(false)
-  const [codeId, setCodeId] = useState("")
-  const [otpLoading, setOtpLoading] = useState(false)
   const [previewData, setPreviewData] = useState<PreviewResultDto | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
   const [createdRequest, setCreatedRequest] = useState<EWARequestDto | null>(
     null,
   )
 
-  const { employee: authEmployee, isInLiff } = useAuth()
+  const { employee: authEmployee, isInLiff, verifyPin } = useAuth()
   const employeeId = getAuthEmployeeId(authEmployee)
   const profile = useLiffProfile()
   const locale = useLocale()
@@ -172,14 +171,10 @@ export function LiffRequestPage() {
   useEffect(() => {
     if (step !== 2 || !employeeId) return
     let cancelled = false
-    setOtpError("")
+    setPinError("")
     setSubmitError("")
     setPreviewData(null)
     setPreviewLoading(true)
-
-    sendCode(employeeId).then(({ codeId: id }) => {
-      if (!cancelled) setCodeId(id)
-    })
 
     preview({
       employeeId,
@@ -198,35 +193,50 @@ export function LiffRequestPage() {
     }
   }, [step, employeeId, amount, reason, preview])
 
-  async function confirmRequest() {
-    if (!codeId || !employeeId) return
-    setOtpLoading(true)
-    setOtpError("")
+  async function submitRequest() {
+    const request = await create({
+      amount,
+      reason: reason as CreateRequestDto["reason"],
+      employeeNote: "",
+    })
+
+    if (!request) {
+      setSubmitError(createError?.message ?? tc("error"))
+      return
+    }
+
+    setCreatedRequest(request)
+    setStep(3)
+  }
+
+  async function confirmPinAndSubmit() {
+    if (pin.length < 6) return
+    setPinLoading(true)
+    setPinError("")
     setSubmitError("")
     try {
-      const result = await verifyCode(codeId, otp)
-      if (!result.valid) {
-        setOtp("")
-        setOtpError(t("invalidOtp"))
+      const verified = await verifyPin(pin)
+      if (!verified) {
+        setPin("")
+        setPinError(t("invalidPin"))
         return
       }
-
-      const request = await create({
-        amount,
-        reason: reason as CreateRequestDto["reason"],
-        employeeNote: "",
-      })
-
-      if (!request) {
-        setOtp("")
-        setSubmitError(createError?.message ?? tc("error"))
+      setPinModalOpen(false)
+      setPin("")
+      await submitRequest()
+    } catch (error) {
+      setPin("")
+      if (error instanceof Response && error.status === 429) {
+        setPinError(
+          t("pinRateLimited", {
+            seconds: error.headers.get("Retry-After") ?? "60",
+          }),
+        )
         return
       }
-
-      setCreatedRequest(request)
-      setStep(3)
+      setPinError(tc("error"))
     } finally {
-      setOtpLoading(false)
+      setPinLoading(false)
     }
   }
 
@@ -247,10 +257,8 @@ export function LiffRequestPage() {
 
   const showStep1Skeleton = periodLoading && !currentPeriod
   const confirmDisabled =
-    otp.length < 6 ||
-    otpLoading ||
+    pinLoading ||
     createLoading ||
-    !codeId ||
     previewLoading ||
     !previewData
 
@@ -458,43 +466,20 @@ export function LiffRequestPage() {
                 {t("deductionWarning", { date: payDateLabel || "—" })}
               </div>
 
-              <div className="rounded-lg border border-border bg-white p-4 shadow-card">
-                <div className="mb-4 text-center text-[16px] font-semibold text-text-primary">
-                  {t("otpLabel")}
-                </div>
-                {otpError && (
-                  <p className="mb-3 text-center text-[16px] font-medium text-red-600">
-                    {otpError}
-                  </p>
-                )}
-                {submitError && (
-                  <p className="mb-3 text-center text-[16px] font-medium text-red-600">
-                    {submitError}
-                  </p>
-                )}
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => {
-                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                    setOtpError("")
-                    setSubmitError("")
-                  }}
-                  placeholder="000000"
-                  className="w-full rounded-md border border-border bg-bg-secondary px-4 py-3 text-center font-mono text-[24px] tracking-widest focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-                <p className="mt-2 text-center text-[14px] text-text-muted">
-                  {t("otpHint")}
+              {submitError && (
+                <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-center text-[16px] font-medium text-red-600">
+                  {submitError}
                 </p>
-              </div>
+              )}
 
               <button
                 type="button"
                 disabled={confirmDisabled}
                 onClick={() => {
-                  void confirmRequest()
+                  setPin("")
+                  setPinError("")
+                  setSubmitError("")
+                  setPinModalOpen(true)
                 }}
                 className="flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -504,8 +489,8 @@ export function LiffRequestPage() {
                 type="button"
                 onClick={() => {
                   setStep(1)
-                  setOtp("")
-                  setOtpError("")
+                  setPin("")
+                  setPinError("")
                   setSubmitError("")
                 }}
                 className="flex h-12 w-full items-center justify-center text-[16px] font-semibold text-text-secondary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -515,6 +500,76 @@ export function LiffRequestPage() {
             </>
           )}
         </section>
+      )}
+
+      {pinModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end bg-black/40 px-4 pb-4 pt-16"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pin-step-up-title"
+        >
+          <div className="w-full rounded-xl bg-white p-4 shadow-modal">
+            <h2
+              id="pin-step-up-title"
+              className="text-[20px] font-semibold text-text-primary"
+            >
+              {t("pinConfirmTitle")}
+            </h2>
+            <p className="mt-2 text-[16px] text-text-secondary">
+              {t("pinConfirmDescription")}
+            </p>
+            <label
+              className="mt-4 block text-[16px] font-semibold text-text-primary"
+              htmlFor="transaction-pin"
+            >
+              {t("pinStepUpLabel")}
+            </label>
+            <input
+              id="transaction-pin"
+              type="text"
+              inputMode="numeric"
+              autoComplete="current-password"
+              maxLength={6}
+              value={pin}
+              onChange={(event) => {
+                setPin(event.target.value.replace(/\D/g, "").slice(0, 6))
+                setPinError("")
+                setSubmitError("")
+              }}
+              placeholder="000000"
+              className="mt-2 w-full rounded-md border border-border bg-bg-secondary px-4 py-3 text-center font-mono text-[24px] tracking-widest focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            {pinError && (
+              <p className="mt-3 text-center text-[16px] font-medium text-red-600">
+                {pinError}
+              </p>
+            )}
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setPinModalOpen(false)
+                  setPin("")
+                  setPinError("")
+                }}
+                className="flex h-12 items-center justify-center rounded-md border border-border bg-white text-[16px] font-semibold text-text-secondary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                {tc("cancel")}
+              </button>
+              <button
+                type="button"
+                disabled={pin.length < 6 || pinLoading || createLoading}
+                onClick={() => {
+                  void confirmPinAndSubmit()
+                }}
+                className="flex h-12 items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {pinLoading || createLoading ? tc("loading") : t("enterPin")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {step === 3 && createdRequest && (

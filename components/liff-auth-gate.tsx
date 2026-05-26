@@ -126,6 +126,7 @@ export function LIFFAuthGate({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ pin }),
     });
+    if (response.status === 429) throw response;
     return response.ok;
   }, []);
 
