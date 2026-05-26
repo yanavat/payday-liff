@@ -344,7 +344,7 @@
         <div class="label">Total Tasks</div>
       </div>
       <div class="stat-card pending">
-        <div class="number" id="stat-pending">7</div>
+        <div class="number" id="stat-pending">6</div>
         <div class="label">Pending</div>
       </div>
       <div class="stat-card progress">
@@ -352,13 +352,13 @@
         <div class="label">In Progress</div>
       </div>
       <div class="stat-card done">
-        <div class="number" id="stat-done">23</div>
+        <div class="number" id="stat-done">24</div>
         <div class="label">Completed</div>
       </div>
     </div>
 
     <div class="progress-bar-container">
-      <div class="progress-bar-done" id="bar-done" style="width:76.67%"></div>
+      <div class="progress-bar-done" id="bar-done" style="width:80%"></div>
       <div class="progress-bar-progress" id="bar-progress" style="width:0%"></div>
     </div>
   </header>
@@ -777,17 +777,18 @@
   <div class="phase-group">
     <div class="phase-header" onclick="toggleSection('fe-p2')">
       <h3>Phase 2 — LIFF Integration</h3>
-      <div><span class="phase-count" id="count-fe-p2">0/3</span> <span class="toggle-arrow" id="arrow-fe-p2">▼</span></div>
+      <div><span class="phase-count" id="count-fe-p2">1/3</span> <span class="toggle-arrow" id="arrow-fe-p2">▼</span></div>
     </div>
     <div class="collapsible-content" id="section-fe-p2">
       <ul class="task-list">
-        <li class="task-item pending" data-id="FE-4" data-group="frontend" data-phase="fe-p2">
+        <li class="task-item completed" data-id="FE-4" data-group="frontend" data-phase="fe-p2">
           <div class="task-checkbox" onclick="cycleStatus(this)"></div>
           <div class="task-content">
             <div class="task-title"><span class="task-id">FE-4</span>LIFF auto-login flow</div>
-            <div class="task-desc">After liff.init() + getProfile() → POST /auth/employee/line-login. JWT → authenticated. needs_linking → LinkLinePage. needs_activation → ActivationPage.</div>
+            <div class="task-desc">Covered LIFF mock/webview auto-login flow in AuthGate: liff.init(), getProfile(), POST /api/auth/line-login, authenticated refresh, needs_linking, and needs_activation branches.</div>
             <div class="task-meta">
-              <span class="tag tag-checkpoint">ready after FE-1</span>
+              <span class="tag tag-file">components/liff-auth-gate.tsx</span>
+              <span class="tag tag-checkpoint">verified: focused test + build</span>
             </div>
           </div>
         </li>

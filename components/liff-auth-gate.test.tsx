@@ -33,22 +33,30 @@ const messages = {
   ...defaultMessages,
   auth: {
     activationLink: "First-time Activation",
+    activationBackToLogin: "Back to login",
+    activationSubmit: "Activate account",
     activationTitle: "Activate your account",
+    confirmPinLabel: "Confirm new PIN",
     dividerOr: "or",
     errorAlreadyActivated: "Already activated",
     errorExpiredInvitation: "Invitation code expired. Please contact HR.",
     errorInvalidCredentials: "Invalid phone/email or PIN",
     errorInvalidInvitation: "Invalid invitation code",
+    errorPinMismatch: "PINs do not match",
     errorTooManyAttempts: "Too many attempts. Try again in {seconds}s.",
     errorTitle: "Authentication unavailable",
     errorDescription: "Please try again.",
     identifierLabel: "Phone or email",
     identifierPlaceholder: "name@example.com",
+    invitationCodeLabel: "Invitation code",
     lineLinkTitle: "Link LINE account",
     lineLoginButton: "Log in with LINE",
     loading: "Checking session...",
     loginButton: "Sign in",
     loginTitle: "Sign in to PayDay+",
+    newPinLabel: "New PIN",
+    phoneLabel: "Phone number",
+    phonePlaceholder: "0812345678",
     pinLabel: "6-digit PIN",
     pinPlaceholder: "••••••",
   },
@@ -133,6 +141,28 @@ describe("LIFFAuthGate", () => {
     renderGate();
 
     expect(await screen.findByText("Link LINE account")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "/api/auth/line-login",
+      expect.objectContaining({
+        body: JSON.stringify({ lineUserId: "U1234567890" }),
+        credentials: "include",
+        method: "POST",
+      }),
+    );
+  });
+
+  it("runs LIFF line-login and shows activation state when LINE user is inactive", async () => {
+    vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "true");
+    const fetchMock = mockFetch([
+      jsonResponse({ message: "Unauthorized" }, { status: 401 }),
+      jsonResponse({ status: "needs_activation" }),
+    ]);
+
+    renderGate();
+
+    expect(await screen.findByText("Activate your account")).toBeInTheDocument();
+    expect(screen.getByLabelText("Phone number")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
       "/api/auth/line-login",
