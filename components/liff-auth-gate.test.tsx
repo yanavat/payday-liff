@@ -2,39 +2,14 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { LiffClient } from "@/lib/liff-client";
-import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils";
+import { defaultMessages, renderWithIntl } from "@/tests/i18n/test-utils";
 
-import { LIFFAuthGate, useLiffProfile } from "./liff-auth-gate";
+import { LIFFAuthGate, useAuth, useLiffProfile } from "./liff-auth-gate";
 
 const loadLiffClientMock = vi.fn();
-const onboardingRenderMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/liff-client", () => ({
   loadLiffClient: () => loadLiffClientMock(),
-}));
-
-vi.mock("@/components/liff-onboarding-page", () => ({
-  LiffOnboardingPage: ({
-    lineProfile,
-    onComplete,
-  }: {
-    lineProfile: {
-      userId: string;
-      displayName: string;
-      pictureUrl?: string;
-    };
-    onComplete: (companyId: string, employeeId: string) => void;
-  }) => {
-    onboardingRenderMock(lineProfile);
-    return (
-      <button
-        type="button"
-        onClick={() => onComplete("company-smpc", "EMP-0041")}
-      >
-        Onboarding Mock
-      </button>
-    );
-  },
 }));
 
 function createLiffClient(overrides: Partial<LiffClient> = {}): LiffClient {
@@ -46,31 +21,41 @@ function createLiffClient(overrides: Partial<LiffClient> = {}): LiffClient {
     getProfile: vi.fn().mockResolvedValue({
       userId: "U1234567890",
       displayName: "Mock LINE User",
-      pictureUrl: undefined,
+      pictureUrl: "https://line.example/avatar.jpg",
       statusMessage: undefined,
     }),
+    getDecodedIDToken: vi.fn(() => ({ email: "line@example.com" })),
     ...overrides,
   } as unknown as LiffClient;
 }
 
 const messages = {
   ...defaultMessages,
-  liff: {
-    loading: "Loading PayDay+...",
-    openInLine: "Open in LINE",
-    openInLineDescription:
-      "PayDay+ needs LINE to verify your employee account.",
-    openInLineButton: "Open in LINE",
-    linkTitle: "Link employee account",
-    linkDescription:
-      "Enter your employee ID once to connect PayDay+ with your LINE account.",
-    employeeIdLabel: "Employee ID",
-    employeeIdPlaceholder: "EMP-0001",
-    linkButton: "Link account",
-    offlineMessage: "No internet connection",
-    externalBrowserMessage: "Open in LINE for the full experience",
+  auth: {
+    activationTitle: "Activate your account",
+    errorTitle: "Authentication unavailable",
+    errorDescription: "Please try again.",
+    lineLinkTitle: "Link LINE account",
+    loading: "Checking session...",
+    loginTitle: "Sign in to PayDay+",
   },
 };
+
+function mockFetch(responses: Response[]) {
+  const fetchMock = vi.fn();
+  for (const response of responses) {
+    fetchMock.mockResolvedValueOnce(response);
+  }
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
+function jsonResponse(body: unknown, init?: ResponseInit) {
+  return new Response(JSON.stringify(body), {
+    status: init?.status ?? 200,
+    headers: { "Content-Type": "application/json", ...init?.headers },
+  });
+}
 
 function renderGate(children = <p>Employee app</p>) {
   return renderWithIntl(<LIFFAuthGate>{children}</LIFFAuthGate>, { messages });
@@ -78,138 +63,197 @@ function renderGate(children = <p>Employee app</p>) {
 
 describe("LIFFAuthGate", () => {
   beforeEach(() => {
-    localStorage.clear();
     vi.stubEnv("NEXT_PUBLIC_LIFF_ID", "test-liff-id");
     vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "false");
     loadLiffClientMock.mockResolvedValue(createLiffClient());
-    onboardingRenderMock.mockClear();
   });
 
   afterEach(() => {
     vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
 
-  it("renders LiffOnboardingPage when authState is linking", async () => {
+  it("loads an existing cookie session from /api/auth/me and provides auth context", async () => {
+    mockFetch([
+      jsonResponse({
+        employee: { id: "emp-1", employeeCode: "EMP-001", name: "Somchai" },
+      }),
+    ]);
+
+    function AuthConsumer() {
+      const auth = useAuth();
+      return (
+        <p>
+          {auth.isAuthenticated ? "authenticated" : "anonymous"}:
+          {auth.employee?.employeeCode}
+        </p>
+      );
+    }
+
+    renderGate(<AuthConsumer />);
+
+    expect(await screen.findByText("authenticated:EMP-001")).toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/auth/me",
+      expect.objectContaining({ credentials: "include", method: "GET" }),
+    );
+  });
+
+  it("shows browser login state when /api/auth/me returns 401 outside LIFF", async () => {
+    mockFetch([jsonResponse({ message: "Unauthorized" }, { status: 401 })]);
+
     renderGate();
 
-    expect(await screen.findByText("Onboarding Mock")).toBeInTheDocument();
+    expect(await screen.findByText("Sign in to PayDay+")).toBeInTheDocument();
     expect(screen.queryByText("Employee app")).not.toBeInTheDocument();
+    expect(loadLiffClientMock).not.toHaveBeenCalled();
   });
 
-  it("passes lineProfile to onboarding component", async () => {
+  it("runs LIFF line-login and shows linking state when LINE user is not linked", async () => {
+    vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "true");
+    const fetchMock = mockFetch([
+      jsonResponse({ message: "Unauthorized" }, { status: 401 }),
+      jsonResponse({ status: "needs_linking" }),
+    ]);
+
     renderGate();
 
-    await screen.findByText("Onboarding Mock");
-
-    expect(onboardingRenderMock).toHaveBeenCalledWith({
-      userId: "U1234567890",
-      displayName: "Mock LINE User",
-      pictureUrl: undefined,
-      statusMessage: undefined,
-      email: undefined,
-    });
-  });
-
-  it("saves the employee link and company ID and then shows the app", async () => {
-    renderGate();
-
-    fireEvent.click(await screen.findByText("Onboarding Mock"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Employee app")).toBeInTheDocument();
-    });
-    expect(
-      JSON.parse(localStorage.getItem("payday-liff-employee-links") ?? "{}"),
-    ).toEqual({
-      U1234567890: "EMP-0041",
-    });
-    expect(localStorage.getItem("payday-company-id")).toBe("company-smpc");
-  });
-
-  it("starts LINE Login with the current URL as the redirect target", async () => {
-    const login = vi.fn();
-    loadLiffClientMock.mockResolvedValue(
-      createLiffClient({
-        isLoggedIn: vi.fn(() => false) as LiffClient["isLoggedIn"],
-        login: login as LiffClient["login"],
+    expect(await screen.findByText("Link LINE account")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "/api/auth/line-login",
+      expect.objectContaining({
+        body: JSON.stringify({ lineUserId: "U1234567890" }),
+        credentials: "include",
+        method: "POST",
       }),
     );
-    window.history.pushState(
-      {},
-      "",
-      "/history?page=history&id=EWA-2025-000014",
-    );
-
-    renderGate();
-
-    await waitFor(() => {
-      expect(login).toHaveBeenCalledWith({
-        redirectUri:
-          "http://localhost:3000/history?page=history&id=EWA-2025-000014",
-      });
-    });
-    expect(screen.queryByText("Employee app")).not.toBeInTheDocument();
   });
 
-  it("allows authenticated external browser users into the app", async () => {
-    localStorage.setItem(
-      "payday-liff-employee-links",
-      JSON.stringify({ U1234567890: "EMP-0041" }),
-    );
-    loadLiffClientMock.mockResolvedValue(
-      createLiffClient({
-        isInClient: vi.fn(() => false) as LiffClient["isInClient"],
+  it("runs LIFF line-login and refreshes /api/auth/me when LINE login authenticates", async () => {
+    vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "true");
+    mockFetch([
+      jsonResponse({ message: "Unauthorized" }, { status: 401 }),
+      jsonResponse({ success: true }),
+      jsonResponse({
+        employee: { id: "emp-1", employeeCode: "EMP-001", name: "Somchai" },
       }),
-    );
+    ]);
 
     renderGate();
 
     expect(await screen.findByText("Employee app")).toBeInTheDocument();
-  });
-
-  it("shows an Open in LINE link when LIFF initialization fails", async () => {
-    loadLiffClientMock.mockResolvedValue(
-      createLiffClient({
-        init: vi.fn().mockRejectedValue(new Error("LIFF init failed")),
-      }),
-    );
-
-    renderGate();
-
-    const link = await screen.findByRole("link", { name: "Open in LINE" });
-
-    expect(link).toHaveAttribute("href", "https://liff.line.me/test-liff-id");
-    expect(screen.queryByText("Employee app")).not.toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 
   it("provides the LINE profile to authenticated child components", async () => {
-    localStorage.setItem(
-      "payday-liff-employee-links",
-      JSON.stringify({ U1234567890: "EMP-0041" }),
-    );
+    vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "true");
+    mockFetch([
+      jsonResponse({ message: "Unauthorized" }, { status: 401 }),
+      jsonResponse({ success: true }),
+      jsonResponse({
+        employee: { id: "emp-1", employeeCode: "EMP-001", name: "Somchai" },
+      }),
+    ]);
 
     function ProfileConsumer() {
       const profile = useLiffProfile();
-
       return <p>{profile?.pictureUrl}</p>;
     }
-
-    loadLiffClientMock.mockResolvedValue(
-      createLiffClient({
-        getProfile: vi.fn().mockResolvedValue({
-          userId: "U1234567890",
-          displayName: "Mock LINE User",
-          pictureUrl: "https://profile.line.example/avatar.jpg",
-          statusMessage: undefined,
-        }) as LiffClient["getProfile"],
-      }),
-    );
 
     renderGate(<ProfileConsumer />);
 
     expect(
-      await screen.findByText("https://profile.line.example/avatar.jpg"),
+      await screen.findByText("https://line.example/avatar.jpg"),
     ).toBeInTheDocument();
+  });
+
+  it("login, hrLogin, logout, and verifyPin use the auth proxy without storing tokens", async () => {
+    mockFetch([
+      jsonResponse({
+        employee: { id: "emp-1", employeeCode: "EMP-001", name: "Somchai" },
+      }),
+      jsonResponse({ success: true }),
+      jsonResponse({
+        employee: { id: "emp-1", employeeCode: "EMP-001", name: "Somchai" },
+      }),
+      jsonResponse({ success: true }),
+      jsonResponse({ hrUser: { id: "hr-1", email: "hr@example.com" } }),
+      jsonResponse({ verified: true }),
+      jsonResponse({ success: true }),
+    ]);
+    const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+
+    function ActionConsumer() {
+      const auth = useAuth();
+      return (
+        <div>
+          <button type="button" onClick={() => auth.login("user@example.com", "123456")}>
+            employee login
+          </button>
+          <button type="button" onClick={() => auth.hrLogin("hr@example.com", "demo1234")}>
+            hr login
+          </button>
+          <button type="button" onClick={() => auth.verifyPin("654321")}>
+            verify pin
+          </button>
+          <button type="button" onClick={() => auth.logout()}>
+            logout
+          </button>
+        </div>
+      );
+    }
+
+    renderGate(<ActionConsumer />);
+    await screen.findByText("employee login");
+
+    fireEvent.click(screen.getByText("employee login"));
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/auth/login",
+        expect.objectContaining({
+          body: JSON.stringify({ identifier: "user@example.com", pin: "123456" }),
+          credentials: "include",
+          method: "POST",
+        }),
+      ),
+    );
+
+    fireEvent.click(screen.getByText("hr login"));
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/auth/hr/login",
+        expect.objectContaining({
+          body: JSON.stringify({ email: "hr@example.com", password: "demo1234" }),
+          credentials: "include",
+          method: "POST",
+        }),
+      ),
+    );
+
+    fireEvent.click(screen.getByText("verify pin"));
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/auth/verify-pin",
+        expect.objectContaining({
+          body: JSON.stringify({ pin: "654321" }),
+          credentials: "include",
+          method: "POST",
+        }),
+      ),
+    );
+
+    fireEvent.click(screen.getByText("logout"));
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/auth/logout",
+        expect.objectContaining({ credentials: "include", method: "POST" }),
+      ),
+    );
+    expect(setItemSpy).not.toHaveBeenCalledWith(
+      expect.stringMatching(/token/i),
+      expect.any(String),
+    );
   });
 });

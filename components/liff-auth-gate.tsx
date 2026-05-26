@@ -3,16 +3,19 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useTranslations } from "next-intl";
 
-import { LiffOnboardingPage } from "@/components/liff-onboarding-page";
 import { loadLiffClient } from "@/lib/liff-client";
 
-type AuthState = "loading" | "ready" | "linking" | "external" | "error";
+type AuthState = "loading" | "ready" | "login" | "activation" | "linking" | "error";
+type AuthActor = Record<string, unknown>;
+
 export interface LiffProfile {
   userId: string;
   displayName: string;
@@ -21,152 +24,279 @@ export interface LiffProfile {
   email?: string;
 }
 
-const EMPLOYEE_LINKS_STORAGE_KEY = "payday-liff-employee-links";
-const COMPANY_ID_STORAGE_KEY = "payday-company-id";
+export interface AuthContextType {
+  employee: AuthActor | null;
+  hrUser: AuthActor | null;
+  isInLiff: boolean;
+  isAuthenticated: boolean;
+  login: (identifier: string, pin: string) => Promise<void>;
+  hrLogin: (email: string, pass: string) => Promise<void>;
+  logout: () => Promise<void>;
+  verifyPin: (pin: string) => Promise<boolean>;
+}
+
+type AuthMeResponse = {
+  employee?: AuthActor | null;
+  hrUser?: AuthActor | null;
+};
+
+type LineLoginResponse = {
+  status?: "authenticated" | "needs_activation" | "needs_linking";
+};
+
+const AuthContext = createContext<AuthContextType | null>(null);
 const LiffProfileContext = createContext<LiffProfile | null>(null);
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within LIFFAuthGate");
+  }
+  return context;
+}
 
 export function useLiffProfile() {
   return useContext(LiffProfileContext);
 }
 
 export function useLinkedEmployeeId(): string {
-  const profile = useLiffProfile();
-  if (!profile?.userId) return "";
-  return readEmployeeLinks()[profile.userId] ?? "";
+  const { employee } = useAuth();
+  return String(employee?.employeeCode ?? employee?.id ?? "");
 }
 
 export function LIFFAuthGate({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>("loading");
+  const [employee, setEmployee] = useState<AuthActor | null>(null);
+  const [hrUser, setHrUser] = useState<AuthActor | null>(null);
+  const [isInLiff, setIsInLiff] = useState(false);
   const [profile, setProfile] = useState<LiffProfile | null>(null);
   const [lineUserId, setLineUserId] = useState("");
-  const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
-  const isMockMode = process.env.NEXT_PUBLIC_LIFF_MOCK === "true";
+  const t = useTranslations("auth");
+
+  const applySession = useCallback((session: AuthMeResponse) => {
+    setEmployee(session.employee ?? null);
+    setHrUser(session.hrUser ?? null);
+    setAuthState("ready");
+  }, []);
+
+  const refreshSession = useCallback(async () => {
+    const response = await authFetch("/api/auth/me");
+    if (!response.ok) {
+      throw response;
+    }
+    applySession((await response.json()) as AuthMeResponse);
+  }, [applySession]);
+
+  const login = useCallback(
+    async (identifier: string, pin: string) => {
+      const response = await authFetch("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ identifier, pin }),
+      });
+      if (!response.ok) throw response;
+      await refreshSession();
+    },
+    [refreshSession],
+  );
+
+  const hrLogin = useCallback(
+    async (email: string, pass: string) => {
+      const response = await authFetch("/api/auth/hr/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password: pass }),
+      });
+      if (!response.ok) throw response;
+      await refreshSession();
+    },
+    [refreshSession],
+  );
+
+  const logout = useCallback(async () => {
+    const response = await authFetch("/api/auth/logout", { method: "POST" });
+    if (!response.ok) throw response;
+    setEmployee(null);
+    setHrUser(null);
+    setAuthState("login");
+  }, []);
+
+  const verifyPin = useCallback(async (pin: string) => {
+    const response = await authFetch("/api/auth/verify-pin", {
+      method: "POST",
+      body: JSON.stringify({ pin }),
+    });
+    return response.ok;
+  }, []);
+
+  const authContext = useMemo<AuthContextType>(
+    () => ({
+      employee,
+      hrUser,
+      isInLiff,
+      isAuthenticated: Boolean(employee || hrUser),
+      login,
+      hrLogin,
+      logout,
+      verifyPin,
+    }),
+    [employee, hrLogin, hrUser, isInLiff, login, logout, verifyPin],
+  );
 
   useEffect(() => {
     let cancelled = false;
 
-    async function initializeLiff() {
+    async function initialize() {
+      const sessionResponse = await authFetch("/api/auth/me");
+
+      if (cancelled) return;
+
+      if (sessionResponse.ok) {
+        applySession((await sessionResponse.json()) as AuthMeResponse);
+        return;
+      }
+
+      if (sessionResponse.status !== 401) {
+        setAuthState("error");
+        return;
+      }
+
+      if (!shouldRunLiffAuth()) {
+        setAuthState("login");
+        return;
+      }
+
+      await initializeLiffAuth(cancelled);
+    }
+
+    async function initializeLiffAuth(wasCancelled: boolean) {
       try {
         const liff = await loadLiffClient();
+        const liffId = process.env.NEXT_PUBLIC_LIFF_ID ?? "mock-liff-id";
 
-        if (!liffId && !isMockMode) {
-          throw new Error("NEXT_PUBLIC_LIFF_ID is required");
-        }
-
-        await liff.init({ liffId: liffId ?? "mock-liff-id" });
+        await liff.init({ liffId });
+        const nextIsInLiff = liff.isInClient() || shouldRunLiffAuth();
 
         if (!liff.isLoggedIn()) {
           liff.login({ redirectUri: window.location.href });
           return;
         }
-        const profile = await liff.getProfile();
+
+        const nextProfile = await liff.getProfile();
         const email = liff.getDecodedIDToken?.()?.email;
 
-        if (!getLinkedEmployeeId(profile.userId)) {
-          if (!cancelled) {
-            setProfile({ ...profile, email });
-            setLineUserId(profile.userId);
-            setAuthState("linking");
-          }
+        if (wasCancelled || cancelled) return;
+
+        setIsInLiff(nextIsInLiff);
+        setProfile({ ...nextProfile, email });
+        setLineUserId(nextProfile.userId);
+
+        const lineLoginResponse = await authFetch("/api/auth/line-login", {
+          method: "POST",
+          body: JSON.stringify({ lineUserId: nextProfile.userId }),
+        });
+
+        if (wasCancelled || cancelled) return;
+
+        if (!lineLoginResponse.ok) {
+          setAuthState("error");
           return;
         }
 
-        if (!cancelled) {
-          setProfile({ ...profile, email });
-          setAuthState("ready");
+        const payload = (await lineLoginResponse.json()) as LineLoginResponse;
+
+        if (payload.status === "needs_activation") {
+          setAuthState("activation");
+          return;
         }
+
+        if (payload.status === "needs_linking") {
+          setAuthState("linking");
+          return;
+        }
+
+        await refreshSession();
       } catch {
-        if (!cancelled) {
+        if (!wasCancelled && !cancelled) {
           setAuthState("error");
         }
       }
     }
 
-    initializeLiff();
+    initialize().catch(() => {
+      if (!cancelled) {
+        setAuthState("error");
+      }
+    });
 
     return () => {
       cancelled = true;
     };
-  }, [isMockMode, liffId]);
-
-  const t = useTranslations("liff");
-
-  if (authState === "loading") {
-    return <main className="employee-screen p-5">{t("loading")}</main>;
-  }
-
-  if (authState === "external") {
-    return (
-      <main className="employee-screen p-5">
-        <h1 className="text-2xl font-semibold">{t("openInLine")}</h1>
-        <p className="mt-2 text-text-secondary">{t("openInLineDescription")}</p>
-        <a
-          className="mt-6 inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 font-medium text-white"
-          href={`https://liff.line.me/${liffId}`}
-        >
-          {t("openInLineButton")}
-        </a>
-      </main>
-    );
-  }
-
-  if (authState === "linking") {
-    return (
-      <LiffOnboardingPage
-        lineProfile={profile!}
-        onComplete={(companyId, employeeId) => {
-          saveLinkedEmployee(lineUserId, employeeId, companyId);
-          setAuthState("ready");
-        }}
-      />
-    );
-  }
-
-  if (authState === "error") {
-    return (
-      <main className="employee-screen p-5">
-        <h1 className="text-2xl font-semibold">{t("openInLine")}</h1>
-        <p className="mt-2 text-text-secondary">{t("openInLineDescription")}</p>
-        {liffId ? (
-          <a
-            className="mt-6 inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 font-medium text-white"
-            href={`https://liff.line.me/${liffId}`}
-          >
-            {t("openInLineButton")}
-          </a>
-        ) : null}
-      </main>
-    );
-  }
+  }, [applySession, refreshSession]);
 
   return (
-    <LiffProfileContext.Provider value={profile}>
-      {children}
-    </LiffProfileContext.Provider>
+    <AuthContext.Provider value={authContext}>
+      <LiffProfileContext.Provider value={profile}>
+        {authState === "loading" ? (
+          <AuthShell>{t("loading")}</AuthShell>
+        ) : null}
+        {authState === "login" ? (
+          <AuthShell>
+            <h1 className="text-[22px] font-semibold text-text-primary">
+              {t("loginTitle")}
+            </h1>
+          </AuthShell>
+        ) : null}
+        {authState === "activation" ? (
+          <AuthShell>
+            <h1 className="text-[22px] font-semibold text-text-primary">
+              {t("activationTitle")}
+            </h1>
+            {lineUserId ? <p className="mt-2 text-text-muted">{lineUserId}</p> : null}
+          </AuthShell>
+        ) : null}
+        {authState === "linking" ? (
+          <AuthShell>
+            <h1 className="text-[22px] font-semibold text-text-primary">
+              {t("lineLinkTitle")}
+            </h1>
+            {profile?.displayName ? (
+              <p className="mt-2 text-text-muted">{profile.displayName}</p>
+            ) : null}
+          </AuthShell>
+        ) : null}
+        {authState === "error" ? (
+          <AuthShell>
+            <h1 className="text-[22px] font-semibold text-text-primary">
+              {t("errorTitle")}
+            </h1>
+            <p className="mt-2 text-text-muted">{t("errorDescription")}</p>
+          </AuthShell>
+        ) : null}
+        {authState === "ready" ? children : null}
+      </LiffProfileContext.Provider>
+    </AuthContext.Provider>
   );
 }
 
-function getLinkedEmployeeId(lineUserId: string): string | null {
-  return readEmployeeLinks()[lineUserId] ?? null;
+function AuthShell({ children }: { children: ReactNode }) {
+  return <main className="employee-screen p-5">{children}</main>;
 }
 
-function saveLinkedEmployee(
-  lineUserId: string,
-  employeeId: string,
-  companyId: string,
-) {
-  const links = readEmployeeLinks();
-  links[lineUserId] = employeeId;
-  localStorage.setItem(EMPLOYEE_LINKS_STORAGE_KEY, JSON.stringify(links));
-  localStorage.setItem(COMPANY_ID_STORAGE_KEY, companyId);
+function shouldRunLiffAuth() {
+  if (process.env.NEXT_PUBLIC_LIFF_MOCK === "true") return true;
+  if (typeof navigator === "undefined") return false;
+  return /Line\//i.test(navigator.userAgent);
 }
 
-function readEmployeeLinks(): Record<string, string> {
-  try {
-    return JSON.parse(
-      localStorage.getItem(EMPLOYEE_LINKS_STORAGE_KEY) ?? "{}",
-    ) as Record<string, string>;
-  } catch {
-    return {};
+function authFetch(path: string, init: RequestInit = {}) {
+  const headers = new Headers(init.headers);
+  if (init.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
   }
+
+  return fetch(path, {
+    ...init,
+    credentials: "include",
+    headers,
+    method: init.method ?? "GET",
+  });
 }

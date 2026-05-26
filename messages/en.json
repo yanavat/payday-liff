@@ -309,6 +309,14 @@
     "logout": "Log out",
     "unlinkLine": "Unlink LINE account"
   },
+  "auth": {
+    "loading": "Checking session...",
+    "loginTitle": "Sign in to PayDay+",
+    "activationTitle": "Activate your account",
+    "lineLinkTitle": "Link LINE account",
+    "errorTitle": "Authentication unavailable",
+    "errorDescription": "Please try again."
+  },
   "liff": {
     "loading": "Loading PayDay+...",
     "openInLine": "Open in LINE",

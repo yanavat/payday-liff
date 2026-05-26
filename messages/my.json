@@ -305,6 +305,14 @@
     "logout": "ထွက်မည်",
     "unlinkLine": "LINE အကောင့်ချိတ်ဆက်မှုဖြုတ်မည်"
   },
+  "auth": {
+    "loading": "Session စစ်ဆေးနေသည်...",
+    "loginTitle": "PayDay+ ဝင်ရောက်မည်",
+    "activationTitle": "အကောင့်ဖွင့်မည်",
+    "lineLinkTitle": "LINE အကောင့်ချိတ်ဆက်မည်",
+    "errorTitle": "အတည်ပြု၍မရပါ",
+    "errorDescription": "ထပ်မံကြိုးစားပါ"
+  },
   "liff": {
     "loading": "PayDay+ တင်နေသည်...",
     "openInLine": "LINE တွင်ဖွင့်မည်",

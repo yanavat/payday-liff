@@ -344,7 +344,7 @@
         <div class="label">Total Tasks</div>
       </div>
       <div class="stat-card pending">
-        <div class="number" id="stat-pending">10</div>
+        <div class="number" id="stat-pending">9</div>
         <div class="label">Pending</div>
       </div>
       <div class="stat-card progress">
@@ -352,13 +352,13 @@
         <div class="label">In Progress</div>
       </div>
       <div class="stat-card done">
-        <div class="number" id="stat-done">20</div>
+        <div class="number" id="stat-done">21</div>
         <div class="label">Completed</div>
       </div>
     </div>
 
     <div class="progress-bar-container">
-      <div class="progress-bar-done" id="bar-done" style="width:66.67%"></div>
+      <div class="progress-bar-done" id="bar-done" style="width:70%"></div>
       <div class="progress-bar-progress" id="bar-progress" style="width:0%"></div>
     </div>
   </header>
@@ -721,17 +721,18 @@
   <div class="phase-group">
     <div class="phase-header" onclick="toggleSection('fe-p1')">
       <h3>Phase 1 — Foundation</h3>
-      <div><span class="phase-count" id="count-fe-p1">1/4</span> <span class="toggle-arrow" id="arrow-fe-p1">▼</span></div>
+      <div><span class="phase-count" id="count-fe-p1">2/4</span> <span class="toggle-arrow" id="arrow-fe-p1">▼</span></div>
     </div>
     <div class="collapsible-content" id="section-fe-p1">
       <ul class="task-list">
-        <li class="task-item pending" data-id="FE-1" data-group="frontend" data-phase="fe-p1">
+        <li class="task-item completed" data-id="FE-1" data-group="frontend" data-phase="fe-p1">
           <div class="task-checkbox" onclick="cycleStatus(this)"></div>
           <div class="task-content">
             <div class="task-title"><span class="task-id">FE-1</span>Create AuthGate — detect LIFF vs browser</div>
-            <div class="task-desc">Replace LIFFAuthGate. Detect LINE WebView → LIFF flow, browser → login screen. Call GET /auth/me on mount. AuthContext: { employee, isInLiff, isAuthenticated }.</div>
+            <div class="task-desc">Replaced LIFFAuthGate with cookie-session AuthContext. Detects browser vs LIFF/mock flow, calls GET /api/auth/me on mount, supports line-login branching, and exposes login/hrLogin/logout/verifyPin without token storage.</div>
             <div class="task-meta">
-              <span class="tag tag-checkpoint">ready after FE-10</span>
+              <span class="tag tag-file">components/liff-auth-gate.tsx</span>
+              <span class="tag tag-checkpoint">verified: focused test + build</span>
             </div>
           </div>
         </li>
@@ -741,7 +742,7 @@
             <div class="task-title"><span class="task-id">FE-2</span>Browser login screen — LINE button + phone/PIN form</div>
             <div class="task-desc">LINE green button top → divider "หรือ" → phone/email + PIN (6 digits, masked). LINE → OAuth redirect. Phone+PIN → POST /auth/employee/login. Error handling.</div>
             <div class="task-meta">
-              <span class="tag tag-blocked">blocked by FE-1</span>
+              <span class="tag tag-checkpoint">ready after FE-1</span>
             </div>
           </div>
         </li>
@@ -751,7 +752,7 @@
             <div class="task-title"><span class="task-id">FE-3</span>Activation screen — phone + invitation code + set PIN</div>
             <div class="task-desc">Enter phone → 6-digit invitation code → set PIN (enter + confirm) → POST /auth/employee/activate → redirect to home. Works in both browser and LIFF.</div>
             <div class="task-meta">
-              <span class="tag tag-blocked">blocked by FE-1</span>
+              <span class="tag tag-checkpoint">ready after FE-1</span>
             </div>
           </div>
         </li>
@@ -784,7 +785,7 @@
             <div class="task-title"><span class="task-id">FE-4</span>LIFF auto-login flow</div>
             <div class="task-desc">After liff.init() + getProfile() → POST /auth/employee/line-login. JWT → authenticated. needs_linking → LinkLinePage. needs_activation → ActivationPage.</div>
             <div class="task-meta">
-              <span class="tag tag-blocked">blocked by FE-1</span>
+              <span class="tag tag-checkpoint">ready after FE-1</span>
             </div>
           </div>
         </li>
@@ -794,7 +795,7 @@
             <div class="task-title"><span class="task-id">FE-5</span>Link LINE screen — phone + PIN</div>
             <div class="task-desc">Shown in LIFF when needs_linking. Form: phone + PIN → POST /auth/employee/link-line with lineUserId. Shows LINE profile at top.</div>
             <div class="task-meta">
-              <span class="tag tag-blocked">blocked by FE-1</span>
+              <span class="tag tag-checkpoint">ready after FE-1</span>
             </div>
           </div>
         </li>
@@ -807,7 +808,7 @@
               <span class="tag tag-file">liff-home-page.tsx</span>
               <span class="tag tag-file">liff-request-page.tsx</span>
               <span class="tag tag-file">liff-profile-page.tsx</span>
-              <span class="tag tag-blocked">blocked by FE-1</span>
+              <span class="tag tag-checkpoint">ready after FE-1</span>
             </div>
           </div>
         </li>
@@ -851,7 +852,7 @@
             <div class="task-desc">HRLoginPage at /hr/login. Email + password → POST /auth/hr/login → redirect to dashboard. Add logout to HR sidebar.</div>
             <div class="task-meta">
               <span class="tag tag-file">app/[locale]/hr/login/</span>
-              <span class="tag tag-blocked">blocked by FE-1</span>
+              <span class="tag tag-checkpoint">ready after FE-1</span>
             </div>
           </div>
         </li>

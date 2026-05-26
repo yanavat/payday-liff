@@ -305,6 +305,14 @@
     "logout": "ออกจากระบบ",
     "unlinkLine": "ยกเลิกการเชื่อมต่อ LINE"
   },
+  "auth": {
+    "loading": "กำลังตรวจสอบเซสชัน...",
+    "loginTitle": "เข้าสู่ระบบ PayDay+",
+    "activationTitle": "เปิดใช้งานบัญชี",
+    "lineLinkTitle": "เชื่อมต่อบัญชี LINE",
+    "errorTitle": "ไม่สามารถยืนยันตัวตนได้",
+    "errorDescription": "กรุณาลองใหม่อีกครั้ง"
+  },
   "liff": {
     "loading": "กำลังโหลด PayDay+...",
     "openInLine": "เปิดใน LINE",
