@@ -53,7 +53,7 @@ export function LiffProfilePage() {
   const t = useTranslations();
   const locale = useLocale();
   const profile = useLiffProfile();
-  const { employee: authEmployee, logout } = useAuth();
+  const { employee: authEmployee, isInLiff, logout } = useAuth();
   const employeeId = getAuthEmployeeId(authEmployee);
   const { data: employee } = useEmployee(employeeId);
   const { updateNotifications } = useSettingsActions();
@@ -87,10 +87,12 @@ export function LiffProfilePage() {
     void logout()
       .catch(() => undefined)
       .finally(() => {
-        void loadLiffClient().then((liff) => {
-          liff.logout();
-          liff.closeWindow();
-        });
+        if (isInLiff) {
+          void loadLiffClient().then((liff) => {
+            liff.logout();
+            liff.closeWindow();
+          });
+        }
         window.location.reload();
       });
   }
@@ -99,7 +101,7 @@ export function LiffProfilePage() {
     <div className="min-h-full bg-bg-page pb-5">
       <main className="space-y-3 px-4 pt-4">
         <section className="rounded-xl bg-gradient-to-br from-primary to-primary-dark p-5 text-white shadow-hover">
-          {profile?.pictureUrl ? (
+          {isInLiff && profile?.pictureUrl ? (
             <Image
               src={profile.pictureUrl}
               alt={profile.displayName}
@@ -111,6 +113,7 @@ export function LiffProfilePage() {
           ) : (
             <Avatar
               initials={employee?.nameTh ?? profile?.displayName ?? ""}
+              alt={employee?.nameTh ?? profile?.displayName ?? ""}
               size="xl"
               color="teal"
               className="mx-auto shadow-lg ring-4 ring-white/50"

@@ -4,12 +4,15 @@ import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
 const refetchPeriodMock = vi.fn()
 const refetchRequestsMock = vi.fn()
-
-vi.mock('@/components/liff-auth-gate', () => ({
-  useAuth: vi.fn(() => ({
+const useAuthMock = vi.hoisted(() =>
+  vi.fn(() => ({
     employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
     isInLiff: true,
   })),
+)
+
+vi.mock('@/components/liff-auth-gate', () => ({
+  useAuth: useAuthMock,
   useLiffProfile: vi.fn(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
@@ -97,6 +100,10 @@ const messages = {
 describe('LiffHomePage', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    useAuthMock.mockReturnValue({
+      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      isInLiff: true,
+    })
     refetchPeriodMock.mockClear()
     refetchRequestsMock.mockClear()
   })
@@ -112,6 +119,18 @@ describe('LiffHomePage', () => {
     expect(screen.getByAltText('Mock LINE User')).toHaveAttribute('src', 'https://profile.line.example/avatar.jpg')
     expect(screen.getByText('Available Balance')).toBeInTheDocument()
     expect(screen.getByText('Recent Requests')).toBeInTheDocument()
+  })
+
+  it('uses avatar fallback instead of LINE picture outside LIFF', () => {
+    useAuthMock.mockReturnValue({
+      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      isInLiff: false,
+    })
+
+    renderWithIntl(<LiffHomePage />, { locale: 'en', messages })
+
+    expect(screen.queryByAltText('Mock LINE User')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Mock LINE User')).toBeInTheDocument()
   })
 
   it('renders the available balance from currentPeriod API data', () => {

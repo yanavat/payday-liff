@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useAuth, useLiffProfile } from "@/components/liff-auth-gate";
+import { Avatar } from "@/components/ui/avatar";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { withLiffLocale } from "@/lib/liff-routes";
 import { formatTHB } from "@/lib/utils/format";
@@ -61,7 +62,7 @@ export function LiffHomePage() {
   const t = useTranslations("home");
   const nav = useTranslations("nav");
   const status = useTranslations("status");
-  const { employee: authEmployee } = useAuth();
+  const { employee: authEmployee, isInLiff } = useAuth();
 
   const employeeId = getAuthEmployeeId(authEmployee);
   const {
@@ -120,7 +121,7 @@ export function LiffHomePage() {
           className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary-bg transition focus:outline-none focus:ring-2 focus:ring-primary/30"
           href={withLiffLocale(pathname, "/profile")}
         >
-          {profile?.pictureUrl ? (
+          {isInLiff && profile?.pictureUrl ? (
             <Image
               alt={profile.displayName}
               className="h-full w-full object-cover"
@@ -130,9 +131,12 @@ export function LiffHomePage() {
               width={48}
             />
           ) : (
-            <span className="text-sm font-semibold text-primary-dark">
-              {(profile?.displayName ?? "").slice(0, 2)}
-            </span>
+            <Avatar
+              initials={profile?.displayName ?? ""}
+              alt={profile?.displayName ?? nav("profile")}
+              color="teal"
+              className="h-full w-full"
+            />
           )}
         </Link>
       </header>

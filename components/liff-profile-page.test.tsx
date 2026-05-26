@@ -2,14 +2,17 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
-const logoutMock = vi.hoisted(() => vi.fn().mockResolvedValue(undefined))
-
-vi.mock('@/components/liff-auth-gate', () => ({
-  useAuth: vi.fn(() => ({
+const { logoutMock, useAuthMock } = vi.hoisted(() => ({
+  logoutMock: vi.fn().mockResolvedValue(undefined),
+  useAuthMock: vi.fn(() => ({
     employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
     isInLiff: true,
-    logout: logoutMock,
+    logout: vi.fn(),
   })),
+}))
+
+vi.mock('@/components/liff-auth-gate', () => ({
+  useAuth: useAuthMock,
   useLiffProfile: vi.fn(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
@@ -108,12 +111,30 @@ describe('LiffProfilePage', () => {
     vi.clearAllMocks()
     localStorage.clear()
     logoutMock.mockResolvedValue(undefined)
+    useAuthMock.mockReturnValue({
+      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      isInLiff: true,
+      logout: logoutMock,
+    })
     updateNotificationsMock.mockResolvedValue({})
   })
 
   it('shows the LINE profile picture', () => {
     renderWithIntl(<LiffProfilePage />, { messages })
     expect(screen.getByAltText('Mock LINE User')).toHaveAttribute('src', 'https://profile.line.example/avatar.jpg')
+  })
+
+  it('uses avatar fallback instead of LINE picture outside LIFF', () => {
+    useAuthMock.mockReturnValue({
+      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      isInLiff: false,
+      logout: logoutMock,
+    })
+
+    renderWithIntl(<LiffProfilePage />, { messages })
+
+    expect(screen.queryByAltText('Mock LINE User')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('สมชาย สมิธ')).toBeInTheDocument()
   })
 
   it('shows the LINE display name', () => {
@@ -140,6 +161,22 @@ describe('LiffProfilePage', () => {
 
     await waitFor(() => expect(logoutMock).toHaveBeenCalledOnce())
     await waitFor(() => expect(reloadMock).toHaveBeenCalledOnce())
+  })
+
+  it('does not call LINE closeWindow outside LIFF', async () => {
+    useAuthMock.mockReturnValue({
+      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      isInLiff: false,
+      logout: logoutMock,
+    })
+    const reloadMock = vi.fn()
+    Object.defineProperty(window, 'location', { value: { reload: reloadMock }, writable: true })
+
+    renderWithIntl(<LiffProfilePage />, { messages })
+    fireEvent.click(screen.getByRole('button', { name: /Unlink LINE account/i }))
+
+    await waitFor(() => expect(logoutMock).toHaveBeenCalledOnce())
+    expect(liffCloseWindowMock).not.toHaveBeenCalled()
   })
 
   it('falls back to Avatar initials when pictureUrl is absent', () => {
