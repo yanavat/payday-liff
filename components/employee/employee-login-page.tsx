@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode, ShieldCheck } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { PINPad } from "@/components/ui/pin-pad";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { cn } from "@/lib/utils";
-import { authenticateEmployee } from "@/lib/auth/mock-auth";
 import { BrandLogo } from "../shared/brand-logo";
 
 const maxAttempts = 5;
@@ -24,32 +22,40 @@ export function EmployeeLoginPage() {
 
   const remainingAttempts = Math.max(maxAttempts - attempts, 0);
 
-  function submitLogin(nextPin = pin) {
+  async function submitLogin(nextPin = pin) {
     if (isLocked || isLoading || !employeeId || nextPin.length < 4) return;
 
     setIsLoading(true);
-    window.setTimeout(async () => {
-      const result = await authenticateEmployee(employeeId, nextPin);
+    setError("");
 
-      if (result.ok) {
-        window.localStorage.setItem("payday-session", result.token);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: employeeId, pin: nextPin }),
+      });
+
+      if (response.ok) {
         router.push("/employee/home");
         return;
       }
+    } catch {
+      // Fall through to the same retry handling as invalid credentials.
+    }
 
-      const nextAttempts = attempts + 1;
-      setAttempts(nextAttempts);
-      setPin("");
-      setIsLoading(false);
+    const nextAttempts = attempts + 1;
+    setAttempts(nextAttempts);
+    setPin("");
+    setIsLoading(false);
 
-      if (nextAttempts >= maxAttempts) {
-        setIsLocked(true);
-        setError(t("locked"));
-        return;
-      }
+    if (nextAttempts >= maxAttempts) {
+      setIsLocked(true);
+      setError(t("locked"));
+      return;
+    }
 
-      setError(t("wrongPin", { attempts: maxAttempts - nextAttempts }));
-    }, 350);
+    setError(t("wrongPin", { attempts: maxAttempts - nextAttempts }));
   }
 
   return (

@@ -153,7 +153,7 @@ describe("LiffOnboardingPage", () => {
     });
 
     const options = Array.from(
-      document.querySelectorAll<HTMLDataListElement>("#company-code-options option"),
+      document.querySelectorAll<HTMLOptionElement>("#company-code-options option"),
     ).map((option) => option.value);
     expect(options).toEqual(["SMPC", "CPALL"]);
   });

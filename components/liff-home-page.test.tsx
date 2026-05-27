@@ -4,6 +4,7 @@ import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
 const refetchPeriodMock = vi.fn()
 const refetchRequestsMock = vi.fn()
+const retryRequestsMock = vi.fn()
 const useAuthMock = vi.hoisted(() =>
   vi.fn(() => ({
     employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
@@ -48,6 +49,7 @@ vi.mock('@/lib/api/hooks/use-ewa-requests', () => ({
     loading: false,
     error: null,
     refetch: refetchRequestsMock,
+    retry: retryRequestsMock,
   })),
 }))
 
@@ -106,6 +108,7 @@ describe('LiffHomePage', () => {
     })
     refetchPeriodMock.mockClear()
     refetchRequestsMock.mockClear()
+    retryRequestsMock.mockClear()
   })
 
   afterEach(() => {
@@ -174,24 +177,32 @@ describe('LiffHomePage', () => {
             companyId: 'COMP-001',
             employeeId: 'EMP-0001',
             status: 'disbursed',
+            requestedAt: '2026-03-10T00:00:00.000Z',
+            amount: 4000,
+            referenceNumber: 'REF-20260310-0001',
+            reason: 'emergency',
             requestedAmount: 4000,
             transferFee: 15,
+            netTransferAmount: 3985,
             netAmount: 3985,
+            hrNote: '',
+            employeeNote: '',
             earnedToDate: 30682,
             maxWithdrawable: 15341,
             periodLabel: 'March 2026',
             periodStart: '2026-03-01',
             periodEnd: '2026-03-31',
             workedDays: 15,
+            payCycle: 'monthly',
             isOnBehalf: false,
             autoApproved: true,
             actorId: 'EMP-0001',
             actorName: 'Anan Srisuwan',
             approvedBy: 'system',
             approvedAt: '2026-03-10T00:00:00.000Z',
-            rejectedBy: null,
-            rejectedAt: null,
-            rejectionReason: null,
+            rejectedBy: undefined,
+            rejectedAt: undefined,
+            rejectionReason: undefined,
             disbursedAt: '2026-03-11T00:00:00.000Z',
             createdAt: '2026-05-12T05:46:44.000Z',
             updatedAt: '2026-05-12T05:46:44.000Z',
@@ -204,6 +215,7 @@ describe('LiffHomePage', () => {
       loading: false,
       error: null,
       refetch: refetchRequestsMock,
+      retry: retryRequestsMock,
     })
 
     renderWithIntl(<LiffHomePage />, { locale: 'en', messages })
