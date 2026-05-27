@@ -158,6 +158,34 @@ describe('LiffHistoryPage', () => {
     expect(screen.getByText('-')).toBeInTheDocument()
   })
 
+  it('does not build an undefined translation key when backend omits reason', () => {
+    useEWARequestsMock.mockReturnValue({
+      data: {
+        data: [
+          {
+            ...mockRequests[0],
+            id: 'EWA-NO-REASON',
+            referenceNumber: 'REF-NO-REASON',
+            reason: undefined,
+          },
+        ],
+        total: 1,
+        limit: 10,
+        offset: 0,
+      },
+      loading: false,
+      error: null,
+      refetch: vi.fn(),
+      retry: vi.fn(),
+    })
+
+    renderWithIntl(<LiffHistoryPage />, { messages })
+
+    expect(screen.getByText('REF-NO-REASON')).toBeInTheDocument()
+    expect(screen.queryByText('requestWizard.reasons.undefined')).not.toBeInTheDocument()
+    expect(screen.getByText('-')).toBeInTheDocument()
+  })
+
   it('does NOT show export pay slip PDF button even when a card is expanded', () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams('id=EWA-2025-000014') as never)
     renderWithIntl(<LiffHistoryPage />, { messages })

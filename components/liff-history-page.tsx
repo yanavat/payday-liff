@@ -24,6 +24,18 @@ const dateLocales: Record<string, string> = {
   my: 'my-MM',
 }
 
+const requestReasonKeys = new Set([
+  'medical',
+  'education',
+  'emergency',
+  'utility',
+  'other',
+])
+
+function getReasonKey(reason: string | undefined) {
+  return reason && requestReasonKeys.has(reason) ? reason : null
+}
+
 function formatDate(value: string | undefined, locale: string) {
   const date = parseDate(value)
   if (!date) return '-'
@@ -226,6 +238,7 @@ export function LiffHistoryPage() {
         <div className="space-y-2">
           {filtered.slice(0, 10).map((request) => {
             const dateParts = getRequestDateParts(request, locale)
+            const reasonKey = getReasonKey(request.reason)
             const expanded = expandedId === request.id
 
             return (
@@ -254,7 +267,7 @@ export function LiffHistoryPage() {
                       {request.referenceNumber}
                     </p>
                     <p className="truncate text-[12px] font-bold text-text-muted">
-                      {t(`requestWizard.reasons.${request.reason}`)}
+                      {reasonKey ? t(`requestWizard.reasons.${reasonKey}`) : '-'}
                     </p>
                   </div>
                   <div className="text-right">
