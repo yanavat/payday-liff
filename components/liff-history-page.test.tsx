@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
-import type { EWARequestDto } from '@/lib/api/types'
+import type { EWAHistoryRequestDto } from '@/lib/api/types'
 
 vi.mock('next/navigation', () => ({
   usePathname: vi.fn(() => '/history'),
@@ -14,7 +14,7 @@ vi.mock('next/link', () => ({
   ),
 }))
 
-const mockRequests: EWARequestDto[] = [
+const mockRequests: EWAHistoryRequestDto[] = [
   {
     id: 'EWA-2025-000014',
     companyId: 'COMP-001',
@@ -48,6 +48,34 @@ const mockRequests: EWARequestDto[] = [
     updatedAt: '2026-05-10T09:00:00.000Z',
   },
 ]
+
+const backendHistoryRequest: EWAHistoryRequestDto = {
+  id: 'EWA-20260528-0001-918',
+  companyId: 'COMP-001',
+  employeeId: 'EMP-0001',
+  status: 'pending',
+  requestedAmount: 1100,
+  transferFee: 15,
+  netAmount: 1085,
+  earnedToDate: 18409,
+  maxWithdrawable: 9204,
+  periodLabel: 'May 2026',
+  periodStart: '2026-05-01',
+  periodEnd: '2026-05-31',
+  workedDays: 9,
+  isOnBehalf: false,
+  autoApproved: false,
+  actorId: 'EMP-0001',
+  actorName: 'อนันต์ ศรีสุวรรณ',
+  approvedBy: null,
+  approvedAt: null,
+  rejectedBy: null,
+  rejectedAt: null,
+  rejectionReason: null,
+  disbursedAt: null,
+  createdAt: '2026-05-27T17:19:50.000Z',
+  updatedAt: '2026-05-27T17:19:50.000Z',
+}
 
 const useEWARequestsMock = vi.hoisted(() => vi.fn())
 
@@ -128,6 +156,27 @@ describe('LiffHistoryPage', () => {
     expect(useEWARequestsMock).toHaveBeenCalledWith({ employeeId: 'EMP-001', limit: 10 })
     expect(screen.getByText('REF-20260510-0014')).toBeInTheDocument()
     expect(screen.getAllByText('฿4,000').length).toBeGreaterThan(0)
+  })
+
+  it('renders the real backend history response shape', () => {
+    useEWARequestsMock.mockReturnValue({
+      data: {
+        data: [backendHistoryRequest],
+        total: 1,
+        limit: 10,
+        offset: 0,
+      },
+      loading: false,
+      error: null,
+      refetch: vi.fn(),
+      retry: vi.fn(),
+    })
+
+    renderWithIntl(<LiffHistoryPage />, { messages })
+
+    expect(screen.getByText('EWA-20260528-0001-918')).toBeInTheDocument()
+    expect(screen.getAllByText('฿1,100').length).toBeGreaterThan(0)
+    expect(screen.queryByText('requestWizard.reasons.undefined')).not.toBeInTheDocument()
   })
 
   it('does not crash when backend request date fields are missing or invalid', () => {

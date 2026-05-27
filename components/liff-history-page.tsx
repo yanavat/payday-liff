@@ -1,92 +1,105 @@
-'use client'
+"use client"
 
-import { useEffect, useMemo, useState } from 'react'
-import { ChevronDown } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
-import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useState } from "react"
+import { ChevronDown } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
+import Link from "next/link"
+import { usePathname, useSearchParams } from "next/navigation"
 
-import { EmptyState } from '@/components/ui/empty-state'
-import { StatusBadge } from '@/components/ui/status-badge'
-import { TabBar, type TabItem } from '@/components/ui/tab-bar'
-import { useAuth } from '@/components/liff-auth-gate'
-import { getAuthEmployeeId } from '@/lib/auth/get-auth-employee-id'
-import { useEmployee } from '@/lib/api/hooks/use-employees'
-import { useEWARequests } from '@/lib/api/hooks/use-ewa-requests'
-import { withLiffLocale } from '@/lib/liff-routes'
-import { cn } from '@/lib/utils'
-import { formatTHB } from '@/lib/utils/format'
-import type { EWARequestDto } from '@/lib/api/types'
+import { EmptyState } from "@/components/ui/empty-state"
+import { StatusBadge } from "@/components/ui/status-badge"
+import { TabBar, type TabItem } from "@/components/ui/tab-bar"
+import { useAuth } from "@/components/liff-auth-gate"
+import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id"
+import { useEmployee } from "@/lib/api/hooks/use-employees"
+import { useEWARequests } from "@/lib/api/hooks/use-ewa-requests"
+import { withLiffLocale } from "@/lib/liff-routes"
+import { cn } from "@/lib/utils"
+import { formatTHB } from "@/lib/utils/format"
+import type { EWAHistoryRequestDto } from "@/lib/api/types"
 
 const dateLocales: Record<string, string> = {
-  th: 'th-TH',
-  en: 'en-US',
-  my: 'my-MM',
+  th: "th-TH",
+  en: "en-US",
+  my: "my-MM",
 }
 
 const requestReasonKeys = new Set([
-  'medical',
-  'education',
-  'emergency',
-  'utility',
-  'other',
+  "medical",
+  "education",
+  "emergency",
+  "utility",
+  "other",
 ])
 
-function getReasonKey(reason: string | undefined) {
+function getReasonKey(reason: string | null | undefined) {
   return reason && requestReasonKeys.has(reason) ? reason : null
 }
 
-function formatDate(value: string | undefined, locale: string) {
+function formatDate(value: string | null | undefined, locale: string) {
   const date = parseDate(value)
-  if (!date) return '-'
-  return new Intl.DateTimeFormat(dateLocales[locale] ?? 'en-US', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  if (!date) return "-"
+  return formatDateValue(date, locale)
+}
+
+function formatDateValue(date: Date, locale: string) {
+  return new Intl.DateTimeFormat(dateLocales[locale] ?? "en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(date)
 }
 
-function parseDate(value: string | undefined) {
+function parseDate(value: string | null | undefined) {
   if (!value) return null
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? null : date
 }
 
-function getRequestedDate(request: EWARequestDto) {
+function getRequestedDate(request: EWAHistoryRequestDto) {
   return parseDate(request.requestedAt) ?? parseDate(request.createdAt)
 }
 
-function getRequestTimestamp(request: EWARequestDto) {
+function getRequestTimestamp(request: EWAHistoryRequestDto) {
   return getRequestedDate(request)?.getTime() ?? 0
 }
 
-function getRequestDateParts(request: EWARequestDto, locale: string) {
+function getRequestDateParts(request: EWAHistoryRequestDto, locale: string) {
   const date = getRequestedDate(request)
-  if (!date) return ['-', '']
+  if (!date) return ["-", ""]
 
-  return new Intl.DateTimeFormat(dateLocales[locale] ?? 'en-US', {
-    day: '2-digit',
-    month: 'short',
+  return new Intl.DateTimeFormat(dateLocales[locale] ?? "en-US", {
+    day: "2-digit",
+    month: "short",
   })
     .format(date)
-    .split(' ')
+    .split(" ")
 }
 
-function getRequestAmount(request: EWARequestDto) {
-  return request.requestedAmount ?? request.amount
+function formatRequestDate(request: EWAHistoryRequestDto, locale: string) {
+  const date = getRequestedDate(request)
+  return date ? formatDateValue(date, locale) : "-"
 }
 
-function getNetTransferAmount(request: EWARequestDto) {
-  return request.netTransferAmount ?? request.netAmount
+function getRequestAmount(request: EWAHistoryRequestDto) {
+  return request.requestedAmount ?? request.amount ?? 0
+}
+
+function getNetTransferAmount(request: EWAHistoryRequestDto) {
+  return request.netTransferAmount ?? request.netAmount ?? 0
+}
+
+function getRequestReference(request: EWAHistoryRequestDto) {
+  return request.referenceNumber || request.id
 }
 
 function getMonthKey(date: Date) {
   return `${date.getFullYear()}-${date.getMonth()}`
 }
 
-function summarizeRequests(requests: EWARequestDto[]) {
+function summarizeRequests(requests: EWAHistoryRequestDto[]) {
   const now = new Date()
   const thisMonthKey = getMonthKey(now)
   const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
@@ -126,7 +139,7 @@ export function LiffHistoryPage() {
   const locale = useLocale()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const deepLinkId = searchParams.get('id')
+  const deepLinkId = searchParams.get("id")
   const { employee: authEmployee } = useAuth()
   const employeeId = getAuthEmployeeId(authEmployee)
   const { data: employee } = useEmployee(employeeId)
@@ -137,22 +150,21 @@ export function LiffHistoryPage() {
   } = useEWARequests({ employeeId, limit: 10 })
 
   const tabs: TabItem[] = [
-    { value: 'all', label: t('status.all') },
-    { value: 'pending', label: t('status.pending') },
-    { value: 'approved', label: t('status.approved') },
-    { value: 'disbursed', label: t('status.disbursed') },
-    { value: 'rejected', label: t('status.rejected') },
+    { value: "all", label: t("status.all") },
+    { value: "pending", label: t("status.pending") },
+    { value: "approved", label: t("status.approved") },
+    { value: "disbursed", label: t("status.disbursed") },
+    { value: "rejected", label: t("status.rejected") },
   ]
 
-  const [tab, setTab] = useState('all')
+  const [tab, setTab] = useState("all")
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const requests = useMemo(
     () =>
-      (requestsData?.data ?? []).slice().sort(
-        (a, b) =>
-          getRequestTimestamp(b) - getRequestTimestamp(a),
-      ),
+      ((requestsData?.data ?? []) as EWAHistoryRequestDto[])
+        .slice()
+        .sort((a, b) => getRequestTimestamp(b) - getRequestTimestamp(a)),
     [requestsData],
   )
 
@@ -161,38 +173,40 @@ export function LiffHistoryPage() {
     if (deepLinkId !== null && requests.some((r) => r.id === deepLinkId)) {
       if (!cancelled) setExpandedId(deepLinkId)
     }
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [deepLinkId, requests])
 
   const filtered =
-    tab === 'all' ? requests : requests.filter((r) => r.status === tab)
+    tab === "all" ? requests : requests.filter((r) => r.status === tab)
   const summary = summarizeRequests(requests)
 
   return (
     <div className="min-h-full bg-bg-page px-4 pb-5 pt-4">
       <header className="mb-4">
         <h1 className="text-[22px] font-semibold leading-tight text-text-primary">
-          {t('history.title')}
+          {t("history.title")}
         </h1>
-        <p className="mt-1 text-[16px] text-text-muted">{t('history.total')}</p>
+        <p className="mt-1 text-[16px] text-text-muted">{t("history.total")}</p>
       </header>
 
       <div className="mb-4 rounded-xl bg-gradient-to-br from-primary to-primary-dark p-5 text-white shadow-hover">
         <div className="flex divide-x divide-border">
           <SummaryCell
-            label={t('history.thisMonth')}
+            label={t("history.thisMonth")}
             value={formatTHB(summary.thisMonth.amount)}
-            sub={t('history.requestCount', { count: summary.thisMonth.count })}
+            sub={t("history.requestCount", { count: summary.thisMonth.count })}
           />
           <SummaryCell
-            label={t('history.lastMonth')}
+            label={t("history.lastMonth")}
             value={formatTHB(summary.lastMonth.amount)}
-            sub={t('history.requestCount', { count: summary.lastMonth.count })}
+            sub={t("history.requestCount", { count: summary.lastMonth.count })}
           />
           <SummaryCell
-            label={t('history.total')}
+            label={t("history.total")}
             value={formatTHB(summary.total.amount)}
-            sub={t('history.requestCount', { count: summary.total.count })}
+            sub={t("history.requestCount", { count: summary.total.count })}
           />
         </div>
       </div>
@@ -217,20 +231,17 @@ export function LiffHistoryPage() {
           ))}
         </div>
       ) : error ? (
-        <EmptyState
-          message={t('common.error')}
-          description={error.message}
-        />
+        <EmptyState message={t("common.error")} description={error.message} />
       ) : filtered.length === 0 ? (
         <EmptyState
-          message={t('common.noData')}
-          description={t('home.requestCta')}
+          message={t("common.noData")}
+          description={t("home.requestCta")}
           action={
             <Link
-              href={withLiffLocale(pathname, '/request')}
+              href={withLiffLocale(pathname, "/request")}
               className="rounded-md bg-primary px-4 py-2 text-[16px] font-semibold text-white"
             >
-              {t('requestWizard.step1')}
+              {t("requestWizard.step1")}
             </Link>
           }
         />
@@ -261,13 +272,15 @@ export function LiffHistoryPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[14px] font-medium text-text-primary">
-                      {t('requests.title')}
+                      {t("requests.title")}
                     </p>
                     <p className="truncate font-mono text-[12px] text-text-muted">
-                      {request.referenceNumber}
+                      {getRequestReference(request)}
                     </p>
                     <p className="truncate text-[12px] font-bold text-text-muted">
-                      {reasonKey ? t(`requestWizard.reasons.${reasonKey}`) : '-'}
+                      {reasonKey
+                        ? t(`requestWizard.reasons.${reasonKey}`)
+                        : "-"}
                     </p>
                   </div>
                   <div className="text-right">
@@ -278,8 +291,8 @@ export function LiffHistoryPage() {
                   </div>
                   <ChevronDown
                     className={cn(
-                      'h-5 w-5 text-text-muted transition',
-                      expanded && 'rotate-180',
+                      "h-5 w-5 text-text-muted transition",
+                      expanded && "rotate-180",
                     )}
                     aria-hidden
                   />
@@ -287,36 +300,36 @@ export function LiffHistoryPage() {
                 {expanded && (
                   <div className="border-t border-border-light bg-bg-secondary p-4 text-[16px]">
                     <DetailRow
-                      label={t('history.requestedDate')}
-                      value={formatDate(request.requestedAt, locale)}
+                      label={t("history.requestedDate")}
+                      value={formatRequestDate(request, locale)}
                     />
                     <DetailRow
-                      label={t('history.approvedDate')}
+                      label={t("history.approvedDate")}
                       value={formatDate(request.approvedAt, locale)}
                     />
                     <DetailRow
-                      label={t('history.approvedBy')}
-                      value={request.approvedBy ?? '-'}
+                      label={t("history.approvedBy")}
+                      value={request.approvedBy ?? "-"}
                     />
                     <DetailRow
-                      label={t('history.transferDate')}
+                      label={t("history.transferDate")}
                       value={formatDate(request.disbursedAt, locale)}
                     />
                     <DetailRow
-                      label={t('profile.bankAccount')}
-                      value={employee?.bankAccountMasked ?? '-'}
+                      label={t("profile.bankAccount")}
+                      value={employee?.bankAccountMasked ?? "-"}
                     />
                     <DetailRow
-                      label={t('history.transferFee')}
+                      label={t("history.transferFee")}
                       value={formatTHB(request.transferFee)}
                     />
                     <DetailRow
-                      label={t('history.netTransferAmount')}
+                      label={t("history.netTransferAmount")}
                       value={formatTHB(getNetTransferAmount(request))}
                     />
                     <DetailRow
-                      label={t('requestDetail.hrNote')}
-                      value={request.hrNote ?? request.employeeNote ?? '-'}
+                      label={t("requestDetail.hrNote")}
+                      value={request.hrNote ?? request.employeeNote ?? "-"}
                     />
                   </div>
                 )}
