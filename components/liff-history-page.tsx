@@ -25,14 +25,41 @@ const dateLocales: Record<string, string> = {
 }
 
 function formatDate(value: string | undefined, locale: string) {
-  if (!value) return '-'
+  const date = parseDate(value)
+  if (!date) return '-'
   return new Intl.DateTimeFormat(dateLocales[locale] ?? 'en-US', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(new Date(value))
+  }).format(date)
+}
+
+function parseDate(value: string | undefined) {
+  if (!value) return null
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function getRequestedDate(request: EWARequestDto) {
+  return parseDate(request.requestedAt) ?? parseDate(request.createdAt)
+}
+
+function getRequestTimestamp(request: EWARequestDto) {
+  return getRequestedDate(request)?.getTime() ?? 0
+}
+
+function getRequestDateParts(request: EWARequestDto, locale: string) {
+  const date = getRequestedDate(request)
+  if (!date) return ['-', '']
+
+  return new Intl.DateTimeFormat(dateLocales[locale] ?? 'en-US', {
+    day: '2-digit',
+    month: 'short',
+  })
+    .format(date)
+    .split(' ')
 }
 
 function getRequestAmount(request: EWARequestDto) {
@@ -56,7 +83,8 @@ function summarizeRequests(requests: EWARequestDto[]) {
   return requests.reduce(
     (summary, request) => {
       const amount = getRequestAmount(request)
-      const requestMonthKey = getMonthKey(new Date(request.requestedAt))
+      const requestedDate = getRequestedDate(request)
+      const requestMonthKey = requestedDate ? getMonthKey(requestedDate) : null
 
       summary.total.amount += amount
       summary.total.count += 1
@@ -111,7 +139,7 @@ export function LiffHistoryPage() {
     () =>
       (requestsData?.data ?? []).slice().sort(
         (a, b) =>
-          new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime(),
+          getRequestTimestamp(b) - getRequestTimestamp(a),
       ),
     [requestsData],
   )
@@ -197,12 +225,7 @@ export function LiffHistoryPage() {
       ) : (
         <div className="space-y-2">
           {filtered.slice(0, 10).map((request) => {
-            const dateParts = new Intl.DateTimeFormat(dateLocales[locale] ?? 'en-US', {
-              day: '2-digit',
-              month: 'short',
-            })
-              .format(new Date(request.requestedAt))
-              .split(' ')
+            const dateParts = getRequestDateParts(request, locale)
             const expanded = expandedId === request.id
 
             return (

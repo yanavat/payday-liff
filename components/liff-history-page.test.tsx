@@ -130,6 +130,34 @@ describe('LiffHistoryPage', () => {
     expect(screen.getAllByText('฿4,000').length).toBeGreaterThan(0)
   })
 
+  it('does not crash when backend request date fields are missing or invalid', () => {
+    useEWARequestsMock.mockReturnValue({
+      data: {
+        data: [
+          {
+            ...mockRequests[0],
+            id: 'EWA-BAD-DATE',
+            requestedAt: '',
+            createdAt: 'not-a-date',
+            referenceNumber: 'REF-BAD-DATE',
+          },
+        ],
+        total: 1,
+        limit: 10,
+        offset: 0,
+      },
+      loading: false,
+      error: null,
+      refetch: vi.fn(),
+      retry: vi.fn(),
+    })
+
+    renderWithIntl(<LiffHistoryPage />, { messages })
+
+    expect(screen.getByText('REF-BAD-DATE')).toBeInTheDocument()
+    expect(screen.getByText('-')).toBeInTheDocument()
+  })
+
   it('does NOT show export pay slip PDF button even when a card is expanded', () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams('id=EWA-2025-000014') as never)
     renderWithIntl(<LiffHistoryPage />, { messages })
