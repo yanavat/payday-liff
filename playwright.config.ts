@@ -14,17 +14,13 @@ export default defineConfig({
     {
       command: "node e2e/mock-auth-backend.mjs",
       url: "http://127.0.0.1:4010/health",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
     },
     {
-      command: "npm run dev -- -p 3100",
+      command:
+        "NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:4010 NEXT_PUBLIC_LIFF_ID=test-liff-id NEXT_PUBLIC_LIFF_MOCK=false npm run dev -- -p 3100",
       url: "http://127.0.0.1:3100/en",
-      reuseExistingServer: !process.env.CI,
-      env: {
-        NEXT_PUBLIC_API_BASE_URL: "http://127.0.0.1:4010",
-        NEXT_PUBLIC_LIFF_ID: "test-liff-id",
-        NEXT_PUBLIC_LIFF_MOCK: "false",
-      },
+      reuseExistingServer: false,
     },
   ],
   projects: [

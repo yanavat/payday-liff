@@ -101,13 +101,19 @@ export function LiffHomePage() {
   const showBalanceSkeleton = periodLoading && !currentPeriod;
   const showPeriodSkeleton = periodLoading && !currentPeriod;
   const showRequestsSkeleton = requestsLoading && !requestsData;
+  const displayName =
+    profile?.displayName ??
+    authEmployee?.name ??
+    authEmployee?.nameTh ??
+    authEmployee?.employeeCode ??
+    "";
 
   return (
     <div className="bg-bg-page pb-5">
       <header className="flex items-center justify-between px-4 py-4">
         <div>
           <h1 className="text-[18px] font-semibold leading-tight text-text-primary">
-            {t("greeting", { name: profile?.displayName ?? "" })}
+            {t("greeting", { name: displayName })}
           </h1>
           <p className="mt-1 text-[16px] text-text-muted">
             {new Intl.DateTimeFormat(dateLocales[locale] ?? "en-US", {
@@ -133,8 +139,8 @@ export function LiffHomePage() {
             />
           ) : (
             <Avatar
-              initials={profile?.displayName ?? ""}
-              alt={profile?.displayName ?? nav("profile")}
+              initials={displayName}
+              alt={displayName || nav("profile")}
               color="teal"
               className="h-full w-full"
             />

@@ -5,6 +5,13 @@ type AuthRouteContext = {
 };
 
 const DEFAULT_API_BASE_URL = "http://localhost:4000";
+const EMPLOYEE_AUTH_PATHS = new Set([
+  "activate",
+  "login",
+  "line-login",
+  "link-line",
+  "verify-pin",
+]);
 
 function getBackendBaseUrl() {
   return (
@@ -15,7 +22,11 @@ function getBackendBaseUrl() {
 
 async function buildBackendUrl(request: Request, context: AuthRouteContext) {
   const { path } = await context.params;
-  const target = new URL(`/auth/${path.map(encodeURIComponent).join("/")}`, getBackendBaseUrl());
+  const backendPath =
+    path.length === 1 && EMPLOYEE_AUTH_PATHS.has(path[0])
+      ? ["employee", path[0]]
+      : path;
+  const target = new URL(`/auth/${backendPath.map(encodeURIComponent).join("/")}`, getBackendBaseUrl());
   const source = new URL(request.url);
   target.search = source.search;
   return target.toString();

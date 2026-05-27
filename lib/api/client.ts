@@ -84,8 +84,16 @@ class ApiClient {
     return response.json();
   }
 
+  private buildUrl(path: string): URL {
+    if (path.startsWith("/api/") && typeof window !== "undefined") {
+      return new URL(path, window.location.origin);
+    }
+
+    return new URL(path, this.config.baseURL);
+  }
+
   async get<T>(path: string, params?: Record<string, unknown>): Promise<T> {
-    const url = new URL(path, this.config.baseURL);
+    const url = this.buildUrl(path);
 
     if (params) {
       Object.entries(params).forEach(([key, value]) => {

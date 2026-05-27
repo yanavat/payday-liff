@@ -98,6 +98,7 @@ describe("AuthGate", () => {
   });
 
   it("loads an existing cookie session from /api/auth/me and provides auth context", async () => {
+    window.localStorage.setItem("payday-company-id", "company-1");
     mockFetch([
       jsonResponse({
         employee: { id: "emp-1", employeeCode: "EMP-001", name: "Somchai" },
@@ -123,8 +124,14 @@ describe("AuthGate", () => {
     expect(await screen.findByText("authenticated:EMP-001")).toBeInTheDocument();
     expect(fetch).toHaveBeenCalledWith(
       "/api/auth/me",
-      expect.objectContaining({ credentials: "include", method: "GET" }),
+      expect.objectContaining({
+        credentials: "include",
+        headers: expect.any(Headers),
+        method: "GET",
+      }),
     );
+    const [, init] = vi.mocked(fetch).mock.calls[0];
+    expect((init?.headers as Headers).get("x-company-id")).toBe("company-1");
   });
 
   it("shows browser login state when /api/auth/me returns 401 outside LIFF", async () => {
