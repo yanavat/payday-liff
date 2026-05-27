@@ -137,6 +137,43 @@ export interface EWARequestDto {
   updatedAt: string
 }
 
+export interface EWAHistoryRequestDto {
+  id: string
+  companyId: string
+  employeeId: string
+  status: "pending" | "approved" | "rejected" | "disbursed" | "cancelled"
+  requestedAmount: number
+  transferFee: number
+  netAmount: number
+  earnedToDate: number
+  maxWithdrawable: number
+  periodLabel: string
+  periodStart: string
+  periodEnd: string
+  workedDays: number
+  isOnBehalf: boolean
+  autoApproved: boolean
+  actorId: string
+  actorName: string | null
+  approvedBy: string | null
+  approvedAt: string | null
+  rejectedBy: string | null
+  rejectedAt: string | null
+  rejectionReason: string | null
+  disbursedAt: string | null
+  createdAt: string
+  updatedAt: string
+  requestedAt?: string | null
+  amount?: number
+  referenceNumber?: string | null
+  reason?: "medical" | "education" | "emergency" | "utility" | "other" | null
+  netTransferAmount?: number
+  hrNote?: string | null
+  employeeNote?: string | null
+  payCycle?: "monthly" | "weekly"
+  employee?: EmployeeDto
+}
+
 export interface CreateRequestDto {
   amount: number
   reason?: "medical" | "education" | "emergency" | "utility" | "other"

@@ -65,6 +65,12 @@ export function LiffProfilePage() {
   const [bankCode, setBankCode] = useState("");
   const [accountMasked, setAccountMasked] = useState("");
   const [holderName, setHolderName] = useState("");
+  const hasLineProfile = isInLiff && Boolean(profile?.userId);
+  const displayName = hasLineProfile
+    ? profile?.displayName
+    : employee?.name ?? employee?.nameTh ?? authEmployee?.name ?? authEmployee?.nameTh;
+  const avatarName =
+    displayName ?? employee?.employeeCode ?? authEmployee?.employeeCode ?? "";
 
   useEffect(() => {
     if (!employee) return;
@@ -85,6 +91,7 @@ export function LiffProfilePage() {
   }
 
   function handleUnlink() {
+    if (!hasLineProfile) return;
     void logout()
       .catch(() => undefined)
       .finally(() => {
@@ -102,7 +109,7 @@ export function LiffProfilePage() {
     <div className="min-h-full bg-bg-page pb-5">
       <main className="space-y-3 px-4 pt-4">
         <section className="rounded-xl bg-gradient-to-br from-primary to-primary-dark p-5 text-white shadow-hover">
-          {isInLiff && profile?.pictureUrl ? (
+          {hasLineProfile && profile?.pictureUrl ? (
             <Image
               src={profile.pictureUrl}
               alt={profile.displayName}
@@ -113,17 +120,17 @@ export function LiffProfilePage() {
             />
           ) : (
             <Avatar
-              initials={employee?.nameTh ?? profile?.displayName ?? ""}
-              alt={employee?.nameTh ?? profile?.displayName ?? ""}
+              initials={avatarName}
+              alt={avatarName}
               size="xl"
               color="teal"
               className="mx-auto shadow-lg ring-4 ring-white/50"
             />
           )}
           <h1 className="mt-3 text-[22px] font-bold leading-tight text-white">
-            {profile?.displayName || employee?.nameTh || ""}
+            {displayName ?? ""}
           </h1>
-          {profile?.email && (
+          {hasLineProfile && profile?.email && (
             <p className="mt-0.5 text-[14px] text-white/70">{profile.email}</p>
           )}
           <p className="mt-1 text-[15px] text-white/80">
@@ -224,6 +231,7 @@ export function LiffProfilePage() {
             icon={<MessageCircle className="h-5 w-5" />}
             label={t("profile.notifyLine")}
             checked={line}
+            disabled={!hasLineProfile}
             onChange={(v) => {
               setLine(v);
               void updateNotifications({
@@ -250,7 +258,8 @@ export function LiffProfilePage() {
         <button
           type="button"
           onClick={handleUnlink}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-red-200 text-[16px] font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200"
+          disabled={!hasLineProfile}
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-red-200 text-[16px] font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
         >
           <Link2Off className="h-5 w-5" aria-hidden />
           {t("profile.unlinkLine")}
@@ -434,11 +443,13 @@ function ToggleRow({
   icon,
   label,
   checked,
+  disabled = false,
   onChange,
 }: {
   icon: ReactNode;
   label: string;
   checked: boolean;
+  disabled?: boolean;
   onChange: (checked: boolean) => void;
 }) {
   return (
@@ -451,12 +462,12 @@ function ToggleRow({
         type="button"
         aria-pressed={checked}
         aria-label={label}
+        disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={
-          checked
-            ? "relative h-8 w-14 rounded-full bg-primary transition focus:outline-none focus:ring-2 focus:ring-primary/30"
-            : "relative h-8 w-14 rounded-full bg-border transition focus:outline-none focus:ring-2 focus:ring-primary/30"
-        }
+        className={cn(
+          "relative h-8 w-14 rounded-full transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50",
+          checked ? "bg-primary" : "bg-border",
+        )}
       >
         <span
           className={
