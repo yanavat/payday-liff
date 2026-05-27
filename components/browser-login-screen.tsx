@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { LogIn } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -17,7 +17,25 @@ export function BrowserLoginScreen({ onActivate }: BrowserLoginScreenProps) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
+  const lineClientId =
+    process.env.NEXT_PUBLIC_LINE_CHANNEL_ID || process.env.NEXT_PUBLIC_LIFF_ID;
+  const [lineLoginUrl, setLineLoginUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!lineClientId) return;
+
+    const params = new URLSearchParams({
+      client_id: lineClientId,
+      redirect_uri: window.location.href,
+      response_type: "code",
+      scope: "profile openid",
+      state: createStateNonce(),
+    });
+
+    setLineLoginUrl(
+      `https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`,
+    );
+  }, [lineClientId]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,10 +72,10 @@ export function BrowserLoginScreen({ onActivate }: BrowserLoginScreenProps) {
           </h1>
         </div>
 
-        {liffId ? (
+        {lineLoginUrl ? (
           <a
             className="flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
-            href={`https://liff.line.me/${liffId}`}
+            href={lineLoginUrl}
           >
             <LogIn className="h-5 w-5" strokeWidth={1.8} />
             {t("lineLoginButton")}
@@ -99,7 +117,7 @@ export function BrowserLoginScreen({ onActivate }: BrowserLoginScreenProps) {
           </label>
 
           {error ? (
-            <p className="rounded-md bg-red-50 px-3 py-2 text-[14px] font-medium text-red-600">
+            <p className="rounded-md bg-[var(--color-error-bg)] px-3 py-2 text-[14px] font-medium text-[var(--color-error-text)]">
               {error}
             </p>
           ) : null}
@@ -123,4 +141,12 @@ export function BrowserLoginScreen({ onActivate }: BrowserLoginScreenProps) {
       </section>
     </main>
   );
+}
+
+function createStateNonce() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }

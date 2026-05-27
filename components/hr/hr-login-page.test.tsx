@@ -7,7 +7,7 @@ const pushMock = vi.fn();
 const replaceMock = vi.fn();
 
 vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(() => ({ replace: replaceMock })),
+  useRouter: vi.fn(() => ({ push: pushMock, replace: replaceMock })),
   usePathname: vi.fn(() => "/en/hr/login"),
   useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
@@ -60,7 +60,7 @@ describe("HRLoginPage", () => {
     renderWithIntl(<HRLoginPage />);
 
     expect(
-      screen.getByText("Demo: hr@paydayplus.co / 123456"),
+      screen.getByText("Demo: hr@paydayplus.co / demo1234"),
     ).toBeInTheDocument();
   });
 
@@ -88,7 +88,7 @@ describe("HRLoginPage", () => {
     renderWithIntl(<HRLoginPage />);
 
     fireEvent.change(screen.getByLabelText("Password"), {
-      target: { value: "123456" },
+      target: { value: "demo1234" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Login" }));
 
@@ -100,14 +100,14 @@ describe("HRLoginPage", () => {
           credentials: "include",
           body: JSON.stringify({
             email: "hr@paydayplus.co",
-            password: "123456",
+            password: "demo1234",
           }),
         }),
       );
     });
 
     await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith("/hr/dashboard");
+      expect(pushMock).toHaveBeenCalledWith("/en/hr/dashboard");
     });
 
     expect(window.localStorage.getItem("payday-session")).toBeNull();
@@ -140,7 +140,7 @@ describe("HRLoginPage", () => {
 
     // Fill required fields so HTML5 validation passes
     fireEvent.change(screen.getByLabelText("Password"), {
-      target: { value: "123456" },
+      target: { value: "demo1234" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Login" }));
 

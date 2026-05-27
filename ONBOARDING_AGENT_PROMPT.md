@@ -6,7 +6,7 @@ Implement multi-company employee onboarding for a LINE LIFF app. Workers scan a 
 
 ## Architecture Summary
 
-This is a **Next.js 14 App Router** project using `next-intl` for i18n. The employee-facing LIFF app lives under `app/(liff)/` and `app/[locale]/(liff)/`. Auth is handled client-side by `LIFFAuthGate` in the layout — it gates all child pages. The onboarding flow is **not a new route** — it renders inside the existing auth gate when `authState === "linking"`.
+This is a **Next.js 14 App Router** project using `next-intl` for i18n. The employee-facing LIFF app lives under `app/(liff)/` and `app/[locale]/(liff)/`. Auth is handled client-side by `AuthGate` in the layout — it gates all child pages. The onboarding flow is **not a new route** — it renders inside the existing auth gate when `authState === "linking"`.
 
 ## Important: Backend is a separate repo
 

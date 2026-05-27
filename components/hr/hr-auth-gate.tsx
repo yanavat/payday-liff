@@ -3,6 +3,7 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { getApiClient } from "@/lib/api/client";
 
 type GuardState = "loading" | "authorized" | "redirecting";
 
@@ -20,19 +21,10 @@ export function HRAuthGate({ children }: { children: ReactNode }) {
 
     async function checkSession() {
       try {
-        const response = await fetch("/api/auth/me", {
-          credentials: "include",
-        });
+        const session = await getApiClient().get<AuthMeResponse>("/api/auth/me");
 
         if (cancelled) return;
 
-        if (!response.ok) {
-          setState("redirecting");
-          push("/hr/login");
-          return;
-        }
-
-        const session = (await response.json()) as AuthMeResponse;
         if (session.hrUser) {
           setState("authorized");
           return;

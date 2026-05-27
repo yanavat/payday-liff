@@ -105,7 +105,7 @@ export function ActivationScreen({
           />
 
           {error ? (
-            <p className="rounded-md bg-red-50 px-3 py-2 text-[14px] font-medium text-red-600">
+            <p className="rounded-md bg-[var(--color-error-bg)] px-3 py-2 text-[14px] font-medium text-[var(--color-error-text)]">
               {error}
             </p>
           ) : null}

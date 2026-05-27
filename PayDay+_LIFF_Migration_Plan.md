@@ -94,7 +94,7 @@ The current product is a frontend-only MVP, but LIFF login, employee linking, pu
 The current login page (`EmployeeLoginPage`) with Employee ID input, PINPad, and QR scan becomes unnecessary. In the LIFF app, authentication happens automatically when the user opens the mini app inside LINE.
 
 - **Replace with:** A splash/loading screen that calls `liff.init()` and `liff.login()`, then redirects to home
-- **New component:** `LIFFAuthGate` — wraps the app, handles `liff.init()`, checks if user is linked to an employee record
+- **New component:** `AuthGate` — wraps the app, handles `liff.init()`, checks if user is linked to an employee record
 - **Fallback:** If opened outside LINE (external browser), show an "Open in LINE" button that links to `https://liff.line.me/{liffId}`. Do not auto-redirect with a custom scheme; keep the fallback explicit so users are not trapped in a redirect loop.
 - **First-time linking:** If LINE userId has no employee mapping, show a one-time Employee ID verification form
 - **Components to remove:** PINPad (from login), QR code button, lock mechanism, attempt counter
@@ -190,7 +190,7 @@ Push notifications use the LINE Messaging API to send Flex Messages to employees
 - Extract `packages/shared` (`@payday/shared`) from the monolith (types, utils, i18n, constants, date config, token contract)
 - Add `packages/payday-api` with mock-backed interfaces for LIFF identity verification, employee linking, and notification dispatch
 - Set up LINE Developer Console: create LIFF app, Messaging API channel
-- Implement `LIFFAuthGate` with LINE Login and employee linking flow
+- Implement `AuthGate` with LINE Login and employee linking flow
 - Port Tailwind config and design tokens (CSS variables) to new project
 - Deploy the LIFF workspace as a separate Vercel project from this same repository, then register the LIFF endpoint URL
 

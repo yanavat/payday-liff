@@ -27,6 +27,7 @@ import type {
   PreviewResultDto,
 } from "@/lib/api/types"
 import { formatTHB } from "@/lib/utils/format"
+import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id"
 import {
   DEFAULT_TRANSFER_FEE_THB,
   getNetTransferAmount,
@@ -76,7 +77,6 @@ export function LiffRequestPage() {
   const [pinError, setPinError] = useState("")
   const [pinLoading, setPinLoading] = useState(false)
   const [submitError, setSubmitError] = useState("")
-  const [isInClient, setIsInClient] = useState(false)
   const [previewData, setPreviewData] = useState<PreviewResultDto | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
   const [createdRequest, setCreatedRequest] = useState<EWARequestDto | null>(
@@ -131,10 +131,6 @@ export function LiffRequestPage() {
   const payDateLabel = currentPeriod?.payDate
     ? formatPayDate(currentPeriod.payDate, locale)
     : ""
-
-  useEffect(() => {
-    setIsInClient(isInLiff)
-  }, [isInLiff])
 
   useEffect(() => {
     if (step !== 3) return
@@ -241,9 +237,8 @@ export function LiffRequestPage() {
   }
 
   async function handleShare() {
-    if (!createdRequest) return
+    if (!createdRequest || !isInLiff) return
     const liff = await loadLiffClient()
-    if (!liff.isInClient()) return
     await liff.shareTargetPicker([
       {
         type: "text",
@@ -362,7 +357,7 @@ export function LiffRequestPage() {
               className={
                 amountValid
                   ? "mt-2 text-[16px] text-text-muted"
-                  : "mt-2 text-[16px] font-medium text-red-600"
+                  : "mt-2 text-[16px] font-medium text-[var(--color-error-text)]"
               }
             >
               {amountValid
@@ -467,7 +462,7 @@ export function LiffRequestPage() {
               </div>
 
               {submitError && (
-                <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-center text-[16px] font-medium text-red-600">
+                <p className="rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-3 text-center text-[16px] font-medium text-[var(--color-error-text)]">
                   {submitError}
                 </p>
               )}
@@ -541,7 +536,7 @@ export function LiffRequestPage() {
               className="mt-2 w-full rounded-md border border-border bg-bg-secondary px-4 py-3 text-center font-mono text-[24px] tracking-widest focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {pinError && (
-              <p className="mt-3 text-center text-[16px] font-medium text-red-600">
+              <p className="mt-3 text-center text-[16px] font-medium text-[var(--color-error-text)]">
                 {pinError}
               </p>
             )}
@@ -633,7 +628,7 @@ export function LiffRequestPage() {
           >
             {t("backToHome")}
           </Link>
-          {isInClient && (
+          {isInLiff && (
             <button
               type="button"
               onClick={() => {
@@ -650,10 +645,6 @@ export function LiffRequestPage() {
       )}
     </div>
   )
-}
-
-function getAuthEmployeeId(employee: Record<string, unknown> | null) {
-  return String(employee?.employeeCode ?? employee?.id ?? "")
 }
 
 function SummaryRow({

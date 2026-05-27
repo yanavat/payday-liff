@@ -14,10 +14,11 @@ import { useTranslations } from "next-intl";
 import { ActivationScreen } from "@/components/activation-screen";
 import { BrowserLoginScreen } from "@/components/browser-login-screen";
 import { LinkLineScreen } from "@/components/link-line-screen";
+import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id";
 import { loadLiffClient } from "@/lib/liff-client";
+import type { Employee, HRUser } from "@/types";
 
 type AuthState = "loading" | "ready" | "login" | "activation" | "linking" | "error";
-type AuthActor = Record<string, unknown>;
 
 export interface LiffProfile {
   userId: string;
@@ -28,8 +29,8 @@ export interface LiffProfile {
 }
 
 export interface AuthContextType {
-  employee: AuthActor | null;
-  hrUser: AuthActor | null;
+  employee: Employee | null;
+  hrUser: HRUser | null;
   isInLiff: boolean;
   isAuthenticated: boolean;
   login: (identifier: string, pin: string) => Promise<void>;
@@ -39,8 +40,8 @@ export interface AuthContextType {
 }
 
 type AuthMeResponse = {
-  employee?: AuthActor | null;
-  hrUser?: AuthActor | null;
+  employee?: Employee | null;
+  hrUser?: HRUser | null;
 };
 
 type LineLoginResponse = {
@@ -53,7 +54,7 @@ const LiffProfileContext = createContext<LiffProfile | null>(null);
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within LIFFAuthGate");
+    throw new Error("useAuth must be used within AuthGate");
   }
   return context;
 }
@@ -64,13 +65,13 @@ export function useLiffProfile() {
 
 export function useLinkedEmployeeId(): string {
   const { employee } = useAuth();
-  return String(employee?.employeeCode ?? employee?.id ?? "");
+  return getAuthEmployeeId(employee);
 }
 
-export function LIFFAuthGate({ children }: { children: ReactNode }) {
+export function AuthGate({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>("loading");
-  const [employee, setEmployee] = useState<AuthActor | null>(null);
-  const [hrUser, setHrUser] = useState<AuthActor | null>(null);
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [hrUser, setHrUser] = useState<HRUser | null>(null);
   const [isInLiff, setIsInLiff] = useState(false);
   const [profile, setProfile] = useState<LiffProfile | null>(null);
   const t = useTranslations("auth");

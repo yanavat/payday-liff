@@ -32,20 +32,4 @@ For production, set these environment variables in your hosting platform (e.g., 
 
 ## Authentication
 
-The API client currently stores authentication tokens in `localStorage`. For production, this should be replaced with HttpOnly Secure SameSite cookies managed by the backend.
-
-Current implementation:
-- Token storage: `localStorage.getItem('auth_token')`
-- Token header: `Authorization: Bearer <token>`
-
-To set a token:
-```typescript
-import { setAuthToken } from '@/lib/api'
-setAuthToken('your-jwt-token')
-```
-
-To clear a token:
-```typescript
-import { clearAuthToken } from '@/lib/api'
-clearAuthToken()
-```
+Authentication is handled with HttpOnly Secure SameSite cookies managed by the backend and forwarded through the Next.js auth proxy. Shared API calls use `getApiClient()` with `credentials: "include"`; do not store JWTs in `localStorage` or attach bearer tokens from client code.

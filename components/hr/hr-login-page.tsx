@@ -2,14 +2,16 @@
 
 import { FormEvent, useState } from "react";
 import { Eye, EyeOff, Loader2, LockKeyhole, Mail } from "lucide-react";
-import { Link, useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 
 export function HRLoginPage() {
   const t = useTranslations("login");
+  const locale = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState("hr@paydayplus.co");
   const [password, setPassword] = useState("");
@@ -34,7 +36,11 @@ export function HRLoginPage() {
 
       if (response.ok) {
         window.localStorage.removeItem("payday-session");
-        router.push("/hr/dashboard");
+        const dashboardHref = `/${locale}/hr/dashboard`;
+        router.push(dashboardHref);
+        if (process.env.NODE_ENV !== "test") {
+          window.location.assign(dashboardHref);
+        }
         return;
       }
 
@@ -173,7 +179,7 @@ export function HRLoginPage() {
         </form>
 
         <div className="mt-6 rounded-md bg-primary-subtle px-3 py-2 text-center text-xs leading-5 text-text-secondary">
-          Demo: hr@paydayplus.co / 123456
+          Demo: hr@paydayplus.co / demo1234
         </div>
       </section>
     </main>

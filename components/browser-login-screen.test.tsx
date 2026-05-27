@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultMessages, renderWithIntl } from "@/tests/i18n/test-utils";
 
-import { LIFFAuthGate } from "./liff-auth-gate";
+import { AuthGate } from "./liff-auth-gate";
 
 const loadLiffClientMock = vi.fn();
 
@@ -61,7 +61,7 @@ function mockFetch(responses: Response[]) {
 }
 
 function renderGate(children = <p>Employee app</p>) {
-  return renderWithIntl(<LIFFAuthGate>{children}</LIFFAuthGate>, { messages });
+  return renderWithIntl(<AuthGate>{children}</AuthGate>, { messages });
 }
 
 describe("Browser login screen", () => {
@@ -82,10 +82,17 @@ describe("Browser login screen", () => {
     renderGate();
 
     expect(await screen.findByRole("heading", { name: "Sign in to PayDay+" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Log in with LINE" })).toHaveAttribute(
-      "href",
-      "https://liff.line.me/test-liff-id",
+    const lineLoginUrl = new URL(
+      (await screen.findByRole("link", { name: "Log in with LINE" })).getAttribute("href") ?? "",
     );
+    expect(lineLoginUrl.origin + lineLoginUrl.pathname).toBe(
+      "https://access.line.me/oauth2/v2.1/authorize",
+    );
+    expect(lineLoginUrl.searchParams.get("client_id")).toBe("test-liff-id");
+    expect(lineLoginUrl.searchParams.get("redirect_uri")).toBe(window.location.href);
+    expect(lineLoginUrl.searchParams.get("response_type")).toBe("code");
+    expect(lineLoginUrl.searchParams.get("scope")).toBe("profile openid");
+    expect(lineLoginUrl.searchParams.get("state")).toBeTruthy();
     expect(screen.getByText("or")).toBeInTheDocument();
     expect(screen.getByLabelText("Phone or email")).toBeInTheDocument();
     expect(screen.getByLabelText("6-digit PIN")).toBeInTheDocument();

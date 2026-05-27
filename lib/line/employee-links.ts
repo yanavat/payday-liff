@@ -3,7 +3,7 @@
  * In production this would be a database table.
  *
  * Used by:
- * - LIFFAuthGate (client-side localStorage for demo)
+ * - AuthGate (client-side localStorage for demo)
  * - Notification dispatch (server-side in-memory map for demo)
  */
 

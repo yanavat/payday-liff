@@ -180,11 +180,3 @@ export function getApiClient(): ApiClient {
 
   return apiClientInstance;
 }
-
-export function setAuthToken(token: string): void {
-  void token;
-}
-
-export function clearAuthToken(): void {
-  return;
-}

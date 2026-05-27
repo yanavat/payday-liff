@@ -25,6 +25,7 @@ export type NotificationChannel = 'email' | 'line' | 'sms'
 
 export interface Employee {
   id: string                   // e.g. "EMP-0041"
+  employeeCode?: string
   name: string
   nameTh: string
   department: string

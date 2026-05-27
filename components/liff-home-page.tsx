@@ -11,6 +11,7 @@ import { useAuth, useLiffProfile } from "@/components/liff-auth-gate";
 import { Avatar } from "@/components/ui/avatar";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { withLiffLocale } from "@/lib/liff-routes";
+import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id";
 import { formatTHB } from "@/lib/utils/format";
 import { useEmployeeCurrentPeriod } from "@/lib/api/hooks/use-employees";
 import { useEWARequests } from "@/lib/api/hooks/use-ewa-requests";
@@ -312,8 +313,4 @@ export function LiffHomePage() {
       </section>
     </div>
   );
-}
-
-function getAuthEmployeeId(employee: Record<string, unknown> | null) {
-  return String(employee?.employeeCode ?? employee?.id ?? "");
 }

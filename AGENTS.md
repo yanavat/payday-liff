@@ -199,7 +199,7 @@ packages/payday-api          → LIFF auth/linking, webhooks, notification adapt
 
 | Screen | Change | Details |
 |--------|--------|---------|
-| E-1: Login | **Replace entirely** | LINE Login replaces Employee ID + PIN. New `LIFFAuthGate` component handles `liff.init()` + `liff.login()`. Remove PINPad from login. First-time users get a one-time employee ID linking form. |
+| E-1: Login | **Replace entirely** | LINE Login replaces Employee ID + PIN. New `AuthGate` component handles `liff.init()` + `liff.login()`. Remove PINPad from login. First-time users get a one-time employee ID linking form. |
 | E-2: Home | **Minor changes** | Avatar uses LINE profile picture via `liff.getProfile().pictureUrl`. NotificationBell removed (push notifications handle it). Everything else stays. |
 | E-3: Request | **Step 2 changes** | Step 1 (amount) and Step 3 (success) are identical. Step 2 removes PINPad, replaces it with transaction-level step-up confirmation, and supports WebAuthn/device biometric or one-time confirmation code fallback. Receipt sharing uses `liff.shareTargetPicker()` instead of Web Share API. |
 | E-4: History | **Direct port** | Add deep-link support via LIFF URL params (`?page=history&id=EWA-001`). |

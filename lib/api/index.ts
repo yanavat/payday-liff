@@ -4,8 +4,6 @@
 
 export {
   getApiClient,
-  setAuthToken,
-  clearAuthToken,
   // type ApiError,
 } from "./client";
 

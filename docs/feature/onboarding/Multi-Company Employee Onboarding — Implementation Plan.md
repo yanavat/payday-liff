@@ -190,7 +190,7 @@ export function LiffOnboardingPage({ lineProfile, onComplete }: Props) {
 
 #### [MODIFY] [components/liff-auth-gate.tsx](file:///Users/tavana/dev/wow-2026/payday-liff/components/liff-auth-gate.tsx)
 
-Adjust `LIFFAuthGate` to use `LiffOnboardingPage` instead of the old linking form:
+Adjust `AuthGate` to use `LiffOnboardingPage` instead of the old linking form:
 
 ```diff
  // Change from single Employee ID form...

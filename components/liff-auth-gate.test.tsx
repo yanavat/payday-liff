@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { LiffClient } from "@/lib/liff-client";
 import { defaultMessages, renderWithIntl } from "@/tests/i18n/test-utils";
 
-import { LIFFAuthGate, useAuth, useLiffProfile } from "./liff-auth-gate";
+import { AuthGate, useAuth, useLiffProfile } from "./liff-auth-gate";
 
 const loadLiffClientMock = vi.fn();
 
@@ -81,10 +81,10 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
 }
 
 function renderGate(children = <p>Employee app</p>) {
-  return renderWithIntl(<LIFFAuthGate>{children}</LIFFAuthGate>, { messages });
+  return renderWithIntl(<AuthGate>{children}</AuthGate>, { messages });
 }
 
-describe("LIFFAuthGate", () => {
+describe("AuthGate", () => {
   beforeEach(() => {
     vi.stubEnv("NEXT_PUBLIC_LIFF_ID", "test-liff-id");
     vi.stubEnv("NEXT_PUBLIC_LIFF_MOCK", "false");
@@ -106,10 +106,14 @@ describe("LIFFAuthGate", () => {
 
     function AuthConsumer() {
       const auth = useAuth();
+      const employeeCode =
+        typeof auth.employee?.employeeCode === "string"
+          ? auth.employee.employeeCode
+          : "";
       return (
         <p>
           {auth.isAuthenticated ? "authenticated" : "anonymous"}:
-          {auth.employee?.employeeCode}
+          {employeeCode}
         </p>
       );
     }

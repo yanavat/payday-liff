@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { ToastProvider } from "@/components/ui/toast";
-import { LIFFAuthGate } from "@/components/liff-auth-gate";
+import { AuthGate } from "@/components/liff-auth-gate";
 import { LiffShell } from "@/components/liff-shell";
 import { LiffDeepLinkHandler } from "@/components/liff-deep-link-handler";
 
@@ -15,10 +15,10 @@ export default async function LiffLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <ToastProvider>
-        <LIFFAuthGate>
+        <AuthGate>
           <LiffDeepLinkHandler />
           <LiffShell>{children}</LiffShell>
-        </LIFFAuthGate>
+        </AuthGate>
       </ToastProvider>
     </NextIntlClientProvider>
   );

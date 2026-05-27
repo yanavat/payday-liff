@@ -53,7 +53,7 @@ Source of truth: `PayDay+_LIFF_Migration_Plan.md`
 - [x] Add mock-backed notification dispatch adapter for LINE Messaging API
 - [ ] Set up LINE Developer Console: LINE Login channel, Messaging API channel, LIFF app
 - [x] Install `@line/liff@2.21.4` in the root LIFF app and wire it for Next.js client-only usage
-- [x] Implement `LIFFAuthGate` with `liff.init()`, login handling, profile loading, and linked-user check
+- [x] Implement `AuthGate` with `liff.init()`, login handling, profile loading, and linked-user check
 - [x] Implement first-time Employee ID linking form for unlinked LINE users
 - [x] Add explicit external-browser fallback with `https://liff.line.me/{liffId}` "Open in LINE" link
 - [ ] Deploy root LIFF app as a Vercel project from this repo

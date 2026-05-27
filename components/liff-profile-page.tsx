@@ -21,6 +21,7 @@ import {
   useAuth,
   useLiffProfile,
 } from "@/components/liff-auth-gate";
+import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id";
 import { useEmployee } from "@/lib/api/hooks/use-employees";
 import { useSettingsActions } from "@/lib/api/hooks/use-settings";
 import { loadLiffClient } from "@/lib/liff-client";
@@ -266,10 +267,6 @@ export function LiffProfilePage() {
       />
     </div>
   );
-}
-
-function getAuthEmployeeId(employee: Record<string, unknown> | null) {
-  return String(employee?.employeeCode ?? employee?.id ?? "");
 }
 
 interface BankAccountSheetProps {

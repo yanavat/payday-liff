@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultMessages, renderWithIntl } from "@/tests/i18n/test-utils";
 
-import { LIFFAuthGate } from "./liff-auth-gate";
+import { AuthGate } from "./liff-auth-gate";
 
 vi.mock("@/lib/liff-client", () => ({
   loadLiffClient: vi.fn(),
@@ -59,7 +59,7 @@ function mockFetch(responses: Response[]) {
 }
 
 function renderGate(children = <p>Employee app</p>) {
-  return renderWithIntl(<LIFFAuthGate>{children}</LIFFAuthGate>, { messages });
+  return renderWithIntl(<AuthGate>{children}</AuthGate>, { messages });
 }
 
 async function openActivation() {
