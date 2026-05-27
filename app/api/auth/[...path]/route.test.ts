@@ -57,6 +57,35 @@ describe("/api/auth proxy route", () => {
     expect(response.headers.get("Set-Cookie")).toContain("payday_token=jwt");
   });
 
+  it.each([
+    [["activate"], "http://backend.test/auth/employee/activate"],
+    [["login"], "http://backend.test/auth/employee/login"],
+    [["line-login"], "http://backend.test/auth/employee/line-login"],
+    [["link-line"], "http://backend.test/auth/employee/link-line"],
+    [["verify-pin"], "http://backend.test/auth/employee/verify-pin"],
+    [["hr", "login"], "http://backend.test/auth/hr/login"],
+    [["logout"], "http://backend.test/auth/logout"],
+  ])("maps /api/auth/%s to backend %s", async (path, expectedUrl) => {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "http://backend.test";
+    const fetchMock = vi.fn().mockResolvedValue(
+      Response.json({ success: true }, { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await POST(
+      new Request(`http://localhost/api/auth/${path.join("/")}`, {
+        method: "POST",
+        body: JSON.stringify({ ok: true }),
+      }),
+      context(path),
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expectedUrl,
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
   it("forwards GET auth requests with query strings and cookies", async () => {
     process.env.NEXT_PUBLIC_API_BASE_URL = "http://backend.test";
     const fetchMock = vi.fn().mockResolvedValue(

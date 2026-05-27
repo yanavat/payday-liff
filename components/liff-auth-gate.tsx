@@ -282,6 +282,10 @@ function authFetch(path: string, init: RequestInit = {}) {
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
+  const companyId = getAuthCompanyId();
+  if (companyId && !headers.has("x-company-id")) {
+    headers.set("x-company-id", companyId);
+  }
 
   return fetch(path, {
     ...init,
@@ -289,4 +293,12 @@ function authFetch(path: string, init: RequestInit = {}) {
     headers,
     method: init.method ?? "GET",
   });
+}
+
+function getAuthCompanyId() {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("payday-company-id") ?? process.env.NEXT_PUBLIC_COMPANY_ID;
+  }
+
+  return process.env.NEXT_PUBLIC_COMPANY_ID;
 }
