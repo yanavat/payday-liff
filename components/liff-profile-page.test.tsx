@@ -10,14 +10,17 @@ const { logoutMock, useAuthMock } = vi.hoisted(() => ({
     logout: vi.fn(),
   })),
 }))
-
-vi.mock('@/components/liff-auth-gate', () => ({
-  useAuth: useAuthMock,
-  useLiffProfile: vi.fn(() => ({
+const useLiffProfileMock = vi.hoisted(() =>
+  vi.fn(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
     pictureUrl: 'https://profile.line.example/avatar.jpg',
   })),
+)
+
+vi.mock('@/components/liff-auth-gate', () => ({
+  useAuth: useAuthMock,
+  useLiffProfile: useLiffProfileMock,
 }))
 
 vi.mock('@/components/shared/locale-switcher', () => ({
@@ -117,6 +120,11 @@ describe('LiffProfilePage', () => {
       logout: logoutMock,
     })
     updateNotificationsMock.mockResolvedValue({})
+    useLiffProfileMock.mockReturnValue({
+      userId: 'U1234567890',
+      displayName: 'Mock LINE User',
+      pictureUrl: 'https://profile.line.example/avatar.jpg',
+    })
   })
 
   it('shows the LINE profile picture', () => {
@@ -134,12 +142,26 @@ describe('LiffProfilePage', () => {
     renderWithIntl(<LiffProfilePage />, { messages })
 
     expect(screen.queryByAltText('Mock LINE User')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('สมชาย สมิธ')).toBeInTheDocument()
+    expect(screen.getByLabelText('Somchai Smith')).toBeInTheDocument()
   })
 
   it('shows the LINE display name', () => {
     renderWithIntl(<LiffProfilePage />, { messages })
     expect(screen.getByText('Mock LINE User')).toBeInTheDocument()
+  })
+
+  it('shows the employee name when manual login has no LINE profile', () => {
+    useAuthMock.mockReturnValue({
+      employee: { id: 'EMP-001', employeeCode: 'EMP-001', name: 'Somchai Smith' },
+      isInLiff: false,
+      logout: logoutMock,
+    })
+    useLiffProfileMock.mockReturnValue(null)
+
+    renderWithIntl(<LiffProfilePage />, { messages })
+
+    expect(screen.getByRole('heading', { name: 'Somchai Smith' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Somchai Smith')).toBeInTheDocument()
   })
 
   it('does NOT show a logout button', () => {
@@ -163,7 +185,7 @@ describe('LiffProfilePage', () => {
     await waitFor(() => expect(reloadMock).toHaveBeenCalledOnce())
   })
 
-  it('does not call LINE closeWindow outside LIFF', async () => {
+  it('disables unlink outside LIFF and does not call LINE closeWindow', () => {
     useAuthMock.mockReturnValue({
       employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
       isInLiff: false,
@@ -173,9 +195,9 @@ describe('LiffProfilePage', () => {
     Object.defineProperty(window, 'location', { value: { reload: reloadMock }, writable: true })
 
     renderWithIntl(<LiffProfilePage />, { messages })
-    fireEvent.click(screen.getByRole('button', { name: /Unlink LINE account/i }))
 
-    await waitFor(() => expect(logoutMock).toHaveBeenCalledOnce())
+    expect(screen.getByRole('button', { name: /Unlink LINE account/i })).toBeDisabled()
+    expect(logoutMock).not.toHaveBeenCalled()
     expect(liffCloseWindowMock).not.toHaveBeenCalled()
   })
 
@@ -199,6 +221,20 @@ describe('LiffProfilePage', () => {
     renderWithIntl(<LiffProfilePage />, { messages })
     fireEvent.click(screen.getByRole('button', { name: /Notify via LINE/i }))
     await waitFor(() => expect(updateNotificationsMock).toHaveBeenCalledOnce())
+  })
+
+  it('disables LINE notification and unlink controls without LINE profile information', () => {
+    useAuthMock.mockReturnValue({
+      employee: { id: 'EMP-001', employeeCode: 'EMP-001', name: 'Somchai Smith' },
+      isInLiff: false,
+      logout: logoutMock,
+    })
+    useLiffProfileMock.mockReturnValue(null)
+
+    renderWithIntl(<LiffProfilePage />, { messages })
+
+    expect(screen.getByRole('button', { name: /Notify via LINE/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Unlink LINE account/i })).toBeDisabled()
   })
 
   it('uses employee name for Avatar when pictureUrl is absent', () => {

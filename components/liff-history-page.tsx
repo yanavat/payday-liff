@@ -9,11 +9,14 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { EmptyState } from '@/components/ui/empty-state'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { TabBar, type TabItem } from '@/components/ui/tab-bar'
-import { currentEmployee } from '@/lib/mock/currentUser'
-import { getRequestsByEmployee } from '@/lib/mock/requests'
+import { useAuth } from '@/components/liff-auth-gate'
+import { getAuthEmployeeId } from '@/lib/auth/get-auth-employee-id'
+import { useEmployee } from '@/lib/api/hooks/use-employees'
+import { useEWARequests } from '@/lib/api/hooks/use-ewa-requests'
 import { withLiffLocale } from '@/lib/liff-routes'
 import { cn } from '@/lib/utils'
 import { formatTHB } from '@/lib/utils/format'
+import type { EWARequestDto } from '@/lib/api/types'
 
 const dateLocales: Record<string, string> = {
   th: 'th-TH',
@@ -32,12 +35,66 @@ function formatDate(value: string | undefined, locale: string) {
   }).format(new Date(value))
 }
 
+function getRequestAmount(request: EWARequestDto) {
+  return request.requestedAmount ?? request.amount
+}
+
+function getNetTransferAmount(request: EWARequestDto) {
+  return request.netTransferAmount ?? request.netAmount
+}
+
+function getMonthKey(date: Date) {
+  return `${date.getFullYear()}-${date.getMonth()}`
+}
+
+function summarizeRequests(requests: EWARequestDto[]) {
+  const now = new Date()
+  const thisMonthKey = getMonthKey(now)
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const lastMonthKey = getMonthKey(lastMonthDate)
+
+  return requests.reduce(
+    (summary, request) => {
+      const amount = getRequestAmount(request)
+      const requestMonthKey = getMonthKey(new Date(request.requestedAt))
+
+      summary.total.amount += amount
+      summary.total.count += 1
+
+      if (requestMonthKey === thisMonthKey) {
+        summary.thisMonth.amount += amount
+        summary.thisMonth.count += 1
+      }
+
+      if (requestMonthKey === lastMonthKey) {
+        summary.lastMonth.amount += amount
+        summary.lastMonth.count += 1
+      }
+
+      return summary
+    },
+    {
+      thisMonth: { amount: 0, count: 0 },
+      lastMonth: { amount: 0, count: 0 },
+      total: { amount: 0, count: 0 },
+    },
+  )
+}
+
 export function LiffHistoryPage() {
   const t = useTranslations()
   const locale = useLocale()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const deepLinkId = searchParams.get('id')
+  const { employee: authEmployee } = useAuth()
+  const employeeId = getAuthEmployeeId(authEmployee)
+  const { data: employee } = useEmployee(employeeId)
+  const {
+    data: requestsData,
+    loading,
+    error,
+  } = useEWARequests({ employeeId, limit: 10 })
 
   const tabs: TabItem[] = [
     { value: 'all', label: t('status.all') },
@@ -52,11 +109,11 @@ export function LiffHistoryPage() {
 
   const requests = useMemo(
     () =>
-      getRequestsByEmployee(currentEmployee.id).sort(
+      (requestsData?.data ?? []).slice().sort(
         (a, b) =>
           new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime(),
       ),
-    [],
+    [requestsData],
   )
 
   useEffect(() => {
@@ -69,6 +126,7 @@ export function LiffHistoryPage() {
 
   const filtered =
     tab === 'all' ? requests : requests.filter((r) => r.status === tab)
+  const summary = summarizeRequests(requests)
 
   return (
     <div className="min-h-full bg-bg-page px-4 pb-5 pt-4">
@@ -83,18 +141,18 @@ export function LiffHistoryPage() {
         <div className="flex divide-x divide-border">
           <SummaryCell
             label={t('history.thisMonth')}
-            value="฿5,500"
-            sub={t('history.requestCount', { count: 2 })}
+            value={formatTHB(summary.thisMonth.amount)}
+            sub={t('history.requestCount', { count: summary.thisMonth.count })}
           />
           <SummaryCell
             label={t('history.lastMonth')}
-            value="฿5,500"
-            sub={t('history.requestCount', { count: 2 })}
+            value={formatTHB(summary.lastMonth.amount)}
+            sub={t('history.requestCount', { count: summary.lastMonth.count })}
           />
           <SummaryCell
             label={t('history.total')}
-            value="฿24,000"
-            sub={t('history.requestCount', { count: 9 })}
+            value={formatTHB(summary.total.amount)}
+            sub={t('history.requestCount', { count: summary.total.count })}
           />
         </div>
       </div>
@@ -109,7 +167,21 @@ export function LiffHistoryPage() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-20 animate-pulse rounded-lg border border-border bg-white shadow-card"
+            />
+          ))}
+        </div>
+      ) : error ? (
+        <EmptyState
+          message={t('common.error')}
+          description={error.message}
+        />
+      ) : filtered.length === 0 ? (
         <EmptyState
           message={t('common.noData')}
           description={t('home.requestCta')}
@@ -164,7 +236,7 @@ export function LiffHistoryPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-sans text-[16px] font-bold text-text-primary">
-                      {formatTHB(request.amount)}
+                      {formatTHB(getRequestAmount(request))}
                     </p>
                     <StatusBadge status={request.status} size="sm" />
                   </div>
@@ -196,7 +268,7 @@ export function LiffHistoryPage() {
                     />
                     <DetailRow
                       label={t('profile.bankAccount')}
-                      value={currentEmployee.bankAccountMasked}
+                      value={employee?.bankAccountMasked ?? '-'}
                     />
                     <DetailRow
                       label={t('history.transferFee')}
@@ -204,7 +276,7 @@ export function LiffHistoryPage() {
                     />
                     <DetailRow
                       label={t('history.netTransferAmount')}
-                      value={formatTHB(request.netTransferAmount)}
+                      value={formatTHB(getNetTransferAmount(request))}
                     />
                     <DetailRow
                       label={t('requestDetail.hrNote')}
