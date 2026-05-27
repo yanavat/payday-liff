@@ -11,14 +11,17 @@ const useAuthMock = vi.hoisted(() =>
     isInLiff: true,
   })),
 )
-
-vi.mock('@/components/liff-auth-gate', () => ({
-  useAuth: useAuthMock,
-  useLiffProfile: vi.fn(() => ({
+const useLiffProfileMock = vi.hoisted(() =>
+  vi.fn(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
     pictureUrl: 'https://profile.line.example/avatar.jpg',
   })),
+)
+
+vi.mock('@/components/liff-auth-gate', () => ({
+  useAuth: useAuthMock,
+  useLiffProfile: useLiffProfileMock,
 }))
 
 vi.mock('@/lib/api/hooks/use-employees', () => ({
@@ -109,6 +112,11 @@ describe('LiffHomePage', () => {
     refetchPeriodMock.mockClear()
     refetchRequestsMock.mockClear()
     retryRequestsMock.mockClear()
+    useLiffProfileMock.mockReturnValue({
+      userId: 'U1234567890',
+      displayName: 'Mock LINE User',
+      pictureUrl: 'https://profile.line.example/avatar.jpg',
+    })
   })
 
   afterEach(() => {
@@ -134,6 +142,24 @@ describe('LiffHomePage', () => {
 
     expect(screen.queryByAltText('Mock LINE User')).not.toBeInTheDocument()
     expect(screen.getByLabelText('Mock LINE User')).toBeInTheDocument()
+  })
+
+  it('uses the authenticated employee name when manual login has no LINE profile', () => {
+    useAuthMock.mockReturnValue({
+      employee: {
+        id: 'EMP-001',
+        employeeCode: 'EMP-001',
+        name: 'Somchai Jaidee',
+        nameTh: 'สมชาย ใจดี',
+      },
+      isInLiff: false,
+    })
+    useLiffProfileMock.mockReturnValue(null)
+
+    renderWithIntl(<LiffHomePage />, { locale: 'en', messages })
+
+    expect(screen.getByRole('heading', { name: 'Hello, Somchai Jaidee' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Somchai Jaidee')).toBeInTheDocument()
   })
 
   it('renders the available balance from currentPeriod API data', () => {
