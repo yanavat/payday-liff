@@ -100,7 +100,12 @@ const server = http.createServer((requestMessage, response) => {
     return;
   }
 
-  if (url.pathname === "/auth/activate" || url.pathname === "/auth/login") {
+  if (
+    url.pathname === "/auth/employee/activate" ||
+    url.pathname === "/auth/employee/login" ||
+    url.pathname === "/auth/activate" ||
+    url.pathname === "/auth/login"
+  ) {
     session = { employee };
     send(response, 200, { success: true }, { "Set-Cookie": "payday_session=employee; Path=/; SameSite=Lax" });
     return;
@@ -112,7 +117,7 @@ const server = http.createServer((requestMessage, response) => {
     return;
   }
 
-  if (url.pathname === "/auth/verify-pin") {
+  if (url.pathname === "/auth/employee/verify-pin" || url.pathname === "/auth/verify-pin") {
     send(response, 200, { verified: true });
     return;
   }
