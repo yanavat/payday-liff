@@ -24,6 +24,14 @@ function formatDate(value?: string) {
   }).format(new Date(value));
 }
 
+function getRequestedAmount(request: { requestedAmount: number; amount?: number }) {
+  return request.requestedAmount ?? request.amount ?? 0;
+}
+
+function getNetAmount(request: { netAmount: number; netTransferAmount?: number }) {
+  return request.netAmount ?? request.netTransferAmount ?? 0;
+}
+
 export function EmployeeHistoryPage() {
   const t = useTranslations();
   const tabs: TabItem[] = [
@@ -70,7 +78,7 @@ export function EmployeeHistoryPage() {
     );
   });
   const thisMonthTotal = thisMonthRequests.reduce(
-    (sum, r) => sum + r.requestedAmount,
+    (sum, r) => sum + getRequestedAmount(r),
     0,
   );
 
@@ -84,12 +92,12 @@ export function EmployeeHistoryPage() {
     );
   });
   const lastMonthTotal = lastMonthRequests.reduce(
-    (sum, r) => sum + r.requestedAmount,
+    (sum, r) => sum + getRequestedAmount(r),
     0,
   );
 
   const totalRequests = requests.length;
-  const totalAmount = requests.reduce((sum, r) => sum + r.requestedAmount, 0);
+  const totalAmount = requests.reduce((sum, r) => sum + getRequestedAmount(r), 0);
 
   function exportPaySlip(request: (typeof requests)[number]) {
     downloadPdf(
@@ -218,7 +226,7 @@ export function EmployeeHistoryPage() {
                       </div>
                       <div className="text-right">
                         <p className="font-sans text-[16px] font-bold text-text-primary">
-                          {formatTHB(request.requestedAmount)}
+                          {formatTHB(getRequestedAmount(request))}
                         </p>
                         <StatusBadge status={request.status} size="sm" />
                       </div>
@@ -258,7 +266,7 @@ export function EmployeeHistoryPage() {
                         />
                         <DetailRow
                           label={t("history.netTransferAmount")}
-                          value={formatTHB(request.netAmount)}
+                          value={formatTHB(getNetAmount(request))}
                         />
                         <DetailRow
                           label={t("requestDetail.hrNote")}
