@@ -29,8 +29,6 @@ function SettingsContent() {
   const t = useTranslations("settings");
   const tc = useTranslations("common");
   const { toast } = useToast();
-  const router = useRouter();
-  const { role } = useHRRole();
   const [activeTab, setActiveTab] = useState("policy");
   const [policyTab, setPolicyTab] = useState<"monthly" | "weekly">("monthly");
   const [maxPercent, setMaxPercent] = useState(50);
@@ -40,12 +38,6 @@ function SettingsContent() {
 
   const { data: settings, loading: settingsLoading, error: settingsError } = useSettings();
   const { updatePolicy, loading: saving, error: saveError } = useSettingsActions();
-
-  useEffect(() => {
-    if (role !== "hr_manager") {
-      router.push("/hr/dashboard");
-    }
-  }, [role, router]);
 
   // Sync state when settings load or policyTab changes
   useEffect(() => {
@@ -267,6 +259,24 @@ function SettingsContent() {
 }
 
 export function SettingsPageContent() {
+  const router = useRouter();
+  const tc = useTranslations("common");
+  const { role } = useHRRole();
+
+  useEffect(() => {
+    if (role !== "hr_manager") {
+      router.push("/hr/dashboard");
+    }
+  }, [role, router]);
+
+  if (role !== "hr_manager") {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center text-sm font-medium text-text-secondary">
+        {tc("loading")}
+      </div>
+    );
+  }
+
   return (
     <ApiErrorBoundary>
       <SettingsContent />
