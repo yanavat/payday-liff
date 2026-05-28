@@ -27,6 +27,7 @@ import {
 import { signOut } from "@/lib/auth/session";
 import { hrUser, companyName } from "@/lib/mock";
 import { cn } from "@/lib/utils";
+import { useHRRole, type HRRole } from "@/components/hr/hr-auth-gate";
 
 const SEGMENT_KEYS: Record<string, string> = {
   hr: "dashboard",
@@ -35,6 +36,7 @@ const SEGMENT_KEYS: Record<string, string> = {
   reports: "reports",
   settings: "settings",
   employees: "employees",
+  "transfer-export": "transferExport",
   request: "requestOnBehalf",
 };
 
@@ -108,10 +110,10 @@ function HRBreadcrumb() {
   );
 }
 
-const roleLabels: Record<typeof hrUser.role, string> = {
+const roleLabels: Record<HRRole, string> = {
   hr_manager: "HR Manager",
-  hr_officer: "HR Officer",
   accountant: "Accountant",
+  viewer: "Viewer",
 };
 
 const TopbarIconButton = React.forwardRef<
@@ -137,6 +139,7 @@ TopbarIconButton.displayName = "TopbarIconButton";
 export function HRTopbar() {
   const t = useTranslations("common");
   const router = useRouter();
+  const { role } = useHRRole();
   const displayCompanyName = companyName.trim();
   const initials = hrUser.name
     .split(" ")
@@ -210,6 +213,9 @@ export function HRTopbar() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <span className="hidden rounded-full border border-primary/20 bg-primary-subtle px-3 py-1 text-xs font-semibold text-primary-dark sm:inline-flex">
+          {roleLabels[role]}
+        </span>
         <div className="flex items-center gap-2 rounded-lg bg-bg-canvas py-1 pl-1 pr-3 ">
           <Avatar
             initials={initials}
@@ -223,7 +229,7 @@ export function HRTopbar() {
               {hrUser.name}
             </div>
             <div className="mt-1 text-[11px] leading-none text-text-muted">
-              {roleLabels[hrUser.role]}
+              {roleLabels[role]}
             </div>
           </div>
         </div>

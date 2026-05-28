@@ -3,6 +3,11 @@ import { screen } from "@testing-library/react";
 import { RequestDetailDrawer } from "./request-detail-drawer";
 import { renderWithIntl } from "@/tests/i18n/test-utils";
 import type { EmployeeDto, EWARequestDto } from "@/lib/api";
+import { HRRoleContext, type HRRole } from "./hr-auth-gate";
+
+vi.mock("@/i18n/navigation", () => ({
+  useRouter: vi.fn(() => ({ push: vi.fn() })),
+}));
 
 const messages = {
   common: {
@@ -127,23 +132,29 @@ const request: EWARequestDto = {
 };
 
 describe("RequestDetailDrawer", () => {
-  it("renders server-provided financial values from the request DTO", () => {
-    renderWithIntl(
-      <RequestDetailDrawer
-        request={request}
-        employee={employee}
-        history={[request]}
-        open
-        confirmAction={null}
-        onClose={vi.fn()}
-        onApprove={vi.fn()}
-        onReject={vi.fn()}
-        onCancelConfirm={vi.fn()}
-        onConfirmApprove={vi.fn()}
-        onConfirmReject={vi.fn()}
-      />,
+  function renderDrawer(role: HRRole) {
+    return renderWithIntl(
+      <HRRoleContext.Provider value={{ role }}>
+        <RequestDetailDrawer
+          request={request}
+          employee={employee}
+          history={[request]}
+          open
+          confirmAction={null}
+          onClose={vi.fn()}
+          onApprove={vi.fn()}
+          onReject={vi.fn()}
+          onCancelConfirm={vi.fn()}
+          onConfirmApprove={vi.fn()}
+          onConfirmReject={vi.fn()}
+        />
+      </HRRoleContext.Provider>,
       { messages },
     );
+  }
+
+  it("renders server-provided financial values from the request DTO", () => {
+    renderDrawer("hr_manager");
 
     expect(screen.getByText("REF-20260528-ABC123")).toBeInTheDocument();
     expect(screen.getByText("Somchai Jaidee")).toBeInTheDocument();
@@ -152,5 +163,18 @@ describe("RequestDetailDrawer", () => {
     expect(screen.getAllByText("฿4,000")).toHaveLength(2);
     expect(screen.getByText("฿3,985")).toBeInTheDocument();
     expect(screen.getByText("Need cash today")).toBeInTheDocument();
+  });
+
+  it("hides approve and reject actions for accountants", () => {
+    renderDrawer("accountant");
+
+    expect(screen.queryByRole("button", { name: "Approve" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reject" })).not.toBeInTheDocument();
+  });
+
+  it("disables non-approval actions for viewers", () => {
+    renderDrawer("viewer");
+
+    expect(screen.getByRole("button", { name: "Retry" })).toBeDisabled();
   });
 });

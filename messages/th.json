@@ -49,6 +49,7 @@
     "requests": "คำขอเบิกเงิน",
     "employees": "พนักงาน",
     "reports": "รายงาน",
+    "transferExport": "ส่งออกโอนเงิน",
     "settings": "ตั้งค่า",
     "home": "หน้าหลัก",
     "history": "ประวัติ",
@@ -134,7 +135,8 @@
     "eligible": "มีสิทธิ์",
     "limitReached": "ใช้ครบ",
     "suspended": "ถูกระงับ",
-    "requestOnBehalf": "ยื่นคำขอแทน"
+    "requestOnBehalf": "ยื่นคำขอแทน",
+    "importEmployees": "นำเข้าพนักงาน"
   },
   "hrRequest": {
     "onBehalfBanner": "HR กำลังยื่นคำขอแทน",

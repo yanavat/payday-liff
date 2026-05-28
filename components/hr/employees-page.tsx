@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { Upload, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Avatar } from "@/components/ui/avatar";
@@ -14,10 +14,12 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import type { EmployeeDto } from "@/lib/api/types";
 import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
+import { useHRRole } from "./hr-auth-gate";
 
 function EmployeesContent() {
   const t = useTranslations();
   const tc = useTranslations("employees");
+  const { role } = useHRRole();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [department, setDepartment] = useState("all");
@@ -83,13 +85,24 @@ function EmployeesContent() {
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
-          {tc("title")}
-        </h1>
-        <p className="mt-1 text-[13px] text-text-secondary">
-          {enrolled} enrolled · {notEligible} not eligible
-        </p>
+      <header className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-[22px] font-semibold leading-[28.6px] text-text-primary">
+            {tc("title")}
+          </h1>
+          <p className="mt-1 text-[13px] text-text-secondary">
+            {enrolled} enrolled · {notEligible} not eligible
+          </p>
+        </div>
+        {role === "hr_manager" && (
+          <button
+            type="button"
+            className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-white shadow-card transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+          >
+            <Upload className="h-4 w-4" aria-hidden />
+            {tc("importEmployees")}
+          </button>
+        )}
       </header>
 
       <section className="rounded-xl border border-border bg-bg-canvas p-4 shadow-card">

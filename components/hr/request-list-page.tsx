@@ -22,6 +22,7 @@ import type { EWARequestDto, EmployeeDto } from "@/lib/api/types";
 import dayjs from "@/lib/dayjs";
 import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
+import { useHRRole } from "./hr-auth-gate";
 import { RequestDetailDrawer } from "./request-detail-drawer";
 
 type StatusFilter = "all" | EWARequestDto["status"];
@@ -37,6 +38,7 @@ function RequestListContent() {
   const t = useTranslations();
   const tc = useTranslations("common");
   const { toast } = useToast();
+  const { role } = useHRRole();
 
   const statusTabs: Array<{ value: StatusFilter; label: string }> = [
     { value: "all", label: tc("all") },
@@ -115,12 +117,16 @@ function RequestListContent() {
   const activeRow = rows.find((row) => row.request.id === activeRequestId);
   const selectedCount = selectedIds.length;
   const visibleRows = rows.slice(0, 20);
+  const canApproveOrReject = role === "hr_manager";
+  const isViewer = role === "viewer";
 
   function toggleAllVisible(checked: boolean) {
+    if (isViewer) return;
     setSelectedIds(checked ? visibleRows.map((row) => row.request.id) : []);
   }
 
   function toggleRow(id: string, checked: boolean) {
+    if (isViewer) return;
     setSelectedIds((current) =>
       checked
         ? Array.from(new Set(current.concat(id)))
@@ -129,6 +135,7 @@ function RequestListContent() {
   }
 
   async function handleConfirmApprove() {
+    if (!canApproveOrReject) return;
     if (!activeRequestId) return;
     const result = await approve(activeRequestId);
     if (result) {
@@ -143,6 +150,7 @@ function RequestListContent() {
   }
 
   async function handleConfirmReject(reason?: string) {
+    if (!canApproveOrReject) return;
     if (!activeRequestId) return;
     const result = await rejectRequest(activeRequestId, { hrNote: reason });
     if (result) {
@@ -157,6 +165,7 @@ function RequestListContent() {
   }
 
   async function handleDisburse(id: string) {
+    if (isViewer) return;
     const result = await disburse(id);
     if (result) {
       toast({
@@ -170,6 +179,7 @@ function RequestListContent() {
   }
 
   async function handleBulkApprove() {
+    if (!canApproveOrReject) return;
     for (const id of selectedIds) {
       await approve(id);
     }
@@ -179,6 +189,7 @@ function RequestListContent() {
   }
 
   async function handleBulkReject() {
+    if (!canApproveOrReject) return;
     for (const id of selectedIds) {
       await rejectRequest(id, { hrNote: "Bulk reject" });
     }
@@ -227,6 +238,7 @@ function RequestListContent() {
         </div>
         <button
           type="button"
+          disabled={isViewer}
           className="inline-flex h-[33px] items-center gap-2 rounded-md bg-[#006c4f] px-4 text-xs font-medium text-white shadow-card transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
           <Download className="h-3 w-3" aria-hidden />
@@ -297,7 +309,7 @@ function RequestListContent() {
         </div>
       </section>
 
-      {selectedCount > 0 && (
+      {selectedCount > 0 && canApproveOrReject && (
         <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           <span>{selectedCount} selected</span>
           <div className="flex gap-2">
@@ -342,6 +354,7 @@ function RequestListContent() {
                       selectedIds.length === visibleRows.length
                     }
                     onChange={(e) => toggleAllVisible(e.target.checked)}
+                    disabled={isViewer}
                     className="h-4 w-4 rounded border-border accent-primary"
                   />
                 </th>
@@ -380,6 +393,7 @@ function RequestListContent() {
                         onChange={(e) =>
                           toggleRow(request.id, e.target.checked)
                         }
+                        disabled={isViewer}
                         className="h-4 w-4 rounded border-border accent-primary"
                       />
                     </td>
@@ -487,8 +501,12 @@ function RequestListContent() {
           setActiveRequestId(null);
           setConfirmAction(null);
         }}
-        onApprove={() => setConfirmAction("approve")}
-        onReject={() => setConfirmAction("reject")}
+        onApprove={() => {
+          if (canApproveOrReject) setConfirmAction("approve");
+        }}
+        onReject={() => {
+          if (canApproveOrReject) setConfirmAction("reject");
+        }}
         onDisburse={
           activeRequestId ? () => handleDisburse(activeRequestId) : undefined
         }

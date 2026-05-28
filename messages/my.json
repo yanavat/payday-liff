@@ -49,6 +49,7 @@
     "requests": "တောင်းဆိုမှုများ",
     "employees": "ဝန်ထမ်းများ",
     "reports": "အစီရင်ခံစာ",
+    "transferExport": "လွှဲပြောင်းမှု ထုတ်ယူရန်",
     "settings": "ဆက်တင်",
     "home": "ပင်မ",
     "history": "မှတ်တမ်း",
@@ -219,7 +220,8 @@
     "eligible": "ခွင့်ပြုထား",
     "limitReached": "ကန့်သတ်ပြည့်",
     "suspended": "ဆိုင်းငံ့ထား",
-    "requestOnBehalf": "အစားထိုးတောင်းဆိုမည်"
+    "requestOnBehalf": "အစားထိုးတောင်းဆိုမည်",
+    "importEmployees": "ဝန်ထမ်းများ တင်သွင်းရန်"
   },
   "hrRequest": {
     "onBehalfBanner": "HR သည်အစားထိုးတောင်းဆိုနေသည်",

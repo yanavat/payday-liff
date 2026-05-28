@@ -4,26 +4,39 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
+  FileDown,
   FileText,
   Gauge,
   LogOut,
   Settings,
   Users,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type ComponentType, useEffect, useState } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { signOut } from "@/lib/auth/session";
+import { useHRRole, type HRRole } from "@/components/hr/hr-auth-gate";
 
 const mainNav = [
   { href: "/hr/dashboard", labelKey: "dashboard", icon: Gauge },
   { href: "/hr/requests", labelKey: "requests", icon: FileText },
   { href: "/hr/reports", labelKey: "reports", icon: BarChart3 },
+  {
+    href: "/hr/transfer-export",
+    labelKey: "transferExport",
+    icon: FileDown,
+    roles: ["hr_manager", "accountant"],
+  },
   { href: "/hr/employees", labelKey: "employees", icon: Users },
-  { href: "/hr/settings", labelKey: "settings", icon: Settings },
-];
+  { href: "/hr/settings", labelKey: "settings", icon: Settings, roles: ["hr_manager"] },
+] satisfies Array<{
+  href: string;
+  labelKey: string;
+  icon: ComponentType<{ className?: string; strokeWidth?: number; "aria-hidden"?: boolean }>;
+  roles?: HRRole[];
+}>;
 
 const footerNav = [{ href: "/hr/login", labelKey: "logout", icon: LogOut }];
 
@@ -32,6 +45,10 @@ export function HRSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { role } = useHRRole();
+  const visibleMainNav = mainNav.filter(
+    (item) => !item.roles || item.roles.includes(role),
+  );
 
   useEffect(() => {
     function handleResize() {
@@ -105,7 +122,7 @@ export function HRSidebar() {
         )}
         aria-label="HR navigation"
       >
-        {mainNav.map((item) => {
+        {visibleMainNav.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { TabBar } from "@/components/ui/tab-bar";
 import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { Toggle } from "./settings-toggle";
@@ -10,6 +11,7 @@ import { useToast } from "@/components/ui/toast";
 import { useSettings, useSettingsActions } from "@/lib/api/hooks";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { cn } from "@/lib/utils";
+import { useHRRole } from "./hr-auth-gate";
 
 const mainTabs = [
   { value: "general", labelKey: "general" },
@@ -27,6 +29,8 @@ function SettingsContent() {
   const t = useTranslations("settings");
   const tc = useTranslations("common");
   const { toast } = useToast();
+  const router = useRouter();
+  const { role } = useHRRole();
   const [activeTab, setActiveTab] = useState("policy");
   const [policyTab, setPolicyTab] = useState<"monthly" | "weekly">("monthly");
   const [maxPercent, setMaxPercent] = useState(50);
@@ -36,6 +40,12 @@ function SettingsContent() {
 
   const { data: settings, loading: settingsLoading, error: settingsError } = useSettings();
   const { updatePolicy, loading: saving, error: saveError } = useSettingsActions();
+
+  useEffect(() => {
+    if (role !== "hr_manager") {
+      router.push("/hr/dashboard");
+    }
+  }, [role, router]);
 
   // Sync state when settings load or policyTab changes
   useEffect(() => {
