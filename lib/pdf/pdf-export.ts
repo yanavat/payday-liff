@@ -1,4 +1,4 @@
-import type { Employee, EWARequest } from "@/lib/api";
+import type { Employee, EmployeeDto, EWARequest, EWARequestDto } from "@/lib/api";
 import { formatTHB } from "@/lib/utils/format";
 
 type ReportPdfInput = {
@@ -10,8 +10,8 @@ type ReportPdfInput = {
 };
 
 type PaySlipPdfInput = {
-  employee: Employee;
-  request: EWARequest;
+  employee: Employee | EmployeeDto;
+  request: EWARequest | EWARequestDto;
 };
 
 export function buildReportPdf(input: ReportPdfInput) {
@@ -27,19 +27,24 @@ export function buildReportPdf(input: ReportPdfInput) {
 }
 
 export function buildPaySlipPdf({ employee, request }: PaySlipPdfInput) {
+  const referenceNumber = request.referenceNumber ?? request.id;
+  const amount =
+    "requestedAmount" in request ? request.requestedAmount : request.amount;
+  const netTransfer =
+    "netAmount" in request ? request.netAmount : request.netTransferAmount;
   return createSimplePdf([
     "PayDay+ Pay Slip",
     `Employee: ${employee.name} (${employee.id})`,
     `Department: ${employee.department}`,
-    `Reference: ${request.referenceNumber}`,
-    `Amount: ${formatTHB(request.amount)}`,
+    `Reference: ${referenceNumber}`,
+    `Amount: ${formatTHB(amount)}`,
     `Transfer fee: ${formatTHB(request.transferFee)}`,
-    `Net transfer: ${formatTHB(request.netTransferAmount)}`,
+    `Net transfer: ${formatTHB(netTransfer)}`,
     `Status: ${request.status}`,
     `Requested: ${formatDate(request.requestedAt)}`,
-    `Approved: ${formatDate(request.approvedAt)}`,
-    `Transferred: ${formatDate(request.disbursedAt)}`,
-    `Bank: ${employee.bankName} ${employee.bankAccountMasked}`,
+    `Approved: ${formatDate(request.approvedAt ?? undefined)}`,
+    `Transferred: ${formatDate(request.disbursedAt ?? undefined)}`,
+    `Bank: ${employee.bankName ?? "-"} ${employee.bankAccountMasked ?? "-"}`,
   ]);
 }
 

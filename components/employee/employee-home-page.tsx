@@ -233,7 +233,7 @@ export function EmployeeHomePage() {
                   </div>
                   <div className="text-right">
                     <p className="font-sans text-[16px] font-bold text-text-primary">
-                      {formatTHB(request.amount)}
+                      {formatTHB(request.requestedAmount)}
                     </p>
                     <StatusBadge status={request.status} size="sm" />
                   </div>

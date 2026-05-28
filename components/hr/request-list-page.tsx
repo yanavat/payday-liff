@@ -97,7 +97,7 @@ function RequestListContent() {
       )
       .filter((row) => {
         const searchable =
-          `${row.employee.name} ${row.employee.nameTh} ${row.employee.id} ${row.employee.department}`.toLowerCase();
+          `${row.employee.name} ${row.employee.employeeCode ?? ""} ${row.employee.id} ${row.employee.department}`.toLowerCase();
         const matchesQuery = searchable.includes(query.trim().toLowerCase());
         const matchesCycle =
           payCycle === "all" || row.request.payCycle === payCycle;
@@ -361,12 +361,9 @@ function RequestListContent() {
             </thead>
             <tbody>
               {visibleRows.map(({ request, employee }) => {
-                const earned =
-                  employee.payCycle === "monthly"
-                    ? Math.round((employee.baseSalary / 31) * 14)
-                    : Math.round((employee.baseSalary / 5) * 3);
+                const earned = request.earnedToDate;
                 const ratio = Math.round(
-                  (request.amount / Math.max(earned, 1)) * 100,
+                  (request.requestedAmount / Math.max(earned, 1)) * 100,
                 );
 
                 return (
@@ -378,7 +375,7 @@ function RequestListContent() {
                     <td className="px-4" onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
-                        aria-label={`Select ${employee.nameTh}`}
+                        aria-label={`Select ${employee.name}`}
                         checked={selectedIds.includes(request.id)}
                         onChange={(e) =>
                           toggleRow(request.id, e.target.checked)
@@ -394,7 +391,7 @@ function RequestListContent() {
                         />
                         <div>
                           <div className="text-[13px] font-medium leading-[20.8px] text-text-primary">
-                            {employee.nameTh}
+                            {employee.name}
                           </div>
                           <div className="text-[11px] leading-[16.5px] text-text-muted">
                             ID: {employee.id}
@@ -409,7 +406,7 @@ function RequestListContent() {
                       <PayCycleBadge type={request.payCycle} />
                     </td>
                     <td className="px-4 text-right font-number text-[13px] font-semibold text-text-primary">
-                      {formatTHB(request.amount)}
+                      {formatTHB(request.requestedAmount)}
                     </td>
                     <td className="px-4 text-right font-number text-[13px] text-text-secondary">
                       {formatTHB(earned)}
@@ -478,12 +475,10 @@ function RequestListContent() {
       </section>
 
       <RequestDetailDrawer
-        request={activeRow?.request as unknown as EWARequestDto | null}
-        employee={activeRow?.employee as unknown as EmployeeDto}
+        request={activeRow?.request ?? null}
+        employee={activeRow?.employee}
         history={
-          allRequests.filter(
-            (r) => r.employeeId === activeRow?.request.employeeId,
-          ) as unknown as EWARequestDto[]
+          allRequests.filter((r) => r.employeeId === activeRow?.request.employeeId)
         }
         open={!!activeRequestId}
         confirmAction={confirmAction}

@@ -70,7 +70,7 @@ export function EmployeeHistoryPage() {
     );
   });
   const thisMonthTotal = thisMonthRequests.reduce(
-    (sum, r) => sum + r.amount,
+    (sum, r) => sum + r.requestedAmount,
     0,
   );
 
@@ -84,17 +84,17 @@ export function EmployeeHistoryPage() {
     );
   });
   const lastMonthTotal = lastMonthRequests.reduce(
-    (sum, r) => sum + r.amount,
+    (sum, r) => sum + r.requestedAmount,
     0,
   );
 
   const totalRequests = requests.length;
-  const totalAmount = requests.reduce((sum, r) => sum + r.amount, 0);
+  const totalAmount = requests.reduce((sum, r) => sum + r.requestedAmount, 0);
 
   function exportPaySlip(request: (typeof requests)[number]) {
     downloadPdf(
       buildPaySlipPdf({ employee: currentEmployee, request }),
-      `pay-slip-${request.referenceNumber}.pdf`,
+      `pay-slip-${request.referenceNumber ?? request.id}.pdf`,
     );
   }
 
@@ -208,17 +208,17 @@ export function EmployeeHistoryPage() {
                           {t("requests.title")}
                         </p>
                         <p className="truncate font-mono text-[12px] text-text-muted">
-                          {request.referenceNumber}
+                          {request.referenceNumber ?? request.id}
                         </p>
                         <p className="truncate text-[12px] font-bold text-text-muted">
-                          {t(
-                            `requestWizard.reasons.${request.reason}` as keyof typeof t,
-                          )}
+                          {request.reason
+                            ? t(`requestWizard.reasons.${request.reason}` as keyof typeof t)
+                            : "-"}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="font-sans text-[16px] font-bold text-text-primary">
-                          {formatTHB(request.amount)}
+                          {formatTHB(request.requestedAmount)}
                         </p>
                         <StatusBadge status={request.status} size="sm" />
                       </div>
@@ -238,7 +238,7 @@ export function EmployeeHistoryPage() {
                         />
                         <DetailRow
                           label={t("history.approvedDate")}
-                          value={formatDate(request.approvedAt)}
+                          value={formatDate(request.approvedAt ?? undefined)}
                         />
                         <DetailRow
                           label={t("history.approvedBy")}
@@ -246,7 +246,7 @@ export function EmployeeHistoryPage() {
                         />
                         <DetailRow
                           label={t("history.transferDate")}
-                          value={formatDate(request.disbursedAt)}
+                          value={formatDate(request.disbursedAt ?? undefined)}
                         />
                         <DetailRow
                           label={t("profile.bankAccount")}
@@ -258,7 +258,7 @@ export function EmployeeHistoryPage() {
                         />
                         <DetailRow
                           label={t("history.netTransferAmount")}
-                          value={formatTHB(request.netTransferAmount)}
+                          value={formatTHB(request.netAmount)}
                         />
                         <DetailRow
                           label={t("requestDetail.hrNote")}

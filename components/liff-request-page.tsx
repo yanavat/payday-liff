@@ -422,7 +422,7 @@ export function LiffRequestPage() {
                 <div className="space-y-3 p-4 text-[16px]">
                   <SummaryRow
                     label={tc("employeeName")}
-                    value={employee?.nameTh ?? profile?.displayName ?? "—"}
+                    value={employee?.name ?? profile?.displayName ?? "—"}
                   />
                   <SummaryRow
                     label={tc("employeeId")}

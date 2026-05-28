@@ -43,7 +43,7 @@ function ReportsContent() {
         .filter((r) => r.status === "disbursed" || r.status === "approved")
         .forEach((r) => {
           const d = dayjs(r.requestedAt).format("YYYY-MM-DD");
-          if (buckets[d]) { buckets[d].amount += r.amount; buckets[d].count += 1; }
+          if (buckets[d]) { buckets[d].amount += r.requestedAmount; buckets[d].count += 1; }
         });
       const data = Object.entries(buckets).map(([date, v]) => ({ date, ...v }));
       return { chartData: data, maxAmount: Math.max(...data.map((d) => d.amount), 1) };
@@ -58,7 +58,7 @@ function ReportsContent() {
         .filter((r) => r.status === "disbursed" || r.status === "approved")
         .forEach((r) => {
           const w = `W${String(dayjs(r.requestedAt).week()).padStart(2, "0")}`;
-          if (buckets[w]) { buckets[w].amount += r.amount; buckets[w].count += 1; }
+          if (buckets[w]) { buckets[w].amount += r.requestedAmount; buckets[w].count += 1; }
         });
       const data = Object.entries(buckets).map(([week, v]) => ({ week, ...v }));
       return { chartData: data, maxAmount: Math.max(...data.map((d) => d.amount), 1) };
@@ -69,7 +69,7 @@ function ReportsContent() {
     const totalRequests = allRequests.length;
     const totalApproved = allRequests.filter((r) => r.status === "approved" || r.status === "disbursed").length;
     const disbursed = allRequests.filter((r) => r.status === "disbursed");
-    const totalDisbursed = disbursed.reduce((s, r) => s + r.amount, 0);
+    const totalDisbursed = disbursed.reduce((s, r) => s + r.requestedAmount, 0);
     const avgAmount = disbursed.length > 0 ? Math.round(totalDisbursed / disbursed.length) : 0;
     const totalFees = allRequests.reduce((s, r) => s + (r.transferFee ?? 0), 0);
     return { totalRequests, totalApproved, totalDisbursed, avgAmount, totalFees };
@@ -82,7 +82,7 @@ function ReportsContent() {
     allRequests.forEach((r) => {
       const dept = allEmployees.find((e) => e.id === r.employeeId)?.department ?? "Unknown";
       const cur = deptMap.get(dept) ?? { totalRequests: 0, totalAmount: 0 };
-      deptMap.set(dept, { totalRequests: cur.totalRequests + 1, totalAmount: cur.totalAmount + r.amount });
+      deptMap.set(dept, { totalRequests: cur.totalRequests + 1, totalAmount: cur.totalAmount + r.requestedAmount });
     });
     return Array.from(deptMap.entries())
       .map(([department, v]) => ({
@@ -102,9 +102,9 @@ function ReportsContent() {
       .filter((r) => r.status !== "pending")
       .slice(0, 10)
       .map((r) => ({
-        referenceNumber: r.referenceNumber,
+        referenceNumber: r.referenceNumber ?? r.id,
         employeeId: r.employeeId,
-        amount: r.amount,
+        amount: r.requestedAmount,
         status: r.status === "disbursed" ? "settled" as const
           : r.status === "approved" ? "processing" as const
           : "failed" as const,

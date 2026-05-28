@@ -4,14 +4,14 @@ import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
 
 const { logoutMock, useAuthMock } = vi.hoisted(() => ({
   logoutMock: vi.fn().mockResolvedValue(undefined),
-  useAuthMock: vi.fn(() => ({
+  useAuthMock: vi.fn<() => any>(() => ({
     employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
     isInLiff: true,
     logout: vi.fn(),
   })),
 }))
 const useLiffProfileMock = vi.hoisted(() =>
-  vi.fn(() => ({
+  vi.fn<() => { userId: string; displayName: string; pictureUrl?: string } | null>(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
     pictureUrl: 'https://profile.line.example/avatar.jpg',

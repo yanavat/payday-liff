@@ -6,13 +6,13 @@ const refetchPeriodMock = vi.fn()
 const refetchRequestsMock = vi.fn()
 const retryRequestsMock = vi.fn()
 const useAuthMock = vi.hoisted(() =>
-  vi.fn(() => ({
+  vi.fn<() => any>(() => ({
     employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
     isInLiff: true,
   })),
 )
 const useLiffProfileMock = vi.hoisted(() =>
-  vi.fn(() => ({
+  vi.fn<() => { userId: string; displayName: string; pictureUrl?: string } | null>(() => ({
     userId: 'U1234567890',
     displayName: 'Mock LINE User',
     pictureUrl: 'https://profile.line.example/avatar.jpg',
@@ -204,12 +204,10 @@ describe('LiffHomePage', () => {
             employeeId: 'EMP-0001',
             status: 'disbursed',
             requestedAt: '2026-03-10T00:00:00.000Z',
-            amount: 4000,
             referenceNumber: 'REF-20260310-0001',
             reason: 'emergency',
             requestedAmount: 4000,
             transferFee: 15,
-            netTransferAmount: 3985,
             netAmount: 3985,
             hrNote: '',
             employeeNote: '',
@@ -226,9 +224,9 @@ describe('LiffHomePage', () => {
             actorName: 'Anan Srisuwan',
             approvedBy: 'system',
             approvedAt: '2026-03-10T00:00:00.000Z',
-            rejectedBy: undefined,
-            rejectedAt: undefined,
-            rejectionReason: undefined,
+            rejectedBy: null,
+            rejectedAt: null,
+            rejectionReason: null,
             disbursedAt: '2026-03-11T00:00:00.000Z',
             createdAt: '2026-05-12T05:46:44.000Z',
             updatedAt: '2026-05-12T05:46:44.000Z',

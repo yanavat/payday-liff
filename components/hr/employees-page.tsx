@@ -44,16 +44,18 @@ function EmployeesContent() {
   const allDepartments = departmentsData?.data ?? [];
 
   const rows = useMemo(() => {
-    if (!debouncedQuery) return allEmployees;
+    const matchesStatus = (employee: EmployeeDto) =>
+      status === "all" || (employee.ewaEligibility ?? "eligible") === status;
+    if (!debouncedQuery) return allEmployees.filter(matchesStatus);
     const q = debouncedQuery.toLowerCase();
     return allEmployees.filter((e) =>
-      `${e.name} ${e.nameTh} ${e.id}`.toLowerCase().includes(q) &&
-      (status === "all" || e.ewaStatus === status)
+      `${e.name} ${e.employeeCode ?? ""} ${e.id}`.toLowerCase().includes(q) &&
+      matchesStatus(e)
     );
   }, [allEmployees, debouncedQuery, status]);
 
   const enrolled = employeesData?.total ?? 0;
-  const notEligible = allEmployees.filter((e) => e.ewaStatus !== "eligible").length;
+  const notEligible = allEmployees.filter((e) => (e.ewaEligibility ?? "eligible") !== "eligible").length;
 
   if (loading) {
     return (
@@ -124,7 +126,7 @@ function EmployeesContent() {
             options={[
               ["all", t("status.all") ?? "All"],
               ["eligible", t("employees.eligible")],
-              ["limit_reached", t("employees.limitReached")],
+              ["quota_used", t("employees.limitReached")],
               ["suspended", t("employees.suspended")],
             ]}
           />
@@ -146,16 +148,15 @@ function EmployeesContent() {
             </thead>
             <tbody>
               {rows.slice(0, 20).map((employee) => {
-                const max = employee.payCycle === "monthly"
-                  ? Math.round(employee.baseSalary * 0.25)
-                  : Math.round(employee.baseSalary * 0.5);
+                const eligibility = employee.ewaEligibility ?? "eligible";
+                const max = employee.currentPeriod?.maxWithdrawable ?? employee.ewaMaxAmount ?? 0;
                 return (
                   <tr key={employee.id} className="h-[52px] border-b border-border-light last:border-0 hover:bg-primary-subtle">
                     <td className="px-4">
                       <div className="flex items-center gap-3">
-                        <Avatar initials={employee.nameTh.slice(0, 2)} size="sm" />
+                        <Avatar initials={employee.avatarInitials ?? employee.name.slice(0, 2)} size="sm" />
                         <div>
-                          <div className="text-sm font-medium text-text-primary">{employee.nameTh}</div>
+                          <div className="text-sm font-medium text-text-primary">{employee.name}</div>
                           <div className="text-caption text-text-muted">{employee.id}</div>
                         </div>
                       </div>
@@ -163,9 +164,9 @@ function EmployeesContent() {
                     <td className="px-4 text-sm text-text-secondary">{employee.department}</td>
                     <td className="px-4"><PayCycleBadge type={employee.payCycle} /></td>
                     <td className="px-4 text-right font-number text-sm font-semibold">{formatTHB(max)}</td>
-                    <td className="px-4"><EWAStatusBadge status={employee.ewaStatus} /></td>
+                    <td className="px-4"><EWAStatusBadge status={eligibility} /></td>
                     <td className="px-4 text-right">
-                      {employee.ewaStatus === "eligible" ? (
+                      {eligibility === "eligible" ? (
                         <Link
                           href={`/hr/employees/${employee.id}/request`}
                           className="inline-flex h-8 items-center rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary"
@@ -215,7 +216,7 @@ function FilterSelect({ value, onChange, options }: { value: string; onChange: (
 
 const ewaStatusClassMap: Record<string, string> = {
   eligible: "bg-green-100 text-green-800",
-  limit_reached: "bg-bg-secondary text-text-secondary",
+  quota_used: "bg-bg-secondary text-text-secondary",
   suspended: "bg-red-100 text-red-800",
 };
 
@@ -223,7 +224,7 @@ function EWAStatusBadge({ status }: { status: string }) {
   const tc = useTranslations("employees");
   return (
     <span className={cn("rounded-full px-2.5 py-1 text-badge font-medium", ewaStatusClassMap[status] ?? "bg-bg-secondary text-text-secondary")}>
-      {status === "limit_reached" ? tc("limitReached") : tc(status as "eligible" | "suspended")}
+      {status === "quota_used" ? tc("limitReached") : tc(status as "eligible" | "suspended")}
     </span>
   );
 }

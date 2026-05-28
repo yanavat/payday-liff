@@ -68,15 +68,15 @@ export function LiffProfilePage() {
   const hasLineProfile = isInLiff && Boolean(profile?.userId);
   const displayName = hasLineProfile
     ? profile?.displayName
-    : employee?.name ?? employee?.nameTh ?? authEmployee?.name ?? authEmployee?.nameTh;
+    : employee?.name ?? authEmployee?.name ?? authEmployee?.nameTh;
   const avatarName =
     displayName ?? employee?.employeeCode ?? authEmployee?.employeeCode ?? "";
 
   useEffect(() => {
     if (!employee) return;
-    setBankCode(employee.bankName);
-    setAccountMasked(employee.bankAccountMasked);
-    setHolderName(employee.nameTh);
+    setBankCode(employee.bankName ?? "");
+    setAccountMasked(employee.bankAccountMasked ?? "");
+    setHolderName(employee.name);
   }, [employee]);
 
   function handleSaveBank(data: {

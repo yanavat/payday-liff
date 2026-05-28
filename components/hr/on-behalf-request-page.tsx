@@ -75,17 +75,12 @@ function OnBehalfForm({ employee }: { employee: EmployeeDto }) {
 
   const { createOnBehalf, loading: submitting, error: submitError } = useEWARequestActions();
 
-  const maxAmount =
-    employee.payCycle === "monthly"
-      ? Math.round(employee.baseSalary * 0.25)
-      : Math.round(employee.baseSalary * 0.5);
-  const earned =
-    employee.payCycle === "monthly"
-      ? Math.round(employee.baseSalary * 0.5)
-      : employee.baseSalary;
+  const maxAmount = employee.currentPeriod?.maxWithdrawable ?? employee.ewaMaxAmount ?? 0;
+  const earned = employee.currentPeriod?.earnedToDate ?? 0;
+  const eligibility = employee.ewaEligibility ?? "eligible";
   const overLimit = amount > maxAmount;
   const canSubmit =
-    employee.ewaStatus === "eligible" &&
+    eligibility === "eligible" &&
     !overLimit &&
     amount >= 500 &&
     hrNote.trim().length >= 10 &&
@@ -100,7 +95,7 @@ function OnBehalfForm({ employee }: { employee: EmployeeDto }) {
       submittedBy: "HR",
     });
     if (result) {
-      setSubmittedRef(result.referenceNumber);
+      setSubmittedRef(result.referenceNumber ?? result.id);
       toast({ variant: "success", message: tc("success") });
     } else if (submitError) {
       toast({ variant: "error", message: getApiErrorMessage(submitError, tc) });
@@ -119,7 +114,7 @@ function OnBehalfForm({ employee }: { employee: EmployeeDto }) {
           <div className="mx-auto mt-6 max-w-sm rounded-lg bg-bg-secondary p-4 text-left text-sm">
             <Info label={t("auditRef")} value={submittedRef} />
             <Info label={tc("amount")} value={formatTHB(amount)} />
-            <Info label={tc("employeeId")} value={employee.nameTh} />
+            <Info label={tc("employeeId")} value={employee.name} />
           </div>
           <div className="mt-6 flex justify-center gap-3">
             <Link
@@ -152,9 +147,9 @@ function OnBehalfForm({ employee }: { employee: EmployeeDto }) {
 
       <section className="rounded-xl border border-border bg-bg-canvas p-5 shadow-card">
         <div className="flex items-center gap-3">
-          <Avatar initials={employee.nameTh.slice(0, 2)} size="md" />
+          <Avatar initials={employee.avatarInitials ?? employee.name.slice(0, 2)} size="md" />
           <div className="flex-1">
-            <h2 className="font-semibold text-text-primary">{employee.nameTh}</h2>
+            <h2 className="font-semibold text-text-primary">{employee.name}</h2>
             <p className="text-caption text-text-muted">
               {employee.id} · {employee.department}
             </p>
@@ -170,7 +165,7 @@ function OnBehalfForm({ employee }: { employee: EmployeeDto }) {
         </div>
       </section>
 
-      {employee.ewaStatus !== "eligible" && (
+      {eligibility !== "eligible" && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           Not eligible
         </div>
