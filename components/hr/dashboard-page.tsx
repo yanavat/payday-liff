@@ -226,12 +226,12 @@ function DashboardContent() {
                     <td className="px-4">
                       <div className="flex items-center gap-3">
                         <Avatar
-                          initials={employee.nameTh.slice(0, 2)}
+                          initials={employee.avatarInitials ?? employee.name.slice(0, 2)}
                           size="sm"
                         />
                         <div>
                           <div className="text-sm font-medium text-text-primary">
-                            {employee.nameTh}
+                            {employee.name}
                           </div>
                           <div className="text-caption text-text-muted">
                             {employee.id}
@@ -243,7 +243,7 @@ function DashboardContent() {
                       {employee.department}
                     </td>
                     <td className="px-4 text-right font-number text-sm font-semibold">
-                      {formatTHB(request.amount)}
+                      {formatTHB(request.requestedAmount)}
                     </td>
                     <td className="px-4 text-sm text-text-muted">
                       {dayjs(request.requestedAt).format("DD/MM/YY")}
