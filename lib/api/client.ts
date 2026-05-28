@@ -126,6 +126,24 @@ class ApiClient {
     return this.handleResponse<T>(response);
   }
 
+  async postText(path: string, body?: unknown): Promise<string> {
+    const response = await this.fetchWithRetry(
+      `${this.config.baseURL}${path}`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: body ? JSON.stringify(body) : undefined,
+        credentials: "include",
+      },
+    );
+
+    if (!response.ok) {
+      await this.handleResponse<never>(response);
+    }
+
+    return response.text();
+  }
+
   async patch<T>(path: string, body?: unknown): Promise<T> {
     const response = await this.fetchWithRetry(
       `${this.config.baseURL}${path}`,

@@ -175,6 +175,9 @@ export interface EWARequestDto {
   rejectedAt: string | null
   rejectionReason: string | null
   disbursedAt: string | null
+  exported?: boolean
+  exportedAt?: string | null
+  exportedBy?: string | null
   createdAt: string
   requestedAt: string
   updatedAt: string

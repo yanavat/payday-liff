@@ -48,6 +48,14 @@ export class EWARequestsService {
   async disburse(id: string): Promise<EWARequestDto> {
     return this.client.post<EWARequestDto>(`/ewa-requests/${id}/disburse`)
   }
+
+  async exportBatch(requestIds: string[]): Promise<string> {
+    return this.client.postText('/requests/export-batch', { requestIds })
+  }
+
+  async markTransferFailed(id: string): Promise<EWARequestDto> {
+    return this.client.post<EWARequestDto>(`/requests/${id}/mark-transfer-failed`)
+  }
 }
 
 export const ewaRequestsService = new EWARequestsService()

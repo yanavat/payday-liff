@@ -196,5 +196,47 @@ export function useEWARequestActions() {
     [],
   );
 
-  return { create, createOnBehalf, approve, reject, disburse, loading, error };
+  const exportBatch = useCallback(
+    async (requestIds: string[]): Promise<string | null> => {
+      try {
+        setLoading(true);
+        setError(null);
+        return await ewaRequestsService.exportBatch(requestIds);
+      } catch (err) {
+        setError(err as ApiError);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const markTransferFailed = useCallback(
+    async (id: string): Promise<EWARequestDto | null> => {
+      try {
+        setLoading(true);
+        setError(null);
+        return await ewaRequestsService.markTransferFailed(id);
+      } catch (err) {
+        setError(err as ApiError);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  return {
+    create,
+    createOnBehalf,
+    approve,
+    reject,
+    disburse,
+    exportBatch,
+    markTransferFailed,
+    loading,
+    error,
+  };
 }
