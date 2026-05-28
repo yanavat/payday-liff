@@ -66,6 +66,31 @@ export function useEwaPolicy(cycle: "monthly" | "weekly") {
   return { data, loading, error, refetch: fetch };
 }
 
+export function useSettingsApiKey() {
+  const [data, setData] = useState<{ apiKey: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
+
+  const fetch = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await settingsService.getApiKey();
+      setData(result);
+    } catch (err) {
+      setError(err as ApiError);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  return { data, loading, error, refetch: fetch };
+}
+
 export function useSettingsActions() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);

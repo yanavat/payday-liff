@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Plus, X } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, Loader2, Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { TabBar } from "@/components/ui/tab-bar";
 import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { Toggle } from "./settings-toggle";
 import { useToast } from "@/components/ui/toast";
-import { useSettings, useSettingsActions } from "@/lib/api/hooks";
+import { useSettings, useSettingsActions, useSettingsApiKey } from "@/lib/api/hooks";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { cn } from "@/lib/utils";
 import { useHRRole } from "./hr-auth-gate";
@@ -237,11 +237,14 @@ function SettingsContent() {
       )}
 
       {activeTab === "general" && (
-        <SettingsPanel title={t("general")}>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <NumberField label="Company" value={settings?.companyName ?? ""} />
-          </div>
-        </SettingsPanel>
+        <>
+          <SettingsPanel title={t("general")}>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <NumberField label="Company" value={settings?.companyName ?? ""} />
+            </div>
+          </SettingsPanel>
+          <ApiKeySection />
+        </>
       )}
 
       <div className="fixed bottom-5 right-5">
@@ -322,5 +325,79 @@ function RadioPill({ checked = false, label }: { checked?: boolean; label: strin
     <span className={cn("rounded-full border px-3 py-1 text-sm", checked ? "border-primary bg-primary-subtle text-primary-dark" : "border-border text-text-secondary")}>
       {label}
     </span>
+  );
+}
+
+function ApiKeySection() {
+  const { role } = useHRRole();
+  const { toast } = useToast();
+  const { data, loading, error } = useSettingsApiKey();
+  const [revealed, setRevealed] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  if (role !== "hr_manager") return null;
+
+  const apiKey = data?.apiKey ?? null;
+
+  const maskedKey = apiKey
+    ? `${"•".repeat(Math.max(0, apiKey.length - 4))}${apiKey.slice(-4)}`
+    : null;
+
+  async function handleCopy() {
+    if (!apiKey) return;
+    try {
+      await navigator.clipboard.writeText(apiKey);
+      setCopied(true);
+      toast({ variant: "success", message: "Copied!" });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({ variant: "error", message: "Failed to copy" });
+    }
+  }
+
+  return (
+    <SettingsPanel title="API Integration">
+      <p className="text-sm text-text-secondary">
+        Share this key with your IT team to enable automatic employee sync.
+      </p>
+      {loading ? (
+        <div className="h-10 animate-pulse rounded-md bg-bg-secondary" />
+      ) : error ? (
+        <p className="text-sm text-text-muted">
+          API key endpoint not available yet.
+        </p>
+      ) : (
+        <div className="flex items-center gap-2">
+          <div className="flex h-10 flex-1 items-center rounded-md border border-border bg-bg-secondary px-3 font-mono text-sm text-text-primary">
+            {revealed ? (apiKey ?? "—") : (maskedKey ?? "—")}
+          </div>
+          <button
+            type="button"
+            onClick={() => setRevealed((v) => !v)}
+            aria-label={revealed ? "Hide API key" : "Reveal API key"}
+            className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-bg-canvas text-text-secondary hover:bg-bg-secondary"
+          >
+            {revealed ? (
+              <EyeOff className="h-4 w-4" aria-hidden />
+            ) : (
+              <Eye className="h-4 w-4" aria-hidden />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={handleCopy}
+            disabled={!apiKey}
+            aria-label="Copy API key"
+            className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-bg-canvas text-text-secondary hover:bg-bg-secondary disabled:opacity-50"
+          >
+            {copied ? (
+              <Check className="h-4 w-4 text-green-600" aria-hidden />
+            ) : (
+              <Copy className="h-4 w-4" aria-hidden />
+            )}
+          </button>
+        </div>
+      )}
+    </SettingsPanel>
   );
 }

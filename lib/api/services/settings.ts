@@ -40,6 +40,11 @@ export class SettingsService {
   ): Promise<AppSettingsDto> {
     return this.client.patch<AppSettingsDto>("/settings/notifications", data);
   }
+
+  // GET /settings/api-key — endpoint may not exist on backend yet
+  async getApiKey(): Promise<{ apiKey: string }> {
+    return this.client.get<{ apiKey: string }>("/settings/api-key");
+  }
 }
 
 export const settingsService = new SettingsService();
