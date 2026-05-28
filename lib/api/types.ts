@@ -42,60 +42,105 @@ export interface UpdateCompanyDto {
 
 export interface EmployeeDto {
   id: string
+  companyId: string
+  employeeCode: string | null
   name: string
-  nameTh: string
-  employeeCode: string
+  nameEn: string | null
+  avatarInitials: string | null
+  phoneNumber: string | null
+  lineUserId: string | null
+  email: string | null
+  invitationCode: string | null
+  activated: number
   department: string
-  position: string
+  departmentName: string | null
+  position: string | null
+  startDate: string
+  employmentType: "full_time" | "part_time" | "contract"
   payCycle: "monthly" | "weekly"
-  workType: "remote" | "onsite" | "hybrid"
-  baseSalary: number
-  bankAccountMasked: string
-  bankName: string
-  ewaStatus: "eligible" | "limit_reached" | "suspended"
-  enrolledAt: string
-  isActive: boolean
-  lineUserId?: string
+  monthlySalary: number | null
+  dailyRate: number | null
+  standardWorkDays: number
+  bankAccountMasked: string | null
+  bankName: string | null
+  bankAccountLast4: string | null
+  ewaEnabled: boolean | null
+  ewaEligibility: "eligible" | "quota_used" | "suspended" | null
+  ewaMaxPercent: number | null
+  ewaMaxRequests: number | null
+  ewaMinAmount: number | null
+  ewaMaxAmount: number | null
+  currentPeriod: CurrentPeriodSnapshot | null
   createdAt: string
   updatedAt: string
-  ewaOverrides?: EwaOverridesDto
+  deletedAt: string | null
+}
+
+export interface CurrentPeriodSnapshot {
+  label: string
+  startDate: string
+  endDate: string
+  payDate: string
+  cutoffDate: string
+  workedDays: number
+  totalWorkDays: number
+  earnedToDate: number
+  previousEWAThisPeriod: number
+  maxWithdrawable: number
+  usedRequests: number
+  remainingRequests: number
 }
 
 export interface CreateEmployeeDto {
+  id: string
+  employeeCode?: string
   name: string
-  nameTh: string
-  employeeCode: string
+  nameEn?: string
+  avatarInitials?: string
+  phoneNumber?: string
+  email?: string
   department: string
-  position: string
+  departmentName?: string
+  position?: string
+  startDate: string
+  employmentType: "full_time" | "part_time" | "contract"
   payCycle: "monthly" | "weekly"
-  workType: "remote" | "onsite" | "hybrid"
-  baseSalary: number
-  bankAccountMasked: string
-  bankName: string
-  lineUserId?: string
+  monthlySalary?: number
+  dailyRate?: number
+  standardWorkDays: number
+  bankName?: string
+  bankAccountMasked?: string
+  bankAccountLast4?: string
 }
 
 export interface UpdateEmployeeDto {
-  name?: string
-  nameTh?: string
   employeeCode?: string
+  name?: string
+  nameEn?: string
+  avatarInitials?: string
+  phoneNumber?: string
+  email?: string
   department?: string
+  departmentName?: string
   position?: string
+  startDate?: string
+  employmentType?: "full_time" | "part_time" | "contract"
   payCycle?: "monthly" | "weekly"
-  workType?: "remote" | "onsite" | "hybrid"
-  baseSalary?: number
-  bankAccountMasked?: string
+  monthlySalary?: number
+  dailyRate?: number
+  standardWorkDays?: number
   bankName?: string
-  lineUserId?: string
-  isActive?: boolean
+  bankAccountMasked?: string
+  bankAccountLast4?: string
 }
 
 export interface EwaOverridesDto {
-  maxPercent?: number | null
-  maxRequestsPerPeriod?: number | null
-  minAmount?: number | null
-  autoApproval?: boolean | null
-  autoApprovalThreshold?: number | null
+  ewaEnabled?: boolean | null
+  ewaEligibility?: "eligible" | "quota_used" | "suspended" | null
+  ewaMaxPercent?: number | null
+  ewaMaxRequests?: number | null
+  ewaMinAmount?: number | null
+  ewaMaxAmount?: number | null
 }
 
 // ── EWA Requests ─────────────────────────────────────────────
