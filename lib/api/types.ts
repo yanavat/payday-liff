@@ -101,13 +101,6 @@ export interface EwaOverridesDto {
 // ── EWA Requests ─────────────────────────────────────────────
 
 export interface EWARequestDto {
-  requestedAt: string
-  amount: number
-  referenceNumber: string
-  reason: "medical" | "education" | "emergency" | "utility" | "other"
-  netTransferAmount: number
-  hrNote: string
-  employeeNote: string
   id: string
   companyId: string
   employeeId: string
@@ -118,22 +111,27 @@ export interface EWARequestDto {
   netAmount: number
   earnedToDate: number
   maxWithdrawable: number
+  payCycle: "monthly" | "weekly"
   periodLabel: string
   periodStart: string
   periodEnd: string
   workedDays: number
-  payCycle: "monthly" | "weekly"
+  reason: string | null
+  employeeNote: string | null
+  hrNote: string | null
+  referenceNumber: string | null
   isOnBehalf: boolean
   autoApproved: boolean
   actorId: string
   actorName: string | null
-  approvedBy?: string
-  approvedAt?: string
-  rejectedBy?: string
-  rejectedAt?: string
-  rejectionReason?: string
-  disbursedAt?: string
+  approvedBy: string | null
+  approvedAt: string | null
+  rejectedBy: string | null
+  rejectedAt: string | null
+  rejectionReason: string | null
+  disbursedAt: string | null
   createdAt: string
+  requestedAt: string
   updatedAt: string
 }
 
