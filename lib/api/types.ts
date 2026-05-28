@@ -134,6 +134,18 @@ export interface UpdateEmployeeDto {
   bankAccountLast4?: string
 }
 
+export interface EmployeeImportErrorDto {
+  row: number
+  reason: string
+}
+
+export interface EmployeeImportSummaryDto {
+  total: number
+  success: number
+  failed: number
+  errors: EmployeeImportErrorDto[]
+}
+
 export interface EwaOverridesDto {
   ewaEnabled?: boolean | null
   ewaEligibility?: "eligible" | "quota_used" | "suspended" | null

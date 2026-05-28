@@ -382,6 +382,26 @@
     "exportSuccess": "CSV ထုတ်ယူပြီးပါပြီ",
     "requeued": "နောက်ထုတ်ယူမှုအတွက် ပြန်တန်းစီပြီးပါပြီ"
   },
+  "employeeImport": {
+    "title": "ဝန်ထမ်းများ တင်သွင်းရန်",
+    "dropTitle": "ဝန်ထမ်းဖိုင်ကို ဤနေရာတွင်ချပါ",
+    "dropDescription": "CSV နှင့် JSON ဖိုင်များကို သုံးနိုင်သည်။",
+    "browse": "ဖိုင်ရွေးမည်",
+    "downloadTemplate": "CSV template ဒေါင်းလုပ်",
+    "uploading": "တင်နေသည်...",
+    "invalidFile": "CSV နှင့် JSON ဖိုင်များသာ သုံးနိုင်သည်။",
+    "invalidJson": "JSON ဖိုင်သည် array ဖြစ်ရမည် သို့မဟုတ် employees array ပါရမည်။",
+    "reviewDescription": "ဤအဆင့်ကိုမပိတ်မီ တင်သွင်းမှုရလဒ်ကိုစစ်ဆေးပါ။",
+    "total": "စုစုပေါင်း",
+    "valid": "မှန်ကန်",
+    "failed": "မအောင်မြင်",
+    "failedRows": "မအောင်မြင်သောအတန်းများ",
+    "downloadErrors": "အမှားအတန်း CSV ဒေါင်းလုပ်",
+    "row": "အတန်း",
+    "reason": "အကြောင်းရင်း",
+    "confirmImport": "တင်သွင်းမှု အတည်ပြုမည်",
+    "successToast": "ဝန်ထမ်း {count} ဦး တင်သွင်းပြီးပါပြီ"
+  },
   "onboarding": {
     "stepIndicator": "အဆင့် {current} / {total}",
     "step1Title": "ဝန်ထမ်းအကောင့်ချိတ်ဆက်မည်",

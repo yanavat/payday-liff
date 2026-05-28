@@ -382,6 +382,26 @@
     "exportSuccess": "ส่งออก CSV สำเร็จ",
     "requeued": "นำรายการกลับเข้าคิวส่งออกแล้ว"
   },
+  "employeeImport": {
+    "title": "นำเข้าพนักงาน",
+    "dropTitle": "วางไฟล์พนักงานที่นี่",
+    "dropDescription": "รองรับไฟล์ CSV และ JSON",
+    "browse": "เลือกไฟล์",
+    "downloadTemplate": "ดาวน์โหลดเทมเพลต CSV",
+    "uploading": "กำลังอัปโหลด...",
+    "invalidFile": "รองรับเฉพาะไฟล์ CSV และ JSON",
+    "invalidJson": "ไฟล์ JSON ต้องเป็นอาร์เรย์หรือมีอาร์เรย์ employees",
+    "reviewDescription": "ตรวจสอบผลการนำเข้าก่อนปิดขั้นตอนนี้",
+    "total": "ทั้งหมด",
+    "valid": "ถูกต้อง",
+    "failed": "ล้มเหลว",
+    "failedRows": "แถวที่ล้มเหลว",
+    "downloadErrors": "ดาวน์โหลด CSV แถวที่ผิดพลาด",
+    "row": "แถว",
+    "reason": "เหตุผล",
+    "confirmImport": "ยืนยันการนำเข้า",
+    "successToast": "นำเข้าพนักงานสำเร็จ {count} คน"
+  },
   "onboarding": {
     "stepIndicator": "ขั้นตอนที่ {current} จาก {total}",
     "step1Title": "เชื่อมต่อบัญชีพนักงาน",

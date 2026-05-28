@@ -7,6 +7,7 @@ import type {
   EmployeeDto,
   CreateEmployeeDto,
   UpdateEmployeeDto,
+  EmployeeImportSummaryDto,
   EwaOverridesDto,
   EffectivePolicyResponse,
   CurrentPeriodResponse,
@@ -23,6 +24,20 @@ export class EmployeesService {
 
   async create(data: CreateEmployeeDto): Promise<EmployeeDto> {
     return this.client.post<EmployeeDto>('/employees', data)
+  }
+
+  async importCsv(file: File): Promise<EmployeeImportSummaryDto> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return this.client.postForm<EmployeeImportSummaryDto>('/employees/import', formData)
+  }
+
+  async importJson(employees: unknown[]): Promise<EmployeeImportSummaryDto> {
+    return this.client.post<EmployeeImportSummaryDto>('/employees/import/json', { employees })
+  }
+
+  async getImportTemplate(): Promise<string> {
+    return this.client.getText('/employees/import/template')
   }
 
   async get(id: string): Promise<EmployeeDto> {

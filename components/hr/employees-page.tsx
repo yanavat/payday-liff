@@ -15,6 +15,7 @@ import type { EmployeeDto } from "@/lib/api/types";
 import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { useHRRole } from "./hr-auth-gate";
+import { EmployeeImportDrawer } from "./employee-import-drawer";
 
 function EmployeesContent() {
   const t = useTranslations();
@@ -25,6 +26,7 @@ function EmployeesContent() {
   const [department, setDepartment] = useState("all");
   const [payCycle, setPayCycle] = useState("all");
   const [status, setStatus] = useState("all");
+  const [importOpen, setImportOpen] = useState(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleQueryChange = useCallback((value: string) => {
@@ -35,14 +37,14 @@ function EmployeesContent() {
 
   useEffect(() => () => { if (debounceTimer.current) clearTimeout(debounceTimer.current); }, []);
 
-  const { data: employeesData, loading, error } = useEmployees({
+  const { data: employeesData, loading, error, refetch } = useEmployees({
     department: department === "all" ? undefined : department,
     payCycle: payCycle === "all" ? undefined : (payCycle as "monthly" | "weekly"),
     limit: 200,
   });
   const { data: departmentsData } = useDepartments();
 
-  const allEmployees = employeesData?.data ?? [];
+  const allEmployees = useMemo(() => employeesData?.data ?? [], [employeesData]);
   const allDepartments = departmentsData?.data ?? [];
 
   const rows = useMemo(() => {
@@ -97,6 +99,7 @@ function EmployeesContent() {
         {role === "hr_manager" && (
           <button
             type="button"
+            onClick={() => setImportOpen(true)}
             className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-white shadow-card transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             <Upload className="h-4 w-4" aria-hidden />
@@ -203,6 +206,14 @@ function EmployeesContent() {
           Showing {Math.min(rows.length, 20)} / {rows.length}
         </div>
       </section>
+
+      <EmployeeImportDrawer
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={() => {
+          void refetch();
+        }}
+      />
     </div>
   );
 }

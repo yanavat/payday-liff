@@ -386,6 +386,26 @@
     "exportSuccess": "CSV exported successfully",
     "requeued": "Transfer re-queued for the next export"
   },
+  "employeeImport": {
+    "title": "Import Employees",
+    "dropTitle": "Drop employee file here",
+    "dropDescription": "CSV and JSON files are supported.",
+    "browse": "Browse file",
+    "downloadTemplate": "Download CSV template",
+    "uploading": "Uploading...",
+    "invalidFile": "Only CSV and JSON files are supported.",
+    "invalidJson": "JSON file must be an array or contain an employees array.",
+    "reviewDescription": "Review import results before closing this flow.",
+    "total": "Total",
+    "valid": "Valid",
+    "failed": "Failed",
+    "failedRows": "Failed Rows",
+    "downloadErrors": "Download error rows CSV",
+    "row": "Row",
+    "reason": "Reason",
+    "confirmImport": "Confirm Import",
+    "successToast": "{count} employees imported successfully"
+  },
   "onboarding": {
     "stepIndicator": "Step {current} of {total}",
     "step1Title": "Connect Employee Account",

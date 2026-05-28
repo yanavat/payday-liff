@@ -37,6 +37,16 @@ class ApiClient {
     return headers;
   }
 
+  private getBaseHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {};
+
+    if (this.config.companyId) {
+      headers["x-company-id"] = this.config.companyId;
+    }
+
+    return headers;
+  }
+
   private async fetchWithRetry(
     url: string,
     options: RequestInit,
@@ -112,6 +122,30 @@ class ApiClient {
     return this.handleResponse<T>(response);
   }
 
+  async getText(path: string, params?: Record<string, unknown>): Promise<string> {
+    const url = this.buildUrl(path);
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          url.searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await this.fetchWithRetry(url.toString(), {
+      method: "GET",
+      headers: this.getBaseHeaders(),
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      await this.handleResponse<never>(response);
+    }
+
+    return response.text();
+  }
+
   async post<T>(path: string, body?: unknown): Promise<T> {
     const response = await this.fetchWithRetry(
       `${this.config.baseURL}${path}`,
@@ -119,6 +153,20 @@ class ApiClient {
         method: "POST",
         headers: this.getHeaders(),
         body: body ? JSON.stringify(body) : undefined,
+        credentials: "include",
+      },
+    );
+
+    return this.handleResponse<T>(response);
+  }
+
+  async postForm<T>(path: string, formData: FormData): Promise<T> {
+    const response = await this.fetchWithRetry(
+      `${this.config.baseURL}${path}`,
+      {
+        method: "POST",
+        headers: this.getBaseHeaders(),
+        body: formData,
         credentials: "include",
       },
     );

@@ -8,6 +8,7 @@ import type {
   EmployeeDto,
   CreateEmployeeDto,
   UpdateEmployeeDto,
+  EmployeeImportSummaryDto,
   EwaOverridesDto,
   EffectivePolicyResponse,
   CurrentPeriodResponse,
@@ -194,5 +195,56 @@ export function useEmployeeActions() {
     }
   };
 
-  return { create, update, remove, setOverrides, loading, error };
+  const importCsv = async (file: File): Promise<EmployeeImportSummaryDto | null> => {
+    try {
+      setLoading(true);
+      setError(null);
+      return await employeesService.importCsv(file);
+    } catch (err) {
+      setError(err as ApiError);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const importJson = async (
+    employees: unknown[],
+  ): Promise<EmployeeImportSummaryDto | null> => {
+    try {
+      setLoading(true);
+      setError(null);
+      return await employeesService.importJson(employees);
+    } catch (err) {
+      setError(err as ApiError);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getImportTemplate = async (): Promise<string | null> => {
+    try {
+      setLoading(true);
+      setError(null);
+      return await employeesService.getImportTemplate();
+    } catch (err) {
+      setError(err as ApiError);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    create,
+    update,
+    remove,
+    setOverrides,
+    importCsv,
+    importJson,
+    getImportTemplate,
+    loading,
+    error,
+  };
 }
