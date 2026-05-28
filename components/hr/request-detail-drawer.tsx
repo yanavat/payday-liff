@@ -2,7 +2,7 @@
 
 import { AlertTriangle, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { Employee, EWARequest } from "@/lib/api";
+import type { EmployeeDto, EWARequestDto } from "@/lib/api";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -14,9 +14,9 @@ import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 
 interface RequestDetailDrawerProps {
-  request: EWARequest | null;
-  employee?: Employee;
-  history: EWARequest[];
+  request: EWARequestDto | null;
+  employee?: EmployeeDto;
+  history: EWARequestDto[];
   open: boolean;
   confirmAction: "approve" | "reject" | null;
   actionLoading?: boolean;
@@ -332,7 +332,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function TimelineIcon({ status }: { status: EWARequest["status"] }) {
+function TimelineIcon({ status }: { status: EWARequestDto["status"] }) {
   const Icon =
     status === "rejected"
       ? XCircle
