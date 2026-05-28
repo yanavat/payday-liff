@@ -112,7 +112,7 @@ const server = http.createServer((requestMessage, response) => {
   }
 
   if (url.pathname === "/auth/hr/login") {
-    session = { hrUser: { id: "hr-1", name: "HR Manager", email: "hr@paydayplus.co", role: "hr_manager" } };
+    session = { id: "hr-1", kind: "hr", hrUserId: "hr-1", name: "HR Manager", email: "hr@paydayplus.co", role: "hr_manager", companyId: "COMP-001" };
     send(response, 200, { success: true }, { "Set-Cookie": "payday_session=hr; Path=/; SameSite=Lax" });
     return;
   }
