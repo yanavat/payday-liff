@@ -49,23 +49,18 @@ export function RequestDetailDrawer({
     return null;
   }
 
-  const earnedWage =
-    employee.payCycle === "monthly"
-      ? Math.round((employee.baseSalary / 31) * 14)
-      : Math.round((employee.baseSalary / 5) * 3);
-  const previousAdvance = history
-    .filter((item) => item.id !== request.id && item.status !== "rejected")
-    .reduce((sum, item) => sum + item.amount, 0);
-  const maxAllowed = Math.max(
-    Math.round(earnedWage * 0.5) - previousAdvance,
-    0,
-  );
-  const remainingAfterRequest = Math.max(
-    earnedWage - previousAdvance - request.amount,
-    0,
-  );
-  const progressValue = employee.payCycle === "monthly" ? 14 : 3;
-  const progressMax = employee.payCycle === "monthly" ? 31 : 5;
+  const earnedToDate = request.earnedToDate;
+  const maxWithdrawable = request.maxWithdrawable;
+  const netAmount = request.netAmount;
+  const progressValue = request.workedDays;
+  const progressMax = employee.standardWorkDays;
+  const employeeName = employee.name;
+  const employeeInitials = employee.avatarInitials ?? employee.name.slice(0, 2);
+  const referenceNumber = request.referenceNumber ?? request.id;
+  const bankAccount = employee.bankAccountMasked ?? "-";
+  const reason = request.reason
+    ? t(`requestWizard.reasons.${request.reason}` as keyof typeof t)
+    : "-";
   const isFinal =
     request.status === "approved" ||
     request.status === "rejected" ||
@@ -136,7 +131,7 @@ export function RequestDetailDrawer({
         <div className="space-y-5">
           <div>
             <p className="text-caption text-text-muted">
-              {request.referenceNumber}
+              {referenceNumber}
             </p>
             {request.isOnBehalf && (
               <div className="mt-3 flex gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800">
@@ -144,16 +139,16 @@ export function RequestDetailDrawer({
                   className="mt-0.5 h-4 w-4 shrink-0"
                   aria-hidden
                 />
-                <span>HR: {request.onBehalfBy ?? "-"}</span>
+                <span>HR: {request.actorName ?? "-"}</span>
               </div>
             )}
           </div>
 
           <section className="flex items-start gap-3 rounded-lg border border-border bg-bg-canvas p-4">
-            <Avatar initials={employee.nameTh.slice(0, 2)} size="lg" />
+            <Avatar initials={employeeInitials} size="lg" />
             <div className="min-w-0 flex-1">
               <h3 className="text-base font-semibold text-text-primary">
-                {employee.nameTh}
+                {employeeName}
               </h3>
               <p className="text-caption text-text-muted">{employee.id}</p>
               <p className="mt-1 text-caption text-text-muted">
@@ -185,26 +180,26 @@ export function RequestDetailDrawer({
           <section className="rounded-lg border border-border bg-bg-secondary p-4">
             <SummaryRow
               label={t("requestDetail.earnedWage")}
-              value={formatTHB(earnedWage)}
-            />
-            <SummaryRow
-              label={t("requestDetail.previousAdvance")}
-              value={formatTHB(previousAdvance)}
+              value={formatTHB(earnedToDate)}
             />
             <SummaryRow
               label={t("requestDetail.maxAllowed")}
-              value={formatTHB(maxAllowed)}
+              value={formatTHB(maxWithdrawable)}
             />
             <div className="my-3 border-t border-border" />
             <SummaryRow
               label={t("requestDetail.requestedAmount")}
-              value={formatTHB(request.amount)}
+              value={formatTHB(request.requestedAmount)}
               strong
+            />
+            <SummaryRow
+              label={t("requestDetail.transferFee")}
+              value={formatTHB(request.transferFee)}
             />
             <div className="my-3 border-t border-border" />
             <SummaryRow
-              label={t("requestDetail.remainingBalance")}
-              value={formatTHB(remainingAfterRequest)}
+              label={t("requestDetail.netAmount")}
+              value={formatTHB(netAmount)}
             />
           </section>
 
@@ -218,17 +213,20 @@ export function RequestDetailDrawer({
             />
             <InfoRow
               label={t("requests.reason")}
-              value={t(
-                `requestWizard.reasons.${request.reason}` as keyof typeof t,
-              )}
+              value={reason}
             />
             <InfoRow
               label={t("profile.bankAccount")}
-              value={employee.bankAccountMasked}
+              value={bankAccount}
             />
-            {(request.employeeNote || request.hrNote) && (
+            {request.employeeNote && (
               <div className="mt-3 rounded-md bg-bg-secondary p-3 text-sm leading-6 text-text-secondary">
-                {request.employeeNote ?? request.hrNote}
+                {request.employeeNote}
+              </div>
+            )}
+            {request.hrNote && (
+              <div className="mt-3 rounded-md bg-bg-secondary p-3 text-sm leading-6 text-text-secondary">
+                {request.hrNote}
               </div>
             )}
           </section>
@@ -247,7 +245,7 @@ export function RequestDetailDrawer({
                         {formatBE(item.requestedAt, "D MMM BBBB")}
                       </span>
                       <span className="font-number text-sm font-semibold">
-                        {formatTHB(item.amount)}
+                        {formatTHB(item.requestedAmount)}
                       </span>
                     </div>
                     <div className="mt-1 flex items-center gap-2">
@@ -282,7 +280,7 @@ export function RequestDetailDrawer({
         onClose={onCancelConfirm}
         onConfirm={onConfirmApprove}
         title={t("requestDetail.confirmApprove")}
-        message={`${formatTHB(request.amount)} · ${employee.nameTh}`}
+        message={`${formatTHB(request.requestedAmount)} · ${employeeName}`}
         confirmLabel={t("common.approve")}
       />
       <ConfirmModal

@@ -110,6 +110,8 @@
     "previousAdvance": "เบิกล่วงหน้าก่อนหน้า",
     "maxAllowed": "สูงสุดที่เบิกได้",
     "requestedAmount": "จำนวนที่ขอ",
+    "transferFee": "ค่าธรรมเนียมโอน",
+    "netAmount": "ยอดโอนสุทธิ",
     "remainingBalance": "คงเหลือหลังเบิก",
     "requestHistory": "ประวัติการเบิก",
     "employeeNote": "หมายเหตุพนักงาน",

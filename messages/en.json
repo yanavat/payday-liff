@@ -110,6 +110,8 @@
     "previousAdvance": "Previous Advance",
     "maxAllowed": "Max Allowed",
     "requestedAmount": "Requested Amount",
+    "transferFee": "Transfer Fee",
+    "netAmount": "Net Amount",
     "remainingBalance": "Remaining Balance",
     "requestHistory": "Request History",
     "employeeNote": "Employee Note",
