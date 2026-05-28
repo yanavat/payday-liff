@@ -71,7 +71,7 @@ function RequestListContent() {
     status: status === "all" ? undefined : status,
     limit: 200,
   });
-  const { data: employeesData } = useEmployees({ limit: 1000 });
+  const { data: employeesData } = useEmployees({ limit: 200 });
   const { data: departmentsData } = useDepartments();
   const {
     approve,

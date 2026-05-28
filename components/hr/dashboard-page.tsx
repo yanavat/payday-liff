@@ -39,7 +39,7 @@ function DashboardContent() {
     error: requestsError,
   } = useEWARequests({ limit: 200 });
   const { data: employeesData, loading: employeesLoading } = useEmployees({
-    limit: 1000,
+    limit: 200,
   });
   const { data: recentData, loading: recentLoading } = useEWARequests({
     limit: 5,

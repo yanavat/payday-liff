@@ -27,7 +27,7 @@ function ReportsContent() {
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
 
   const { data: requestsData, loading, error } = useEWARequests({ limit: 500 });
-  const { data: employeesData } = useEmployees({ limit: 1000 });
+  const { data: employeesData } = useEmployees({ limit: 200 });
 
   const allRequests = requestsData?.data ?? [];
   const allEmployees = employeesData?.data ?? [];
