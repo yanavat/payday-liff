@@ -16,6 +16,7 @@ import { formatTHB } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { useHRRole } from "./hr-auth-gate";
 import { EmployeeImportDrawer } from "./employee-import-drawer";
+import { EmployeeDetailDrawer } from "./employee-detail-drawer";
 
 function EmployeesContent() {
   const t = useTranslations();
@@ -27,6 +28,8 @@ function EmployeesContent() {
   const [payCycle, setPayCycle] = useState("all");
   const [status, setStatus] = useState("all");
   const [importOpen, setImportOpen] = useState(false);
+  const [detailEmployee, setDetailEmployee] = useState<EmployeeDto | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleQueryChange = useCallback((value: string) => {
@@ -182,18 +185,27 @@ function EmployeesContent() {
                     <td className="px-4 text-right font-number text-sm font-semibold">{formatTHB(max)}</td>
                     <td className="px-4"><EWAStatusBadge status={eligibility} /></td>
                     <td className="px-4 text-right">
-                      {eligibility === "eligible" ? (
-                        <Link
-                          href={`/hr/employees/${employee.id}/request`}
-                          className="inline-flex h-8 items-center rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary"
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => { setDetailEmployee(employee); setDetailOpen(true); }}
+                          className="h-8 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary"
                         >
-                          {tc("requestOnBehalf")}
-                        </Link>
-                      ) : (
-                        <button disabled className="h-8 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-muted opacity-50">
-                          {tc("requestOnBehalf")}
+                          View
                         </button>
-                      )}
+                        {eligibility === "eligible" ? (
+                          <Link
+                            href={`/hr/employees/${employee.id}/request`}
+                            className="inline-flex h-8 items-center rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary"
+                          >
+                            {tc("requestOnBehalf")}
+                          </Link>
+                        ) : (
+                          <button disabled className="h-8 rounded-md border border-border bg-bg-canvas px-3 text-sm font-medium text-text-muted opacity-50">
+                            {tc("requestOnBehalf")}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -213,6 +225,13 @@ function EmployeesContent() {
         onImported={() => {
           void refetch();
         }}
+      />
+
+      <EmployeeDetailDrawer
+        employee={detailEmployee}
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        onUpdated={() => { void refetch(); }}
       />
     </div>
   );
