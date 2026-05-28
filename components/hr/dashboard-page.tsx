@@ -89,7 +89,7 @@ function DashboardContent() {
     () =>
       allRequests
         .filter((r) => r.status === "disbursed" || r.status === "approved")
-        .reduce((sum, r) => sum + r.amount, 0),
+        .reduce((sum, r) => sum + r.requestedAmount, 0),
     [allRequests],
   );
 
