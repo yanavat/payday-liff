@@ -45,6 +45,7 @@ next-env.d.ts
 .claude/settings.local.json
 .env.example
 PayDay+_Presentation_Script.md
+docs/tasks-*.html
 
 # claude
 CLAUDE.md
