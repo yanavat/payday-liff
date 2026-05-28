@@ -1,4 +1,4 @@
-import type { HRUser, Employee } from "@/types";
+import type { HRUser, Employee } from "@/lib/api";
 
 // Mock HR user session
 export const companyName = "Factory Co., Ltd.";

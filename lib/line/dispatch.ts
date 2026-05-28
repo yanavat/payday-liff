@@ -3,7 +3,7 @@
  * Keeps the channel access token server-side while allowing the UI to trigger sends.
  */
 
-import type { EWARequest, Employee } from "@/types";
+import type { EWARequest, Employee } from "@/lib/api";
 import type { TypedNotificationCommand } from "./notifications";
 
 export async function sendNotification(

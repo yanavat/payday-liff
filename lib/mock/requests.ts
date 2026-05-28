@@ -1,4 +1,4 @@
-import type { EWARequest } from '@/types'
+import type { EWARequest } from '@/lib/api'
 import { DEFAULT_TRANSFER_FEE_THB, getNetTransferAmount } from '@/lib/utils/fees'
 
 function withTransferFee(request: Omit<EWARequest, 'transferFee' | 'netTransferAmount'>): EWARequest {

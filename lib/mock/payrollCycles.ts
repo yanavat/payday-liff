@@ -1,4 +1,4 @@
-import type { PayCycleInfo } from '@/types'
+import type { PayCycleInfo } from '@/lib/api'
 
 // Current pay cycle data (relative to May 2025)
 export const monthlyPayCycle: PayCycleInfo = {

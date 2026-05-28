@@ -1,4 +1,4 @@
-import type { Employee, EWARequest } from "@/types";
+import type { Employee, EWARequest } from "@/lib/api";
 import { formatTHB } from "@/lib/utils/format";
 
 type ReportPdfInput = {

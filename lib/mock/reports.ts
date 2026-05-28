@@ -2,7 +2,7 @@ import type {
   DailyDisbursement,
   DepartmentReport,
   ReconciliationItem,
-} from "@/types";
+} from "@/lib/api";
 
 // deterministic pseudo-random to avoid SSR hydration mismatches
 const seededRand = (seed: number, max: number, min = 0) =>

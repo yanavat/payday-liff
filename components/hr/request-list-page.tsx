@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { CalendarDays, Download, Eye, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { PayCycle } from "@/types";
+import type { PayCycle } from "@/lib/api";
 import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";

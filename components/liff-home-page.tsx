@@ -15,7 +15,7 @@ import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id";
 import { formatTHB } from "@/lib/utils/format";
 import { useEmployeeCurrentPeriod } from "@/lib/api/hooks/use-employees";
 import { useEWARequests } from "@/lib/api/hooks/use-ewa-requests";
-import type { EWAStatus } from "@/types";
+import type { EWAStatus } from "@/lib/api";
 
 const dateLocales: Record<string, string> = {
   th: "th-TH",

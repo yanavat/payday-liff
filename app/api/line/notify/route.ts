@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
           type,
           lineUserId,
           locale,
-          request: request as unknown as import('@/types').EWARequest,
+          request: request as unknown as import('@/lib/api').EWARequest,
           employee,
         })
         return NextResponse.json({ success, sent: success, type, lineUserId: lineUserId.slice(0, 8) + '...' })
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
           type: 'payday_reminder',
           lineUserId,
           locale,
-          payCycleInfo: payCycleInfo as unknown as import('@/types').PayCycleInfo,
+          payCycleInfo: payCycleInfo as unknown as import('@/lib/api').PayCycleInfo,
           employee,
         })
         return NextResponse.json({ success, sent: success, type })
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
           type: 'cutoff_warning',
           lineUserId,
           locale,
-          payCycleInfo: payCycleInfo as unknown as import('@/types').PayCycleInfo,
+          payCycleInfo: payCycleInfo as unknown as import('@/lib/api').PayCycleInfo,
           employee,
         })
         return NextResponse.json({ success, sent: success, type })

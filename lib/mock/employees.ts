@@ -1,4 +1,4 @@
-import type { Employee } from '@/types'
+import type { Employee } from '@/lib/api'
 
 export const employees: Employee[] = [
   {

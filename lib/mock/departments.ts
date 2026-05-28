@@ -1,4 +1,4 @@
-import type { Department } from '@/types'
+import type { Department } from '@/lib/api'
 
 export const departments: Department[] = [
   { id: 'DEPT-01', name: 'Production Line A', nameTh: 'ไลน์ผลิต A', headCount: 45 },

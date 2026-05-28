@@ -2,7 +2,7 @@
 
 import { AlertTriangle, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { Employee, EWARequest } from "@/types";
+import type { Employee, EWARequest } from "@/lib/api";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
 import { ProgressBar } from "@/components/ui/progress-bar";

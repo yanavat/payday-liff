@@ -5,7 +5,7 @@
  * All templates use the Bubble container type with a compact hero + body layout.
  */
 
-import type { EWARequest, Employee, PayCycleInfo } from '@/types'
+import type { EWARequest, Employee, PayCycleInfo } from '@/lib/api'
 import { formatTHB } from '@/lib/utils/format'
 
 // ── Helpers ─────────────────────────────────────────────────

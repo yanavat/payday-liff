@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Employee } from "@/types";
+import type { Employee } from "@/lib/api";
 
 import { getAuthEmployeeId } from "./get-auth-employee-id";
 

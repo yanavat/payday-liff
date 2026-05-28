@@ -7,7 +7,7 @@ import {
   cutoffWarningFlexMessage,
   monthlySummaryFlexMessage,
 } from './flex-messages'
-import type { EWARequest, Employee, PayCycleInfo } from '@/types'
+import type { EWARequest, Employee, PayCycleInfo } from '@/lib/api'
 
 const mockRequest: EWARequest = {
   id: 'EWA-2025-000001',

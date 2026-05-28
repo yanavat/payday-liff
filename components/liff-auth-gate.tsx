@@ -16,7 +16,7 @@ import { BrowserLoginScreen } from "@/components/browser-login-screen";
 import { LinkLineScreen } from "@/components/link-line-screen";
 import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id";
 import { loadLiffClient } from "@/lib/liff-client";
-import type { Employee, HRUser } from "@/types";
+import type { Employee, HRUser } from "@/lib/api";
 
 type AuthState = "loading" | "ready" | "login" | "activation" | "linking" | "error";
 

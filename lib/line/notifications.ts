@@ -3,7 +3,7 @@
  * Each command maps to a business event and builds the appropriate Flex Message.
  */
 
-import type { EWARequest, Employee, PayCycleInfo } from '@/types'
+import type { EWARequest, Employee, PayCycleInfo } from '@/lib/api'
 import { pushMessage } from './messaging-api'
 import {
   approvedFlexMessage,

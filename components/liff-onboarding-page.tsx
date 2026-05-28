@@ -13,7 +13,7 @@ import type {
   SendOtpResponse,
   VerifyEmployeeResponse,
   VerifyOtpResponse,
-} from "@/types";
+} from "@/lib/api";
 
 interface LiffOnboardingPageProps {
   lineProfile: {
