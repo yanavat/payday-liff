@@ -19,7 +19,6 @@ import { usePayrollCycles } from "@/lib/api/hooks";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import dayjs from "@/lib/dayjs";
 import { formatTHB, formatTHBCompact } from "@/lib/utils/format";
-import { EmployeeDto, EWARequestDto } from "@/lib/api";
 
 const statusSegments = [
   { status: "approved" as const, className: "bg-primary" },
@@ -338,12 +337,10 @@ function DashboardContent() {
       </div>
 
       <RequestDetailDrawer
-        request={activeRow?.request as unknown as EWARequestDto | null}
-        employee={activeRow?.employee as unknown as EmployeeDto}
+        request={activeRow?.request ?? null}
+        employee={activeRow?.employee}
         history={
-          allRequests.filter(
-            (r) => r.employeeId === activeRow?.request.employeeId,
-          ) as unknown as EWARequestDto[]
+          allRequests.filter((r) => r.employeeId === activeRow?.request.employeeId)
         }
         open={!!activeRequestId}
         confirmAction={confirmAction}
