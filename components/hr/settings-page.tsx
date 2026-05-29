@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, Copy, Eye, EyeOff, Loader2, Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -8,10 +8,36 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { Toggle } from "./settings-toggle";
 import { useToast } from "@/components/ui/toast";
-import { useSettings, useSettingsActions, useSettingsApiKey } from "@/lib/api/hooks";
+import {
+  useDepartments,
+  useHRUserActions,
+  useHRUsers,
+  useSettings,
+  useSettingsActions,
+  useSettingsApiKey,
+} from "@/lib/api/hooks";
 import { getApiErrorMessage } from "@/lib/api/errors";
+import type { HRUserDto } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { useHRRole } from "./hr-auth-gate";
+
+type BankExportFormat = "generic_csv" | "scb_anywhere";
+
+type HrUserFormState = {
+  id: string | null;
+  name: string;
+  email: string;
+  role: HRUserDto["role"];
+  department: string;
+};
+
+const emptyHrUserForm: HrUserFormState = {
+  id: null,
+  name: "",
+  email: "",
+  role: "viewer",
+  department: "",
+};
 
 const mainTabs = [
   { value: "general", labelKey: "general" },
@@ -34,10 +60,32 @@ function SettingsContent() {
   const [maxPercent, setMaxPercent] = useState(50);
   const [autoApproval, setAutoApproval] = useState(false);
   const [blackoutDates, setBlackoutDates] = useState<string[]>([]);
+  const [bankExportFormat, setBankExportFormat] =
+    useState<BankExportFormat>("generic_csv");
   const [dirty, setDirty] = useState(false);
+  const [hrUserForm, setHrUserForm] =
+    useState<HrUserFormState>(emptyHrUserForm);
+  const [hrUserFormOpen, setHrUserFormOpen] = useState(false);
 
   const { data: settings, loading: settingsLoading, error: settingsError } = useSettings();
-  const { updatePolicy, loading: saving, error: saveError } = useSettingsActions();
+  const { updateSettings, updatePolicy, loading: saving, error: saveError } = useSettingsActions();
+  const {
+    data: hrUsersData,
+    loading: hrUsersLoading,
+    error: hrUsersError,
+    refetch: refetchHrUsers,
+  } = useHRUsers({ limit: 200 });
+  const {
+    data: departmentsData,
+    loading: departmentsLoading,
+    error: departmentsError,
+  } = useDepartments({ limit: 200 });
+  const {
+    create: createHrUser,
+    update: updateHrUser,
+    loading: savingHrUser,
+    error: hrUserActionError,
+  } = useHRUserActions();
 
   // Sync state when settings load or policyTab changes
   useEffect(() => {
@@ -50,16 +98,25 @@ function SettingsContent() {
     }
   }, [settings, policyTab]);
 
+  useEffect(() => {
+    setBankExportFormat(settings?.bankExportFormat ?? "generic_csv");
+  }, [settings?.bankExportFormat]);
+
   function markDirty() {
     setDirty(true);
   }
 
   async function handleSave() {
-    const result = await updatePolicy(policyTab, {
-      maxPercent,
-      autoApproval,
-      blackoutDates,
-    });
+    const result =
+      activeTab === "policy"
+        ? await updatePolicy(policyTab, {
+            maxPercent,
+            autoApproval,
+            blackoutDates,
+          })
+        : await updateSettings({
+            bankExportFormat,
+          });
     if (result) {
       setDirty(false);
       toast({ variant: "success", message: t("saveSuccess") });
@@ -79,6 +136,55 @@ function SettingsContent() {
   }));
 
   const activePolicy = settings?.ewaPolicy?.[policyTab];
+  const hrUsers = useMemo(() => hrUsersData?.data ?? [], [hrUsersData]);
+  const departments = useMemo(
+    () => departmentsData?.data ?? [],
+    [departmentsData],
+  );
+  const departmentsById = useMemo(
+    () => new Map(departments.map((department) => [department.id, department])),
+    [departments],
+  );
+  const showHrUserForm = hrUserFormOpen;
+
+  function getDepartmentName(id: string | null | undefined, fallback?: string | null) {
+    if (!id) return "All departments";
+    const department = departmentsById.get(id);
+    return fallback ?? department?.nameTh ?? department?.name ?? id;
+  }
+
+  function startEditHrUser(user: HRUserDto) {
+    setHrUserForm({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      department: user.department ?? "",
+    });
+    setHrUserFormOpen(true);
+  }
+
+  async function handleSaveHrUser() {
+    const payload = {
+      name: hrUserForm.name.trim(),
+      email: hrUserForm.email.trim(),
+      role: hrUserForm.role,
+      department: hrUserForm.department || null,
+    };
+
+    const result = hrUserForm.id
+      ? await updateHrUser(hrUserForm.id, payload)
+      : await createHrUser(payload);
+
+    if (result) {
+      setHrUserForm(emptyHrUserForm);
+      setHrUserFormOpen(false);
+      await refetchHrUsers();
+      toast({ variant: "success", message: t("saveSuccess") });
+    } else if (hrUserActionError) {
+      toast({ variant: "error", message: getApiErrorMessage(hrUserActionError, tc) });
+    }
+  }
 
   if (settingsLoading) {
     return (
@@ -219,16 +325,151 @@ function SettingsContent() {
       {activeTab === "users" && (
         <SettingsPanel title="HR Users">
           <div className="mb-3 flex justify-end">
-            <button className="h-9 rounded-md bg-primary px-4 text-sm font-medium text-white">+ Add HR User</button>
+            <button
+              type="button"
+              onClick={() => {
+                setHrUserForm(emptyHrUserForm);
+                setHrUserFormOpen(true);
+              }}
+              className="h-9 rounded-md bg-primary px-4 text-sm font-medium text-white hover:bg-primary-dark"
+            >
+              + Add HR User
+            </button>
           </div>
+          {showHrUserForm && (
+            <div className="mb-4 grid grid-cols-1 gap-3 rounded-md border border-border bg-bg-secondary p-4 sm:grid-cols-2">
+              <TextField
+                label="Name"
+                value={hrUserForm.name}
+                onChange={(value) =>
+                  setHrUserForm((current) => ({ ...current, name: value }))
+                }
+              />
+              <TextField
+                label="Email"
+                type="email"
+                value={hrUserForm.email}
+                onChange={(value) =>
+                  setHrUserForm((current) => ({ ...current, email: value }))
+                }
+              />
+              <label className="block">
+                <span className="text-label text-text-muted">Role</span>
+                <select
+                  value={hrUserForm.role}
+                  onChange={(event) =>
+                    setHrUserForm((current) => ({
+                      ...current,
+                      role: event.target.value as HRUserDto["role"],
+                    }))
+                  }
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg-canvas px-3 text-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="hr_manager">HR Manager</option>
+                  <option value="accountant">Accountant</option>
+                  <option value="viewer">Viewer</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-label text-text-muted">Department</span>
+                <select
+                  value={hrUserForm.department}
+                  onChange={(event) =>
+                    setHrUserForm((current) => ({
+                      ...current,
+                      department: event.target.value,
+                    }))
+                  }
+                  disabled={departmentsLoading}
+                  className="mt-2 h-10 w-full rounded-md border border-border bg-bg-canvas px-3 text-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
+                >
+                  <option value="">All departments</option>
+                  {departments.map((department) => (
+                    <option key={department.id} value={department.id}>
+                      {department.nameTh ?? department.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="flex gap-2 sm:col-span-2">
+                <button
+                  type="button"
+                  onClick={handleSaveHrUser}
+                  disabled={
+                    savingHrUser ||
+                    !hrUserForm.name.trim() ||
+                    !hrUserForm.email.trim()
+                  }
+                  className="h-9 rounded-md bg-primary px-4 text-sm font-medium text-white hover:bg-primary-dark disabled:opacity-50"
+                >
+                  {savingHrUser ? tc("loading") : tc("save")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHrUserForm(emptyHrUserForm);
+                    setHrUserFormOpen(false);
+                  }}
+                  className="h-9 rounded-md border border-border bg-bg-canvas px-4 text-sm font-medium text-text-primary hover:bg-bg-secondary"
+                >
+                  {tc("cancel")}
+                </button>
+              </div>
+            </div>
+          )}
+          {(hrUsersError || departmentsError) && (
+            <p className="mb-3 text-sm text-red-600">
+              {getApiErrorMessage(hrUsersError ?? departmentsError!, tc)}
+            </p>
+          )}
           <table className="w-full border-collapse">
+            <thead>
+              <tr className="h-10 border-b border-border bg-bg-secondary text-left text-xs font-semibold text-text-muted">
+                <th className="px-4">Name</th>
+                <th className="px-4">Email</th>
+                <th className="px-4">Role</th>
+                <th className="px-4">Scope</th>
+                <th className="px-4 text-right">Actions</th>
+              </tr>
+            </thead>
             <tbody>
-              {[["HR Admin", "hr@factory.co.th", "HR Manager"], ["Finance", "finance@factory.co.th", "Accountant"]].map((row) => (
-                <tr key={row[1]} className="h-[52px] border-b border-border-light last:border-0">
-                  <td className="text-sm font-medium">{row[0]}</td>
-                  <td className="text-sm text-text-muted">{row[1]}</td>
-                  <td className="text-sm">{row[2]}</td>
-                  <td className="text-right"><button className="text-sm font-medium text-primary">Edit role</button></td>
+              {hrUsersLoading ? (
+                <tr className="h-[52px] border-b border-border-light">
+                  <td colSpan={5} className="px-4 text-sm text-text-muted">
+                    {tc("loading")}
+                  </td>
+                </tr>
+              ) : hrUsers.length === 0 ? (
+                <tr className="h-[52px] border-b border-border-light">
+                  <td colSpan={5} className="px-4 text-sm text-text-muted">
+                    No HR users
+                  </td>
+                </tr>
+              ) : hrUsers.map((user) => (
+                <tr key={user.id} className="h-[52px] border-b border-border-light last:border-0">
+                  <td className="px-4 text-sm font-medium">{user.name}</td>
+                  <td className="px-4 text-sm text-text-muted">{user.email}</td>
+                  <td className="px-4 text-sm">{formatRole(user.role)}</td>
+                  <td className="px-4">
+                    {user.department ? (
+                      <span className="inline-flex rounded-full bg-bg-secondary px-2.5 py-1 text-badge font-medium text-text-secondary">
+                        {getDepartmentName(user.department, user.departmentName)}
+                      </span>
+                    ) : (
+                      <span className="inline-flex rounded-full border border-border px-2.5 py-1 text-badge font-medium text-text-muted">
+                        All departments
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 text-right">
+                    <button
+                      type="button"
+                      onClick={() => startEditHrUser(user)}
+                      className="text-sm font-medium text-primary hover:text-primary-dark"
+                    >
+                      Edit role
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -241,6 +482,28 @@ function SettingsContent() {
           <SettingsPanel title={t("general")}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <NumberField label="Company" value={settings?.companyName ?? ""} />
+            </div>
+          </SettingsPanel>
+          <SettingsPanel title="Bank Export Format">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <RadioOption
+                checked={bankExportFormat === "generic_csv"}
+                label="Generic CSV"
+                description="Standard export with the current field layout."
+                onChange={() => {
+                  setBankExportFormat("generic_csv");
+                  markDirty();
+                }}
+              />
+              <RadioOption
+                checked={bankExportFormat === "scb_anywhere"}
+                label="SCB Anywhere"
+                description="CSV format for SCB Anywhere bulk upload."
+                onChange={() => {
+                  setBankExportFormat("scb_anywhere");
+                  markDirty();
+                }}
+              />
             </div>
           </SettingsPanel>
           <ApiKeySection />
@@ -309,6 +572,30 @@ function NumberField({ label, value, prefix, suffix }: { label: string; value: s
   );
 }
 
+function TextField({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: "text" | "email";
+}) {
+  return (
+    <label className="block">
+      <span className="text-label text-text-muted">{label}</span>
+      <input
+        type={type}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="mt-2 h-10 w-full rounded-md border border-border bg-bg-canvas px-3 text-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+      />
+    </label>
+  );
+}
+
 function SelectField({ label, options, value }: { label: string; options: string[]; value: string }) {
   return (
     <label className="block">
@@ -326,6 +613,48 @@ function RadioPill({ checked = false, label }: { checked?: boolean; label: strin
       {label}
     </span>
   );
+}
+
+function RadioOption({
+  checked,
+  label,
+  description,
+  onChange,
+}: {
+  checked: boolean;
+  label: string;
+  description: string;
+  onChange: () => void;
+}) {
+  return (
+    <label
+      className={cn(
+        "flex cursor-pointer gap-3 rounded-md border p-4",
+        checked
+          ? "border-primary bg-primary-subtle"
+          : "border-border bg-bg-canvas hover:bg-bg-secondary",
+      )}
+    >
+      <input
+        type="radio"
+        checked={checked}
+        onChange={onChange}
+        className="mt-1 h-4 w-4 accent-primary"
+      />
+      <span>
+        <span className="block text-sm font-medium text-text-primary">{label}</span>
+        <span className="mt-1 block text-xs leading-5 text-text-secondary">
+          {description}
+        </span>
+      </span>
+    </label>
+  );
+}
+
+function formatRole(role: HRUserDto["role"]) {
+  if (role === "hr_manager") return "HR Manager";
+  if (role === "accountant") return "Accountant";
+  return "Viewer";
 }
 
 function ApiKeySection() {

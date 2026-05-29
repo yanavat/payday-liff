@@ -10,7 +10,12 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { TableRowSkeleton } from "@/components/ui/table-row-skeleton";
 import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { useToast } from "@/components/ui/toast";
-import { useEmployees, useEWARequestActions, useEWARequests } from "@/lib/api/hooks";
+import {
+  useEmployees,
+  useEWARequestActions,
+  useEWARequests,
+  useSettings,
+} from "@/lib/api/hooks";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import type { EmployeeDto, EWARequestDto } from "@/lib/api/types";
 import dayjs from "@/lib/dayjs";
@@ -59,6 +64,7 @@ function TransferExportContent() {
     refetch: refetchRequests,
   } = useEWARequests({ limit: 200 });
   const { data: employeesData, loading: employeesLoading } = useEmployees({ limit: 200 });
+  const { data: settings, loading: settingsLoading } = useSettings();
   const {
     exportBatch,
     markTransferFailed,
@@ -102,6 +108,10 @@ function TransferExportContent() {
     (total, { request }) => total + request.netAmount,
     0,
   );
+  const exportFormatLabel =
+    settings?.bankExportFormat === "scb_anywhere"
+      ? "SCB Anywhere CSV"
+      : "Generic CSV";
   const allSelectableSelected =
     selectableRows.length > 0 && selectedIds.length === selectableRows.length;
 
@@ -161,7 +171,7 @@ function TransferExportContent() {
     }
   }
 
-  if (requestsLoading || employeesLoading) {
+  if (requestsLoading || employeesLoading || settingsLoading) {
     return (
       <div className="space-y-4">
         <div className="h-8 w-56 animate-pulse rounded bg-bg-secondary" />
@@ -333,7 +343,7 @@ function TransferExportContent() {
         message={t("confirmExportMessage", {
           count: selectedIds.length,
           total: formatTHB(selectedTotal),
-        })}
+        }) + ` Export as: ${exportFormatLabel}`}
         confirmLabel={t("exportCsv")}
         isLoading={actionLoading}
       />

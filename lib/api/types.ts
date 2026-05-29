@@ -297,6 +297,8 @@ export interface HRUserDto {
   name: string
   email: string
   role: "hr_manager" | "accountant" | "viewer"
+  department: string | null
+  departmentName?: string | null
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -306,12 +308,14 @@ export interface CreateHRUserDto {
   name: string
   email: string
   role: "hr_manager" | "accountant" | "viewer"
+  department?: string | null
 }
 
 export interface UpdateHRUserDto {
   name?: string
   email?: string
   role?: "hr_manager" | "accountant" | "viewer"
+  department?: string | null
   isActive?: boolean
 }
 
@@ -364,6 +368,7 @@ export interface AppSettingsDto {
   id: string
   companyId: string
   companyName?: string
+  bankExportFormat?: "generic_csv" | "scb_anywhere"
   ewaPolicy: {
     monthly: EwaPolicyDto
     weekly: EwaPolicyDto
@@ -375,6 +380,7 @@ export interface AppSettingsDto {
 
 export interface UpdateSettingsDto {
   companyName?: string
+  bankExportFormat?: "generic_csv" | "scb_anywhere"
 }
 
 export interface EwaPolicyDto {

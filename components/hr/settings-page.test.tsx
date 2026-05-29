@@ -17,6 +17,7 @@ vi.mock("@/lib/api/hooks", () => ({
   useSettings: vi.fn(() => ({
     data: {
       companyName: "Factory Co.",
+      bankExportFormat: "generic_csv",
       ewaPolicy: {
         monthly: {
           maxPercent: 50,
@@ -44,8 +45,57 @@ vi.mock("@/lib/api/hooks", () => ({
     loading: false,
     error: null,
   })),
+  useDepartments: vi.fn(() => ({
+    data: {
+      data: [
+        {
+          id: "dept-prod",
+          name: "Production",
+          nameTh: "Production",
+          headCount: 10,
+          createdAt: "2026-05-01T00:00:00.000Z",
+          updatedAt: "2026-05-01T00:00:00.000Z",
+        },
+      ],
+    },
+    loading: false,
+    error: null,
+  })),
+  useHRUsers: vi.fn(() => ({
+    data: {
+      data: [
+        {
+          id: "HR-001",
+          name: "HR Admin",
+          email: "hr@factory.co.th",
+          role: "hr_manager",
+          department: null,
+          departmentName: null,
+          isActive: true,
+          createdAt: "2026-05-01T00:00:00.000Z",
+          updatedAt: "2026-05-01T00:00:00.000Z",
+        },
+      ],
+    },
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
   useSettingsActions: vi.fn(() => ({
+    updateSettings: vi.fn(),
     updatePolicy: vi.fn(),
+    loading: false,
+    error: null,
+  })),
+  useHRUserActions: vi.fn(() => ({
+    create: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    loading: false,
+    error: null,
+  })),
+  useSettingsApiKey: vi.fn(() => ({
+    data: null,
     loading: false,
     error: null,
   })),
