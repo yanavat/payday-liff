@@ -1,0 +1,4 @@
+name,employeeCode,department,startDate,payCycle,employmentType
+Watchara Somchai,EMP007,engineering,2024-02-01,monthly,full_time
+Prathom Kaweeka,EMP008,,2024-03-10,monthly,full_time
+Aris Thongchai,EMP009,production,2023-11-15,monthly,full_time

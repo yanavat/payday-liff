@@ -51,7 +51,11 @@ export function ConfirmModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex animate-backdrop-fade-in items-center justify-center bg-black/40 px-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex animate-backdrop-fade-in items-center justify-center bg-black/40 px-4"
+    >
       <div className="w-full max-w-[400px] animate-scale-in rounded-lg bg-bg-canvas p-6 shadow-modal">
         <h2 className="text-base font-semibold text-text-primary">{title}</h2>
         <p className="mt-2 text-sm leading-7 text-text-secondary">{message}</p>

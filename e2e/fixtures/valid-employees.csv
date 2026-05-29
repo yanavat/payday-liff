@@ -1,0 +1,4 @@
+name,employeeCode,department,startDate,payCycle,employmentType
+Somchai Prasert,EMP004,production,2024-01-15,monthly,full_time
+Supranee Srichote,EMP005,production,2023-09-01,monthly,full_time
+Chatchai Muangsamart,EMP006,qc,2022-06-20,monthly,full_time

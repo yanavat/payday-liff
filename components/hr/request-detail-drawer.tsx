@@ -98,7 +98,9 @@ export function RequestDetailDrawer({
                   >
                     {actionLoading ? (
                       <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-red-700 border-t-transparent" />
-                    ) : t("common.reject")}
+                    ) : (
+                      t("common.reject")
+                    )}
                   </button>
                   <button
                     type="button"
@@ -108,7 +110,9 @@ export function RequestDetailDrawer({
                   >
                     {actionLoading ? (
                       <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    ) : t("common.approve")}
+                    ) : (
+                      t("common.approve")
+                    )}
                   </button>
                 </div>
               )}
@@ -121,7 +125,9 @@ export function RequestDetailDrawer({
                 >
                   {actionLoading ? (
                     <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  ) : "Disburse"}
+                  ) : (
+                    "Disburse"
+                  )}
                 </button>
               )}
               <button
@@ -135,11 +141,9 @@ export function RequestDetailDrawer({
           )
         }
       >
-        <div className="space-y-5">
+        <div data-testid="request-drawer" className="space-y-5">
           <div>
-            <p className="text-caption text-text-muted">
-              {referenceNumber}
-            </p>
+            <p className="text-caption text-text-muted">{referenceNumber}</p>
             {request.isOnBehalf && (
               <div className="mt-3 flex gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-800">
                 <AlertTriangle
@@ -218,14 +222,8 @@ export function RequestDetailDrawer({
               label={t("requests.requestDate")}
               value={`${formatBE(request.requestedAt, "DD/MM/BBBB")} · ${dayjs(request.requestedAt).format("HH:mm")}`}
             />
-            <InfoRow
-              label={t("requests.reason")}
-              value={reason}
-            />
-            <InfoRow
-              label={t("profile.bankAccount")}
-              value={bankAccount}
-            />
+            <InfoRow label={t("requests.reason")} value={reason} />
+            <InfoRow label={t("profile.bankAccount")} value={bankAccount} />
             {request.employeeNote && (
               <div className="mt-3 rounded-md bg-bg-secondary p-3 text-sm leading-6 text-text-secondary">
                 {request.employeeNote}
