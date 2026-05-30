@@ -6,6 +6,7 @@ import {
   ChevronDown,
   CreditCard,
   Link2Off,
+  LogOut,
   MessageCircle,
   WalletCards,
   X,
@@ -254,6 +255,15 @@ export function LiffProfilePage() {
           </label>
           <LocaleSwitcher variant="select" />
         </section>
+
+        <button
+          type="button"
+          onClick={() => void logout().catch(() => undefined)}
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-md text-[16px] font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200"
+        >
+          <LogOut className="h-5 w-5" aria-hidden />
+          {t("profile.logout")}
+        </button>
 
         <button
           type="button"
