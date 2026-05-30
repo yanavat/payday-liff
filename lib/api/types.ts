@@ -365,14 +365,12 @@ export interface UpdatePayrollCycleDto {
 // ── Settings ─────────────────────────────────────────────────
 
 export interface AppSettingsDto {
-  id: string
   companyId: string
   companyName?: string
-  bankExportFormat?: "generic_csv" | "scb_anywhere"
-  ewaPolicy: {
-    monthly: EwaPolicyDto
-    weekly: EwaPolicyDto
-  }
+  companyLogoUrl?: string | null
+  bankExportFormat?: "generic" | "scb_anywhere"
+  ewaMonthlyPolicy: EwaPolicyDto
+  ewaWeeklyPolicy: EwaPolicyDto
   notificationSettings: NotificationSettingsDto
   createdAt: string
   updatedAt: string
@@ -380,18 +378,20 @@ export interface AppSettingsDto {
 
 export interface UpdateSettingsDto {
   companyName?: string
-  bankExportFormat?: "generic_csv" | "scb_anywhere"
+  companyLogoUrl?: string | null
+  bankExportFormat?: "generic" | "scb_anywhere"
 }
 
 export interface EwaPolicyDto {
   maxPercent: number
   maxRequestsPerPeriod: number
   minAmount: number
-  autoApproval: boolean
+  autoApprovalEnabled: boolean
   autoApprovalThreshold: number
   approvalChain: "single" | "two_step"
-  weeklyPayday?: "mon" | "tue" | "wed" | "thu" | "fri"
-  ewaCutoffDays: number
+  weeklyPayDayOfWeek?: number
+  weeklyCutoffDayOfWeek?: number
+  weeklyCutoffHour?: number
   blackoutDates: string[]
 }
 
@@ -399,11 +399,12 @@ export interface PartialEwaPolicyDto {
   maxPercent?: number
   maxRequestsPerPeriod?: number
   minAmount?: number
-  autoApproval?: boolean
+  autoApprovalEnabled?: boolean
   autoApprovalThreshold?: number
   approvalChain?: "single" | "two_step"
-  weeklyPayday?: "mon" | "tue" | "wed" | "thu" | "fri"
-  ewaCutoffDays?: number
+  weeklyPayDayOfWeek?: number
+  weeklyCutoffDayOfWeek?: number
+  weeklyCutoffHour?: number
   blackoutDates?: string[]
 }
 

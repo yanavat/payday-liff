@@ -183,15 +183,16 @@ describe("ReportsPageContent", () => {
     expect(screen.getByText("Total")).toBeInTheDocument();
   });
 
-  it("renders transfer status section with retry buttons for failed items", () => {
+  it("renders transfer status section without retry buttons (rejected items excluded)", () => {
     renderWithIntl(<ReportsPageContent />, { messages });
 
     expect(
       screen.getByRole("heading", { name: "Transfer Status" }),
     ).toBeInTheDocument();
+    // Retry buttons must not appear — rejected requests are not transfer failures
     expect(
-      screen.getAllByRole("button", { name: "Retry Failed" }).length,
-    ).toBeGreaterThan(0);
+      screen.queryByRole("button", { name: "Retry Failed" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows toast on CSV export", () => {
@@ -222,18 +223,14 @@ describe("ReportsPageContent", () => {
     });
   });
 
-  it("retries failed transfer and shows info toast", () => {
+  it("transfer status section shows only approved/disbursed items (not rejected)", () => {
     renderWithIntl(<ReportsPageContent />, { messages });
 
-    const retryButton = screen.getAllByRole("button", {
-      name: "Retry Failed",
-    })[0];
-    fireEvent.click(retryButton);
-
-    expect(toastMock).toHaveBeenCalledWith({
-      variant: "info",
-      message: "Retrying transfer",
-    });
+    // The transfer status panel renders items — no retry buttons since rejected
+    // requests are filtered out and only approved (processing) / disbursed (settled) appear
+    const heading = screen.getByRole("heading", { name: "Transfer Status" });
+    expect(heading).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Retry Failed" })).not.toBeInTheDocument();
   });
 
   it("renders metric cards with icons", () => {

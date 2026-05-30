@@ -59,9 +59,9 @@ export function useEwaPolicy(cycle: "monthly" | "weekly") {
     }
   }, [cycle]);
 
-  // useEffect(() => {
-  //   fetch();
-  // }, [cycle, fetch]);
+  useEffect(() => {
+    fetch();
+  }, [cycle, fetch]);
 
   return { data, loading, error, refetch: fetch };
 }

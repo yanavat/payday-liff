@@ -21,7 +21,7 @@ import type { HRUserDto } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { useHRRole } from "./hr-auth-gate";
 
-type BankExportFormat = "generic_csv" | "scb_anywhere";
+type BankExportFormat = "generic" | "scb_anywhere";
 
 type HrUserFormState = {
   id: string | null;
@@ -61,7 +61,7 @@ function SettingsContent() {
   const [autoApproval, setAutoApproval] = useState(false);
   const [blackoutDates, setBlackoutDates] = useState<string[]>([]);
   const [bankExportFormat, setBankExportFormat] =
-    useState<BankExportFormat>("generic_csv");
+    useState<BankExportFormat>("generic");
   const [dirty, setDirty] = useState(false);
   const [hrUserForm, setHrUserForm] =
     useState<HrUserFormState>(emptyHrUserForm);
@@ -89,17 +89,17 @@ function SettingsContent() {
 
   // Sync state when settings load or policyTab changes
   useEffect(() => {
-    const policy = settings?.ewaPolicy?.[policyTab];
+    const policy = policyTab === "monthly" ? settings?.ewaMonthlyPolicy : settings?.ewaWeeklyPolicy;
     if (policy) {
       setMaxPercent(policy.maxPercent ?? 50);
-      setAutoApproval(policy.autoApproval ?? false);
+      setAutoApproval(policy.autoApprovalEnabled ?? false);
       setBlackoutDates(policy.blackoutDates ?? []);
       setDirty(false);
     }
   }, [settings, policyTab]);
 
   useEffect(() => {
-    setBankExportFormat(settings?.bankExportFormat ?? "generic_csv");
+    setBankExportFormat(settings?.bankExportFormat ?? "generic");
   }, [settings?.bankExportFormat]);
 
   function markDirty() {
@@ -111,7 +111,7 @@ function SettingsContent() {
       activeTab === "policy"
         ? await updatePolicy(policyTab, {
             maxPercent,
-            autoApproval,
+            autoApprovalEnabled: autoApproval,
             blackoutDates,
           })
         : await updateSettings({
@@ -135,7 +135,7 @@ function SettingsContent() {
     label: t(tab.labelKey as keyof typeof t),
   }));
 
-  const activePolicy = settings?.ewaPolicy?.[policyTab];
+  const activePolicy = policyTab === "monthly" ? settings?.ewaMonthlyPolicy : settings?.ewaWeeklyPolicy;
   const hrUsers = useMemo(() => hrUsersData?.data ?? [], [hrUsersData]);
   const departments = useMemo(
     () => departmentsData?.data ?? [],
@@ -274,12 +274,8 @@ function SettingsContent() {
           {policyTab === "weekly" && (
             <SettingsPanel title={t("weekly")}>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <SelectField
-                  label={t("weeklyPayday")}
-                  options={["mon", "tue", "wed", "thu", "fri"]}
-                  value={activePolicy?.weeklyPayday ?? "fri"}
-                />
-                <NumberField label={t("ewaCutoffDays")} value={String(activePolicy?.ewaCutoffDays ?? 1)} suffix="days" />
+                <NumberField label={t("weeklyPayday")} value={String(activePolicy?.weeklyPayDayOfWeek ?? 5)} suffix="day" />
+                <NumberField label={t("ewaCutoffDays")} value={String(activePolicy?.weeklyCutoffDayOfWeek ?? 4)} suffix="days" />
               </div>
             </SettingsPanel>
           )}
@@ -487,11 +483,11 @@ function SettingsContent() {
           <SettingsPanel title="Bank Export Format">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <RadioOption
-                checked={bankExportFormat === "generic_csv"}
+                checked={bankExportFormat === "generic"}
                 label="Generic CSV"
                 description="Standard export with the current field layout."
                 onChange={() => {
-                  setBankExportFormat("generic_csv");
+                  setBankExportFormat("generic");
                   markDirty();
                 }}
               />

@@ -8,7 +8,6 @@ import {
   FileText,
   ListOrdered,
   PiggyBank,
-  RefreshCw,
 } from "lucide-react"
 import { MetricCard } from "@/components/ui/metric-card"
 import { MetricCardSkeleton } from "@/components/ui/metric-card-skeleton"
@@ -31,7 +30,6 @@ function ReportsContent() {
   const tc = useTranslations("reports")
   const [view, setView] = useState<ReportView>("monthly")
   const [period, setPeriod] = useState<"this_month" | "last_month" | "all">("this_month")
-  const [failedRetried, setFailedRetried] = useState<string[]>([])
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(
     null,
@@ -489,47 +487,21 @@ function ReportsContent() {
             </h2>
           </div>
           <div className="divide-y divide-border-light">
-            {reconciliationItems.map((item) => {
-              const retried = failedRetried.includes(item.referenceNumber)
-              const status = retried ? "processing" : item.status
-              return (
-                <div
-                  key={item.referenceNumber}
-                  className={cn(
-                    "p-4",
-                    item.status === "failed" && !retried && "bg-red-50/60",
-                  )}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-number text-sm font-semibold">
-                        {item.referenceNumber}
-                      </p>
-                      <p className="mt-1 text-caption text-text-muted">
-                        {item.employeeId} · {formatTHB(item.amount)}
-                      </p>
-                    </div>
-                    <TransferBadge status={status} />
+            {reconciliationItems.map((item) => (
+              <div key={item.referenceNumber} className="p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-number text-sm font-semibold">
+                      {item.referenceNumber}
+                    </p>
+                    <p className="mt-1 text-caption text-text-muted">
+                      {item.employeeId} · {formatTHB(item.amount)}
+                    </p>
                   </div>
-                  {item.status === "failed" && !retried && (
-                    <button
-                      onClick={() => {
-                        setFailedRetried((cur) =>
-                          cur.concat(item.referenceNumber),
-                        )
-                        toast({
-                          variant: "info",
-                          message: tc("retryingTransfer"),
-                        })
-                      }}
-                      className="mt-3 inline-flex h-8 items-center gap-2 rounded-md border border-red-300 bg-bg-canvas px-3 text-xs font-medium text-red-700"
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" /> {tc("retryFailed")}
-                    </button>
-                  )}
+                  <TransferBadge status={item.status} />
                 </div>
-              )
-            })}
+              </div>
+            ))}
             {reconciliationItems.length === 0 && (
               <p className="px-4 py-6 text-center text-sm text-text-muted">
                 {t("common.noData")}
@@ -575,9 +547,8 @@ function ToggleButton({
 function TransferBadge({
   status,
 }: {
-  status: "processing" | "settled" | "failed"
+  status: "processing" | "settled"
 }) {
   if (status === "settled") return <StatusBadge status="disbursed" />
-  if (status === "failed") return <StatusBadge status="rejected" />
   return <StatusBadge status="pending" />
 }
