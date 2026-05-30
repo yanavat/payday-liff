@@ -127,7 +127,7 @@ function EmployeesContent() {
             onChange={setDepartment}
             options={[
               ["all", t("requests.allDepartments")],
-              ...allDepartments.map((d) => [d.name, d.nameTh || d.name] as [string, string]),
+              ...allDepartments.map((d) => [d.id, d.nameTh || d.name] as [string, string]),
             ]}
           />
           <FilterSelect
