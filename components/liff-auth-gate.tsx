@@ -115,7 +115,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    const response = await authFetch("/api/auth/logout", { method: "POST" });
+    const response = await authFetch("/api/auth/logout?scope=employee", { method: "POST" });
     if (!response.ok) throw response;
     setEmployee(null);
     setHrUser(null);

@@ -10,7 +10,7 @@ const sessionStorageKey = "payday-session";
 export async function signOut(scope: AuthScope, router: RouterLike) {
   const logoutRequest =
     typeof fetch === "function"
-      ? fetch("/api/auth/logout", {
+      ? fetch(`/api/auth/logout?scope=${scope}`, {
           method: "POST",
           credentials: "include",
         }).catch(() => undefined)
