@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   BarChart3,
@@ -10,14 +10,14 @@ import {
   LogOut,
   Settings,
   Users,
-} from "lucide-react";
-import { type ComponentType, useEffect, useState } from "react";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
-import { BrandLogo } from "@/components/shared/brand-logo";
-import { signOut } from "@/lib/auth/session";
-import { useHRRole, type HRRole } from "@/components/hr/hr-auth-gate";
+} from "lucide-react"
+import { type ComponentType, useEffect, useState } from "react"
+import { Link, usePathname, useRouter } from "@/i18n/navigation"
+import { useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
+import { BrandLogo } from "@/components/shared/brand-logo"
+import { signOut } from "@/lib/auth/session"
+import { useHRRole, type HRRole } from "@/components/hr/hr-auth-gate"
 
 const mainNav = [
   { href: "/hr/dashboard", labelKey: "dashboard", icon: Gauge },
@@ -27,37 +27,46 @@ const mainNav = [
     href: "/hr/transfer-export",
     labelKey: "transferExport",
     icon: FileDown,
-    roles: ["hr_manager", "accountant"],
+    roles: ["hr_manager", "accountant", "viewer"],
   },
   { href: "/hr/employees", labelKey: "employees", icon: Users },
-  { href: "/hr/settings", labelKey: "settings", icon: Settings, roles: ["hr_manager"] },
+  {
+    href: "/hr/settings",
+    labelKey: "settings",
+    icon: Settings,
+    roles: ["hr_manager"],
+  },
 ] satisfies Array<{
-  href: string;
-  labelKey: string;
-  icon: ComponentType<{ className?: string; strokeWidth?: number; "aria-hidden"?: boolean }>;
-  roles?: HRRole[];
-}>;
+  href: string
+  labelKey: string
+  icon: ComponentType<{
+    className?: string
+    strokeWidth?: number
+    "aria-hidden"?: boolean
+  }>
+  roles?: HRRole[]
+}>
 
-const footerNav = [{ href: "/hr/login", labelKey: "logout", icon: LogOut }];
+const footerNav = [{ href: "/hr/login", labelKey: "logout", icon: LogOut }]
 
 export function HRSidebar() {
-  const t = useTranslations("nav");
-  const router = useRouter();
-  const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
-  const { role } = useHRRole();
+  const t = useTranslations("nav")
+  const router = useRouter()
+  const pathname = usePathname()
+  const [collapsed, setCollapsed] = useState(false)
+  const { role } = useHRRole()
   const visibleMainNav = mainNav.filter(
     (item) => !item.roles || item.roles.includes(role),
-  );
+  )
 
   useEffect(() => {
     function handleResize() {
-      setCollapsed(window.innerWidth < 1024);
+      setCollapsed(window.innerWidth < 1024)
     }
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   return (
     <aside
@@ -123,8 +132,8 @@ export function HRSidebar() {
         aria-label="HR navigation"
       >
         {visibleMainNav.map((item) => {
-          const Icon = item.icon;
-          const active = pathname === item.href;
+          const Icon = item.icon
+          const active = pathname === item.href
 
           return (
             <Link
@@ -153,7 +162,7 @@ export function HRSidebar() {
                 {t(item.labelKey as keyof typeof t)}
               </span>
             </Link>
-          );
+          )
         })}
       </nav>
 
@@ -164,7 +173,7 @@ export function HRSidebar() {
         )}
       >
         {footerNav.map((item) => {
-          const Icon = item.icon;
+          const Icon = item.icon
 
           return (
             <button
@@ -176,7 +185,7 @@ export function HRSidebar() {
                 collapsed && "justify-center px-0",
               )}
               onClick={() => {
-                void signOut("hr", router);
+                void signOut("hr", router)
               }}
             >
               <Icon
@@ -193,9 +202,9 @@ export function HRSidebar() {
                 {t(item.labelKey as keyof typeof t)}
               </span>
             </button>
-          );
+          )
         })}
       </div>
     </aside>
-  );
+  )
 }

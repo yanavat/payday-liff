@@ -1,36 +1,44 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { screen, fireEvent, waitFor } from '@testing-library/react'
-import { renderWithIntl, defaultMessages } from '@/tests/i18n/test-utils'
+import { describe, expect, it, vi, beforeEach } from "vitest"
+import { screen, fireEvent, waitFor } from "@testing-library/react"
+import { renderWithIntl, defaultMessages } from "@/tests/i18n/test-utils"
 
 const { logoutMock, useAuthMock } = vi.hoisted(() => ({
   logoutMock: vi.fn().mockResolvedValue(undefined),
-  useAuthMock: vi.fn<() => any>(() => ({
-    employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+  useAuthMock: vi.fn<
+    () => {
+      employee: { id: string; employeeCode: string; name?: string }
+      isInLiff: boolean
+      logout: () => Promise<void>
+    }
+  >(() => ({
+    employee: { id: "EMP-001", employeeCode: "EMP-001" },
     isInLiff: true,
     logout: vi.fn(),
   })),
 }))
 const useLiffProfileMock = vi.hoisted(() =>
-  vi.fn<() => { userId: string; displayName: string; pictureUrl?: string } | null>(() => ({
-    userId: 'U1234567890',
-    displayName: 'Mock LINE User',
-    pictureUrl: 'https://profile.line.example/avatar.jpg',
+  vi.fn<
+    () => { userId: string; displayName: string; pictureUrl?: string } | null
+  >(() => ({
+    userId: "U1234567890",
+    displayName: "Mock LINE User",
+    pictureUrl: "https://profile.line.example/avatar.jpg",
   })),
 )
 
-vi.mock('@/components/liff-auth-gate', () => ({
+vi.mock("@/components/liff-auth-gate", () => ({
   useAuth: useAuthMock,
   useLiffProfile: useLiffProfileMock,
 }))
 
-vi.mock('@/components/shared/locale-switcher', () => ({
+vi.mock("@/components/shared/locale-switcher", () => ({
   LocaleSwitcher: () => <div data-testid="locale-switcher" />,
 }))
 
 const liffLogoutMock = vi.fn()
 const liffCloseWindowMock = vi.fn()
 
-vi.mock('@/lib/liff-client', () => ({
+vi.mock("@/lib/liff-client", () => ({
   loadLiffClient: vi.fn(() =>
     Promise.resolve({
       logout: liffLogoutMock,
@@ -39,29 +47,31 @@ vi.mock('@/lib/liff-client', () => ({
   ),
 }))
 
-vi.mock('next/image', () => ({
-  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
+vi.mock("next/image", () => ({
+  default: ({ src, alt }: { src: string; alt: string }) => (
+    <img src={src} alt={alt} />
+  ),
 }))
 
-vi.mock('@/lib/api/hooks/use-employees', () => ({
+vi.mock("@/lib/api/hooks/use-employees", () => ({
   useEmployee: vi.fn(() => ({
     data: {
-      id: 'EMP-001',
-      name: 'Somchai Smith',
-      nameTh: 'สมชาย สมิธ',
-      employeeCode: 'E001',
-      department: 'Production',
-      position: 'Operator',
-      payCycle: 'monthly' as const,
-      workType: 'onsite' as const,
+      id: "EMP-001",
+      name: "Somchai Smith",
+      nameTh: "สมชาย สมิธ",
+      employeeCode: "E001",
+      department: "Production",
+      position: "Operator",
+      payCycle: "monthly" as const,
+      workType: "onsite" as const,
       baseSalary: 18000,
-      bankAccountMasked: 'xxx-x-xx123-4',
-      bankName: 'KBANK',
-      ewaStatus: 'eligible' as const,
-      enrolledAt: '2024-01-01',
+      bankAccountMasked: "xxx-x-xx123-4",
+      bankName: "KBANK",
+      ewaStatus: "eligible" as const,
+      enrolledAt: "2024-01-01",
       isActive: true,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-01",
     },
     loading: false,
     error: null,
@@ -70,7 +80,7 @@ vi.mock('@/lib/api/hooks/use-employees', () => ({
 }))
 
 const updateNotificationsMock = vi.fn().mockResolvedValue({})
-vi.mock('@/lib/api/hooks/use-settings', () => ({
+vi.mock("@/lib/api/hooks/use-settings", () => ({
   useSettingsActions: vi.fn(() => ({
     updateNotifications: updateNotificationsMock,
     updateSettings: vi.fn(),
@@ -80,79 +90,86 @@ vi.mock('@/lib/api/hooks/use-settings', () => ({
   })),
 }))
 
-import { useLiffProfile } from '@/components/liff-auth-gate'
-import { LiffProfilePage } from './liff-profile-page'
+import { useLiffProfile } from "@/components/liff-auth-gate"
+import { LiffProfilePage } from "./liff-profile-page"
 
 const messages = {
   ...defaultMessages,
   profile: {
-    bankAccount: 'Bank Account',
-    edit: 'Edit',
-    editBankAccount: 'Edit Bank Account',
-    bankName: 'Bank Name',
-    accountNumber: 'Account Number',
-    accountHolderName: 'Account Holder',
-    selectBank: 'Select Bank',
-    ewaLimit: 'EWA Limit',
-    maxPercent: 'Maximum',
-    percentOfSalary: '{percent}% of salary',
-    used: 'Used',
-    usedCount: '{used} / {max} this period',
-    remaining: 'Remaining',
-    notifications: 'Notifications',
-    notifyApproved: 'Notify on approval',
-    notifyPayday: 'Notify on payday',
-    notifyLine: 'Notify via LINE',
-    language: 'Language',
-    logout: 'Log out',
-    unlinkLine: 'Unlink LINE account',
+    bankAccount: "Bank Account",
+    edit: "Edit",
+    editBankAccount: "Edit Bank Account",
+    bankName: "Bank Name",
+    accountNumber: "Account Number",
+    accountHolderName: "Account Holder",
+    selectBank: "Select Bank",
+    ewaLimit: "EWA Limit",
+    maxPercent: "Maximum",
+    percentOfSalary: "{percent}% of salary",
+    used: "Used",
+    usedCount: "{used} / {max} this period",
+    remaining: "Remaining",
+    notifications: "Notifications",
+    notifyApproved: "Notify on approval",
+    notifyPayday: "Notify on payday",
+    notifyLine: "Notify via LINE",
+    language: "Language",
+    logout: "Log out",
+    unlinkLine: "Unlink LINE account",
   },
 }
 
-describe('LiffProfilePage', () => {
+describe("LiffProfilePage", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     localStorage.clear()
     logoutMock.mockResolvedValue(undefined)
     useAuthMock.mockReturnValue({
-      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      employee: { id: "EMP-001", employeeCode: "EMP-001" },
       isInLiff: true,
       logout: logoutMock,
     })
     updateNotificationsMock.mockResolvedValue({})
     useLiffProfileMock.mockReturnValue({
-      userId: 'U1234567890',
-      displayName: 'Mock LINE User',
-      pictureUrl: 'https://profile.line.example/avatar.jpg',
+      userId: "U1234567890",
+      displayName: "Mock LINE User",
+      pictureUrl: "https://profile.line.example/avatar.jpg",
     })
   })
 
-  it('shows the LINE profile picture', () => {
+  it("shows the LINE profile picture", () => {
     renderWithIntl(<LiffProfilePage />, { messages })
-    expect(screen.getByAltText('Mock LINE User')).toHaveAttribute('src', 'https://profile.line.example/avatar.jpg')
+    expect(screen.getByAltText("Mock LINE User")).toHaveAttribute(
+      "src",
+      "https://profile.line.example/avatar.jpg",
+    )
   })
 
-  it('uses avatar fallback instead of LINE picture outside LIFF', () => {
+  it("uses avatar fallback instead of LINE picture outside LIFF", () => {
     useAuthMock.mockReturnValue({
-      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      employee: { id: "EMP-001", employeeCode: "EMP-001" },
       isInLiff: false,
       logout: logoutMock,
     })
 
     renderWithIntl(<LiffProfilePage />, { messages })
 
-    expect(screen.queryByAltText('Mock LINE User')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Somchai Smith')).toBeInTheDocument()
+    expect(screen.queryByAltText("Mock LINE User")).not.toBeInTheDocument()
+    expect(screen.getByLabelText("Somchai Smith")).toBeInTheDocument()
   })
 
-  it('shows the LINE display name', () => {
+  it("shows the LINE display name", () => {
     renderWithIntl(<LiffProfilePage />, { messages })
-    expect(screen.getByText('Mock LINE User')).toBeInTheDocument()
+    expect(screen.getByText("Mock LINE User")).toBeInTheDocument()
   })
 
-  it('shows the employee name when manual login has no LINE profile', () => {
+  it("shows the employee name when manual login has no LINE profile", () => {
     useAuthMock.mockReturnValue({
-      employee: { id: 'EMP-001', employeeCode: 'EMP-001', name: 'Somchai Smith' },
+      employee: {
+        id: "EMP-001",
+        employeeCode: "EMP-001",
+        name: "Somchai Smith",
+      },
       isInLiff: false,
       logout: logoutMock,
     })
@@ -160,72 +177,104 @@ describe('LiffProfilePage', () => {
 
     renderWithIntl(<LiffProfilePage />, { messages })
 
-    expect(screen.getByRole('heading', { name: 'Somchai Smith' })).toBeInTheDocument()
-    expect(screen.getByLabelText('Somchai Smith')).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: "Somchai Smith" }),
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText("Somchai Smith")).toBeInTheDocument()
   })
 
-  it('does NOT show a logout button', () => {
+  it("shows a sign-out button", () => {
     renderWithIntl(<LiffProfilePage />, { messages })
-    expect(screen.queryByRole('button', { name: /ออกจากระบบ|log out/i })).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /ออกจากระบบ|log out/i }),
+    ).toBeInTheDocument()
   })
 
-  it('shows an unlink LINE button', () => {
+  it("sign-out button calls logout from auth context", async () => {
+    const logoutFn = vi.fn().mockResolvedValue(undefined)
+    useAuthMock.mockReturnValue({
+      employee: { id: "EMP-001", employeeCode: "EMP-001" },
+      isInLiff: false,
+      logout: logoutFn,
+    })
     renderWithIntl(<LiffProfilePage />, { messages })
-    expect(screen.getByRole('button', { name: /Unlink LINE account/i })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: /ออกจากระบบ|log out/i }))
+    await waitFor(() => expect(logoutFn).toHaveBeenCalledOnce())
   })
 
-  it('unlink button logs out through the auth context and reloads', async () => {
+  it("shows an unlink LINE button", () => {
+    renderWithIntl(<LiffProfilePage />, { messages })
+    expect(
+      screen.getByRole("button", { name: /Unlink LINE account/i }),
+    ).toBeInTheDocument()
+  })
+
+  it("unlink button logs out through the auth context and reloads", async () => {
     const reloadMock = vi.fn()
-    Object.defineProperty(window, 'location', { value: { reload: reloadMock }, writable: true })
+    Object.defineProperty(window, "location", {
+      value: { reload: reloadMock },
+      writable: true,
+    })
 
     renderWithIntl(<LiffProfilePage />, { messages })
-    fireEvent.click(screen.getByRole('button', { name: /Unlink LINE account/i }))
+    fireEvent.click(
+      screen.getByRole("button", { name: /Unlink LINE account/i }),
+    )
 
     await waitFor(() => expect(logoutMock).toHaveBeenCalledOnce())
     await waitFor(() => expect(reloadMock).toHaveBeenCalledOnce())
   })
 
-  it('disables unlink outside LIFF and does not call LINE closeWindow', () => {
+  it("disables unlink outside LIFF and does not call LINE closeWindow", () => {
     useAuthMock.mockReturnValue({
-      employee: { id: 'EMP-001', employeeCode: 'EMP-001' },
+      employee: { id: "EMP-001", employeeCode: "EMP-001" },
       isInLiff: false,
       logout: logoutMock,
     })
     const reloadMock = vi.fn()
-    Object.defineProperty(window, 'location', { value: { reload: reloadMock }, writable: true })
+    Object.defineProperty(window, "location", {
+      value: { reload: reloadMock },
+      writable: true,
+    })
 
     renderWithIntl(<LiffProfilePage />, { messages })
 
-    expect(screen.getByRole('button', { name: /Unlink LINE account/i })).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: /Unlink LINE account/i }),
+    ).toBeDisabled()
     expect(logoutMock).not.toHaveBeenCalled()
     expect(liffCloseWindowMock).not.toHaveBeenCalled()
   })
 
-  it('falls back to Avatar initials when pictureUrl is absent', () => {
+  it("falls back to Avatar initials when pictureUrl is absent", () => {
     vi.mocked(useLiffProfile).mockReturnValue({
-      userId: 'U9999',
-      displayName: 'No Picture',
+      userId: "U9999",
+      displayName: "No Picture",
       pictureUrl: undefined,
     } as never)
     renderWithIntl(<LiffProfilePage />, { messages })
     // next/image is mocked to render <img>, so absence of <img> confirms Avatar is shown instead
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.queryByRole("img")).not.toBeInTheDocument()
   })
 
-  it('shows employee bank account from API', () => {
+  it("shows employee bank account from API", () => {
     renderWithIntl(<LiffProfilePage />, { messages })
-    expect(screen.getByText('xxx-x-xx123-4')).toBeInTheDocument()
+    expect(screen.getByText("xxx-x-xx123-4")).toBeInTheDocument()
   })
 
-  it('calls updateNotifications when LINE notification toggle changes', async () => {
+  it("calls updateNotifications when LINE notification toggle changes", async () => {
     renderWithIntl(<LiffProfilePage />, { messages })
-    fireEvent.click(screen.getByRole('button', { name: /Notify via LINE/i }))
+    fireEvent.click(screen.getByRole("button", { name: /Notify via LINE/i }))
     await waitFor(() => expect(updateNotificationsMock).toHaveBeenCalledOnce())
   })
 
-  it('disables LINE notification and unlink controls without LINE profile information', () => {
+  it("disables LINE notification and unlink controls without LINE profile information", () => {
     useAuthMock.mockReturnValue({
-      employee: { id: 'EMP-001', employeeCode: 'EMP-001', name: 'Somchai Smith' },
+      employee: {
+        id: "EMP-001",
+        employeeCode: "EMP-001",
+        name: "Somchai Smith",
+      },
       isInLiff: false,
       logout: logoutMock,
     })
@@ -233,18 +282,22 @@ describe('LiffProfilePage', () => {
 
     renderWithIntl(<LiffProfilePage />, { messages })
 
-    expect(screen.getByRole('button', { name: /Notify via LINE/i })).toBeDisabled()
-    expect(screen.getByRole('button', { name: /Unlink LINE account/i })).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: /Notify via LINE/i }),
+    ).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: /Unlink LINE account/i }),
+    ).toBeDisabled()
   })
 
-  it('uses employee name for Avatar when pictureUrl is absent', () => {
+  it("uses employee name for Avatar when pictureUrl is absent", () => {
     vi.mocked(useLiffProfile).mockReturnValue({
-      userId: 'U9999',
-      displayName: 'No Picture',
+      userId: "U9999",
+      displayName: "No Picture",
       pictureUrl: undefined,
     } as never)
     renderWithIntl(<LiffProfilePage />, { messages })
     // next/image is mocked to render <img>, so no <img> = Avatar is shown
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.queryByRole("img")).not.toBeInTheDocument()
   })
 })

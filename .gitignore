@@ -46,6 +46,10 @@ next-env.d.ts
 .env.example
 PayDay+_Presentation_Script.md
 docs/tasks-*.html
+docs/feature/*.html
+*.html
+/test-results/
+tsconfig.spec.json
 
 # claude
 CLAUDE.md

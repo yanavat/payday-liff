@@ -245,6 +245,8 @@
     "availableBalance": "วงเงินที่เบิกได้",
     "customAmount": "จำนวนอื่น",
     "amountError": "จำนวนเกินวงเงินที่กำหนด",
+    "requestLimitError": "คุณใช้ครบจำนวนครั้งที่กำหนดในรอบนี้แล้ว",
+    "suspendedError": "สิทธิ์การเบิกเงินล่วงหน้าของคุณถูกระงับ กรุณาติดต่อฝ่าย HR",
     "remainingBalance": "คงเหลือหลังเบิก",
     "reason": "เหตุผล",
     "reasons": {

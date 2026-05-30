@@ -552,16 +552,20 @@ export interface ListParams {
 // ── Effective Policy Response ───────────────────────────────
 
 export interface EffectivePolicyResponse {
-  maxPercent: number
-  maxRequestsPerPeriod: number
-  minAmount: number
-  autoApproval: boolean
-  autoApprovalThreshold: number
-  approvalChain: "single" | "two_step"
-  weeklyPayday?: "mon" | "tue" | "wed" | "thu" | "fri"
-  ewaCutoffDays: number
-  blackoutDates: string[]
+  effective: {
+    enabled: boolean
+    eligibility: "eligible" | "quota_used" | "suspended"
+    maxPercent: number
+    maxRequests: number
+    minAmount: number
+    maxAmount: number
+    autoApprovalEnabled: boolean
+    autoApprovalThreshold: number
+    approvalChain: "single" | "two_step"
+    blackoutDates: string[]
+  }
   isOverridden: boolean
+  source: Record<string, "employee" | "company">
 }
 
 // ── Current Period Response ─────────────────────────────────
