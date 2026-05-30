@@ -180,7 +180,7 @@ function EmployeesContent() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 text-sm text-text-secondary">{employee.department}</td>
+                    <td className="px-4 text-sm text-text-secondary">{employee.departmentName ?? employee.department}</td>
                     <td className="px-4"><PayCycleBadge type={employee.payCycle} /></td>
                     <td className="px-4 text-right font-number text-sm font-semibold">{formatTHB(max)}</td>
                     <td className="px-4"><EWAStatusBadge status={eligibility} /></td>

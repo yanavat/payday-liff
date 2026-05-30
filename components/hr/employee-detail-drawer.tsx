@@ -140,9 +140,17 @@ export function EmployeeDetailDrawer({
               </h3>
               <p className="text-caption text-text-muted">{employee.id}</p>
               <p className="mt-1 text-caption text-text-muted">
-                {employee.department}
+                {employee.departmentName ?? employee.department}
                 {employee.position ? ` · ${employee.position}` : ""}
               </p>
+              {employee.invitationCode && (
+                <p className="mt-2 text-caption text-text-muted">
+                  Invite code:{" "}
+                  <span className="font-mono font-semibold text-text-primary">
+                    {employee.invitationCode}
+                  </span>
+                </p>
+              )}
             </div>
           </section>
 

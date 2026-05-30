@@ -55,7 +55,7 @@ export function EmployeeImportDrawer({
   const [dragActive, setDragActive] = useState(false);
   const [summary, setSummary] = useState<EmployeeImportSummaryDto | null>(null);
   const [fileName, setFileName] = useState("");
-  const { importCsv, importJson, getImportTemplate, loading, error } =
+  const { importCsv, importJson, loading, error } =
     useEmployeeActions();
 
   async function handleFile(file: File) {
@@ -109,17 +109,51 @@ export function EmployeeImportDrawer({
     if (file) void handleFile(file);
   }
 
-  async function handleTemplateDownload() {
-    const template = await getImportTemplate();
-    if (template) {
-      downloadTextFile(
-        "employee-import-template.csv",
-        template,
-        "text/csv;charset=utf-8",
-      );
-    } else if (error) {
-      toast({ variant: "error", message: getApiErrorMessage(error, tc) });
-    }
+  function handleTemplateDownload() {
+    const headers = [
+      "id",
+      "employeeCode",
+      "name",
+      "nameEn",
+      "department",
+      "departmentName",
+      "position",
+      "startDate",
+      "employmentType",
+      "payCycle",
+      "monthlySalary",
+      "dailyRate",
+      "standardWorkDays",
+      "bankName",
+      "bankAccountMasked",
+      "bankAccountLast4",
+      "phoneNumber",
+      "email",
+    ];
+    const example = [
+      "EMP001",
+      "A001",
+      "สมชาย ใจดี",
+      "Somchai Jaidee",
+      "DEPT-001",
+      "Human Resources",
+      "Staff",
+      "2024-01-01",
+      "full_time",
+      "monthly",
+      "30000",
+      "",
+      "22",
+      "Kasikorn Bank",
+      "xxxx-xxxx-1234",
+      "1234",
+      "0812345678",
+      "somchai@example.com",
+    ];
+    const csv = [headers, example]
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
+    downloadTextFile("employee-import-template.csv", csv, "text/csv;charset=utf-8");
   }
 
   function handleConfirm() {
