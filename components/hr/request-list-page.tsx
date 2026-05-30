@@ -58,6 +58,8 @@ function RequestListContent() {
   const [status, setStatus] = useState<StatusFilter>("all");
   const [payCycle, setPayCycle] = useState<PayCycleFilter>("all");
   const [department, setDepartment] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<
@@ -105,14 +107,17 @@ function RequestListContent() {
           payCycle === "all" || row.request.payCycle === payCycle;
         const matchesDepartment =
           department === "all" || row.employee.department === department;
-        return matchesQuery && matchesCycle && matchesDepartment;
+        const reqDate = dayjs(row.request.requestedAt);
+        const matchesFrom = !dateFrom || !reqDate.isBefore(dayjs(dateFrom), "day");
+        const matchesTo = !dateTo || !reqDate.isAfter(dayjs(dateTo), "day");
+        return matchesQuery && matchesCycle && matchesDepartment && matchesFrom && matchesTo;
       })
       .sort(
         (a, b) =>
           dayjs(b.request.requestedAt).valueOf() -
           dayjs(a.request.requestedAt).valueOf(),
       );
-  }, [allRequests, allEmployees, query, payCycle, department]);
+  }, [allRequests, allEmployees, query, payCycle, department, dateFrom, dateTo]);
 
   const activeRow = rows.find((row) => row.request.id === activeRequestId);
   const selectedCount = selectedIds.length;
@@ -298,13 +303,26 @@ function RequestListContent() {
                 </option>
               ))}
             </select>
-            <button
-              type="button"
-              className="inline-flex h-[34px] min-w-[152px] items-center gap-2 rounded-md border border-border bg-bg-secondary px-3 text-sm text-text-primary"
-            >
-              <CalendarDays className="h-4 w-4 text-text-muted" aria-hidden />
-              30 days
-            </button>
+            <label className="inline-flex h-[34px] items-center gap-2 rounded-md border border-border bg-bg-secondary px-3 text-sm text-text-muted">
+              <CalendarDays className="h-4 w-4 shrink-0" aria-hidden />
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="bg-transparent text-text-primary outline-none"
+                aria-label="From date"
+              />
+            </label>
+            <label className="inline-flex h-[34px] items-center gap-2 rounded-md border border-border bg-bg-secondary px-3 text-sm text-text-muted">
+              <CalendarDays className="h-4 w-4 shrink-0" aria-hidden />
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="bg-transparent text-text-primary outline-none"
+                aria-label="To date"
+              />
+            </label>
           </div>
         </div>
       </section>
@@ -414,7 +432,7 @@ function RequestListContent() {
                       </div>
                     </td>
                     <td className="px-4 text-[13px] text-text-secondary">
-                      {employee.department}
+                      {employee.departmentName ?? employee.department}
                     </td>
                     <td className="px-4">
                       <PayCycleBadge type={request.payCycle} />
