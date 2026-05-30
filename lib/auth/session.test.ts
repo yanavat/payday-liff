@@ -14,7 +14,7 @@ describe("session", () => {
 
     await signOut("hr", { push });
 
-    expect(fetchMock).toHaveBeenCalledWith("/api/auth/logout", {
+    expect(fetchMock).toHaveBeenCalledWith("/api/auth/logout?scope=hr", {
       method: "POST",
       credentials: "include",
     });

@@ -303,7 +303,7 @@ describe("AuthGate", () => {
     fireEvent.click(screen.getByText("logout"));
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        "/api/auth/logout",
+        "/api/auth/logout?scope=employee",
         expect.objectContaining({ credentials: "include", method: "POST" }),
       ),
     );
