@@ -106,6 +106,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
         body: JSON.stringify({ identifier, pin }),
       });
       if (!response.ok) throw response;
+      const payload = (await response.json().catch(() => ({}))) as { companyId?: string };
+      if (payload.companyId && typeof window !== "undefined") {
+        localStorage.setItem("payday-company-id", payload.companyId);
+        getApiClient().setCompanyId(payload.companyId);
+      }
       await refreshSession();
     },
     [refreshSession],
