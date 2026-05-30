@@ -6,6 +6,7 @@ RUN npm ci
 
 # Build args needed at build time for Next.js
 ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
+ARG BACKEND_INTERNAL_URL=http://backend:3001
 ARG NEXT_PUBLIC_LIFF_ID=
 ARG NEXT_PUBLIC_LIFF_MOCK=false
 

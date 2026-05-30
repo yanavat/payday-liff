@@ -43,10 +43,12 @@ export interface AuthContextType {
 type AuthMeResponse = {
   employee?: Employee | null;
   hrUser?: HRUser | null;
+  companyId?: string;
 };
 
 type LineLoginResponse = {
   status?: "authenticated" | "needs_activation" | "needs_linking";
+  companyId?: string;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -79,9 +81,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   const applySession = useCallback((session: AuthMeResponse) => {
     const employee = session.employee ?? null;
-    if (employee?.companyId && typeof window !== "undefined") {
-      localStorage.setItem("payday-company-id", employee.companyId);
-      getApiClient().setCompanyId(employee.companyId);
+    const companyId = session.companyId ?? getAuthCompanyId();
+    if (companyId && typeof window !== "undefined") {
+      localStorage.setItem("payday-company-id", companyId);
+      getApiClient().setCompanyId(companyId);
     }
     setEmployee(employee);
     setHrUser(session.hrUser ?? null);
@@ -103,6 +106,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
         body: JSON.stringify({ identifier, pin }),
       });
       if (!response.ok) throw response;
+      const payload = (await response.json().catch(() => ({}))) as { companyId?: string };
+      if (payload.companyId && typeof window !== "undefined") {
+        localStorage.setItem("payday-company-id", payload.companyId);
+        getApiClient().setCompanyId(payload.companyId);
+      }
       await refreshSession();
     },
     [refreshSession],
@@ -164,7 +172,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (sessionResponse.status !== 401) {
+      // 400 means x-company-id header is missing (not yet known on first load)
+      // treat it like 401 so the LIFF auth flow can proceed and set the company ID
+      if (sessionResponse.status !== 401 && sessionResponse.status !== 400) {
         setAuthState("error");
         return;
       }
@@ -220,6 +230,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
         if (payload.status === "needs_linking") {
           setAuthState("linking");
           return;
+        }
+
+        if (payload.companyId && typeof window !== "undefined") {
+          localStorage.setItem("payday-company-id", payload.companyId);
+          getApiClient().setCompanyId(payload.companyId);
         }
 
         await refreshSession();

@@ -1,17 +1,10 @@
 import { NextResponse } from "next/server";
 
-type AuthRouteContext = {
+type ProxyRouteContext = {
   params: Promise<{ path: string[] }>;
 };
 
 const DEFAULT_API_BASE_URL = "http://localhost:4000";
-const EMPLOYEE_AUTH_PATHS = new Set([
-  "activate",
-  "login",
-  "line-login",
-  "link-line",
-  "verify-pin",
-]);
 
 function getBackendBaseUrl() {
   return (
@@ -19,18 +12,6 @@ function getBackendBaseUrl() {
     process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ??
     DEFAULT_API_BASE_URL
   );
-}
-
-async function buildBackendUrl(request: Request, context: AuthRouteContext) {
-  const { path } = await context.params;
-  const backendPath =
-    path.length === 1 && EMPLOYEE_AUTH_PATHS.has(path[0])
-      ? ["employee", path[0]]
-      : path;
-  const target = new URL(`/auth/${backendPath.map(encodeURIComponent).join("/")}`, getBackendBaseUrl());
-  const source = new URL(request.url);
-  target.search = source.search;
-  return target.toString();
 }
 
 function buildForwardHeaders(request: Request, hasJsonBody: boolean) {
@@ -70,12 +51,17 @@ function getSetCookieHeaders(headers: Headers) {
   return setCookie ? [setCookie] : [];
 }
 
-async function proxyAuthRequest(request: Request, context: AuthRouteContext) {
+async function proxyRequest(request: Request, context: ProxyRouteContext) {
   try {
+    const { path } = await context.params;
+    const backendPath = `/${path.map(encodeURIComponent).join("/")}`;
+    const source = new URL(request.url);
+    const target = new URL(backendPath, getBackendBaseUrl());
+    target.search = source.search;
+
     const hasBody = request.method !== "GET" && request.method !== "HEAD";
     const body = hasBody ? await request.text() : undefined;
-    const backendUrl = await buildBackendUrl(request, context);
-    const backendResponse = await fetch(backendUrl, {
+    const backendResponse = await fetch(target.toString(), {
       method: request.method,
       headers: buildForwardHeaders(request, hasBody),
       body: body && body.length > 0 ? body : undefined,
@@ -104,10 +90,23 @@ async function proxyAuthRequest(request: Request, context: AuthRouteContext) {
   }
 }
 
-export async function GET(request: Request, context: AuthRouteContext) {
-  return proxyAuthRequest(request, context);
+export async function GET(request: Request, context: ProxyRouteContext) {
+  return proxyRequest(request, context);
 }
 
-export async function POST(request: Request, context: AuthRouteContext) {
-  return proxyAuthRequest(request, context);
+export async function POST(request: Request, context: ProxyRouteContext) {
+  return proxyRequest(request, context);
 }
+
+export async function PATCH(request: Request, context: ProxyRouteContext) {
+  return proxyRequest(request, context);
+}
+
+export async function PUT(request: Request, context: ProxyRouteContext) {
+  return proxyRequest(request, context);
+}
+
+export async function DELETE(request: Request, context: ProxyRouteContext) {
+  return proxyRequest(request, context);
+}
+

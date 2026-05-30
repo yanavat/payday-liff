@@ -128,6 +128,23 @@ describe("ApiClient fetchWithRetry behaviour", () => {
     );
   });
 
+  it("prefixes browser data requests with /api/", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ items: [] }), { status: 200 }),
+    ) as unknown as typeof fetch;
+    globalThis.fetch = fetchMock;
+
+    const { getApiClient } = await import("./client?t=" + Date.now());
+    const client = getApiClient();
+
+    await client.get("/companies");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:3000/api/companies",
+      expect.objectContaining({ credentials: "include", method: "GET" }),
+    );
+  });
+
   it("handles 204 No Content by returning undefined", async () => {
     globalThis.fetch = vi
       .fn()
