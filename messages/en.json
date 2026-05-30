@@ -218,6 +218,7 @@
     "forgotPin": "Forgot PIN?",
     "scanQr": "Scan QR Code",
     "wrongPin": "Wrong PIN. {attempts} attempts remaining",
+    "invalidCredentials": "Invalid email or password",
     "loading": "Signing in...",
     "locked": "Account locked. Please wait 30 minutes",
     "language": "Language"

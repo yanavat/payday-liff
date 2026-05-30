@@ -49,6 +49,7 @@ const defaultMessages = {
     pin: "PIN",
     loginButton: "Login",
     wrongPin: "Wrong PIN — {attempts} left",
+    invalidCredentials: "Invalid email or password",
     locked: "Account locked",
     forgotPin: "Forgot PIN?",
     scanQr: "Scan QR",

@@ -10,6 +10,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { getApiClient } from "@/lib/api/client";
+import { getHRSession } from "@/lib/auth/session";
 
 type GuardState = "loading" | "authorized" | "redirecting";
 export type HRRole = "hr_manager" | "accountant" | "viewer";
@@ -44,6 +45,18 @@ export function HRAuthGate({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     async function checkSession() {
+      // The backend sets the auth cookie with Path=/hr, but all routes are
+      // under /<locale>/hr/... so the browser never sends it to /api/auth/me.
+      // Use the session saved in localStorage at login time as the primary check.
+      const local = getHRSession();
+      if (local) {
+        if (!cancelled) {
+          setRole(local.role);
+          setState("authorized");
+        }
+        return;
+      }
+
       try {
         const session = await getApiClient().get<AuthMeResponse>("/api/auth/me");
 

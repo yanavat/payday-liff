@@ -8,12 +8,14 @@ import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
+import { saveHRSession } from "@/lib/auth/session";
+import { getApiClient } from "@/lib/api/client";
 
 export function HRLoginPage() {
   const t = useTranslations("login");
   const locale = useLocale();
   const router = useRouter();
-  const [email, setEmail] = useState("hr@paydayplus.co");
+  const [email, setEmail] = useState("somchai@pdp.co.th");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +37,14 @@ export function HRLoginPage() {
       });
 
       if (response.ok) {
+        const data = await response.json().catch(() => null);
+        if (data?.hrUserId) {
+          saveHRSession(data);
+          if (data.companyId) {
+            localStorage.setItem("payday-company-id", data.companyId);
+            getApiClient().setCompanyId(data.companyId);
+          }
+        }
         window.localStorage.removeItem("payday-session");
         const dashboardHref = `/${locale}/hr/dashboard`;
         router.push(dashboardHref);
@@ -44,9 +54,9 @@ export function HRLoginPage() {
         return;
       }
 
-      setError(t("wrongPin", { attempts: 0 }));
+      setError(t("invalidCredentials"));
     } catch {
-      setError(t("wrongPin", { attempts: 0 }));
+      setError(t("invalidCredentials"));
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +111,7 @@ export function HRLoginPage() {
                 disabled={isLoading}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="hr@paydayplus.co"
+                placeholder="somchai@pdp.co.th"
                 className="min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
               />
             </div>
