@@ -16,6 +16,7 @@ import { BrowserLoginScreen } from "@/components/browser-login-screen";
 import { LinkLineScreen } from "@/components/link-line-screen";
 import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id";
 import { loadLiffClient } from "@/lib/liff-client";
+import { getApiClient } from "@/lib/api/client";
 import type { Employee, HRUser } from "@/lib/api";
 
 type AuthState = "loading" | "ready" | "login" | "activation" | "linking" | "error";
@@ -77,7 +78,12 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const t = useTranslations("auth");
 
   const applySession = useCallback((session: AuthMeResponse) => {
-    setEmployee(session.employee ?? null);
+    const employee = session.employee ?? null;
+    if (employee?.companyId && typeof window !== "undefined") {
+      localStorage.setItem("payday-company-id", employee.companyId);
+      getApiClient().setCompanyId(employee.companyId);
+    }
+    setEmployee(employee);
     setHrUser(session.hrUser ?? null);
     setAuthState("ready");
   }, []);
