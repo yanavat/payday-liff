@@ -179,7 +179,7 @@ export function HRLoginPage() {
         </form>
 
         <div className="mt-6 rounded-md bg-primary-subtle px-3 py-2 text-center text-xs leading-5 text-text-secondary">
-          Demo: hr@paydayplus.co / demo1234
+          Demo: somchai@pdp.co.th / demo1234
         </div>
       </section>
     </main>
