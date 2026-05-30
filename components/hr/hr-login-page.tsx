@@ -8,6 +8,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
+import { saveHRSession } from "@/lib/auth/session";
+import { getApiClient } from "@/lib/api/client";
 
 export function HRLoginPage() {
   const t = useTranslations("login");
@@ -35,6 +37,14 @@ export function HRLoginPage() {
       });
 
       if (response.ok) {
+        const data = await response.json().catch(() => null);
+        if (data?.hrUserId) {
+          saveHRSession(data);
+          if (data.companyId) {
+            localStorage.setItem("payday-company-id", data.companyId);
+            getApiClient().setCompanyId(data.companyId);
+          }
+        }
         window.localStorage.removeItem("payday-session");
         const dashboardHref = `/${locale}/hr/dashboard`;
         router.push(dashboardHref);
