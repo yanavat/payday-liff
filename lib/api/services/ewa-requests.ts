@@ -17,7 +17,7 @@ import type {
 export class EWARequestsService {
   private client = getApiClient()
 
-  async list(params?: ListParams & { employeeId?: string; status?: string }): Promise<PaginatedResponse<EWARequestDto>> {
+  async list(params?: ListParams & { employeeId?: string; status?: string; department?: string }): Promise<PaginatedResponse<EWARequestDto>> {
     return this.client.get<PaginatedResponse<EWARequestDto>>('/ewa-requests', params)
   }
 

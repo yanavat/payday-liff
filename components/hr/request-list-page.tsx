@@ -73,6 +73,7 @@ function RequestListContent() {
     refetch,
   } = useEWARequests({
     status: status === "all" ? undefined : status,
+    department: department === "all" ? undefined : department,
     limit: 200,
   });
   const { data: employeesData } = useEmployees({ limit: 200 });
@@ -105,19 +106,17 @@ function RequestListContent() {
         const matchesQuery = searchable.includes(query.trim().toLowerCase());
         const matchesCycle =
           payCycle === "all" || row.request.payCycle === payCycle;
-        const matchesDepartment =
-          department === "all" || row.employee.department === department;
         const reqDate = dayjs(row.request.requestedAt);
         const matchesFrom = !dateFrom || !reqDate.isBefore(dayjs(dateFrom), "day");
         const matchesTo = !dateTo || !reqDate.isAfter(dayjs(dateTo), "day");
-        return matchesQuery && matchesCycle && matchesDepartment && matchesFrom && matchesTo;
+        return matchesQuery && matchesCycle && matchesFrom && matchesTo;
       })
       .sort(
         (a, b) =>
           dayjs(b.request.requestedAt).valueOf() -
           dayjs(a.request.requestedAt).valueOf(),
       );
-  }, [allRequests, allEmployees, query, payCycle, department, dateFrom, dateTo]);
+  }, [allRequests, allEmployees, query, payCycle, dateFrom, dateTo]);
 
   const activeRow = rows.find((row) => row.request.id === activeRequestId);
   const selectedCount = selectedIds.length;

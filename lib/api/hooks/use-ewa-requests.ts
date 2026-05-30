@@ -17,7 +17,7 @@ import type {
 } from "../types";
 
 export function useEWARequests(
-  params?: ListParams & { employeeId?: string; status?: string },
+  params?: ListParams & { employeeId?: string; status?: string; department?: string },
 ) {
   const [data, setData] = useState<PaginatedResponse<EWARequestDto> | null>(
     null,
