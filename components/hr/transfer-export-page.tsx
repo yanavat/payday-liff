@@ -260,7 +260,7 @@ function TransferExportContent() {
           >
             <option value="all">{t("department")}</option>
             {allDepartments.map((d) => (
-              <option key={d.id} value={d.name}>{d.nameTh || d.name}</option>
+              <option key={d.id} value={d.id}>{d.nameTh || d.name}</option>
             ))}
           </select>
         </div>

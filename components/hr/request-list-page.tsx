@@ -297,7 +297,7 @@ function RequestListContent() {
             >
               <option value="all">{t("requests.allDepartments")}</option>
               {allDepartments.map((d) => (
-                <option key={d.id} value={d.name}>
+                <option key={d.id} value={d.id}>
                   {d.nameTh || d.name}
                 </option>
               ))}
