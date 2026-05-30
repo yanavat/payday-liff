@@ -239,7 +239,7 @@ function DashboardContent() {
                       </div>
                     </td>
                     <td className="px-4 text-sm text-text-secondary">
-                      {employee.department}
+                      {employee.departmentName ?? employee.department}
                     </td>
                     <td className="px-4 text-right font-number text-sm font-semibold">
                       {formatTHB(request.requestedAmount)}
