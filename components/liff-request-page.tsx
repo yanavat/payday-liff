@@ -15,6 +15,7 @@ import {
 import {
   useEmployee,
   useEmployeeCurrentPeriod,
+  useEmployeeEffectivePolicy,
 } from "@/lib/api/hooks/use-employees"
 import {
   useEWARequestActions,
@@ -97,6 +98,7 @@ export function LiffRequestPage() {
     error: periodError,
   } = useEmployeeCurrentPeriod(employeeId)
   const { data: employee } = useEmployee(employeeId)
+  const { data: effectivePolicy } = useEmployeeEffectivePolicy(employeeId)
   const { preview } = usePreviewEWARequest()
   const {
     create,
@@ -110,6 +112,14 @@ export function LiffRequestPage() {
         currentPeriod.maxWithdrawable - currentPeriod.previousEWAThisPeriod,
       )
     : 0
+  const isSuspended =
+    effectivePolicy?.effective.enabled === false ||
+    effectivePolicy?.effective.eligibility === "suspended"
+  const limitReached =
+    !isSuspended &&
+    !!currentPeriod &&
+    !!effectivePolicy &&
+    currentPeriod.usedRequests >= effectivePolicy.effective.maxRequests
   const minAmount = previewData?.policy?.minAmount ?? 500
   const amountValid =
     amount > 0 &&
@@ -291,6 +301,22 @@ export function LiffRequestPage() {
         </div>
       )}
 
+      {step === 1 && !showStep1Skeleton && isSuspended && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-center">
+          <p className="text-[16px] font-semibold text-red-700">
+            {t("suspendedError")}
+          </p>
+        </div>
+      )}
+
+      {step === 1 && !showStep1Skeleton && limitReached && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-center">
+          <p className="text-[16px] font-semibold text-red-700">
+            {t("requestLimitError")}
+          </p>
+        </div>
+      )}
+
       {step === 1 && !showStep1Skeleton && (
         <section className="space-y-4">
           <div className="rounded-xl bg-primary-bg p-4">
@@ -390,7 +416,7 @@ export function LiffRequestPage() {
 
           <button
             type="button"
-            disabled={!amountValid || !employeeId}
+            disabled={!amountValid || !employeeId || limitReached || isSuspended}
             onClick={() => setStep(2)}
             className="flex h-[52px] w-full items-center justify-center rounded-md bg-primary text-[16px] font-semibold text-white shadow-card transition focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
           >

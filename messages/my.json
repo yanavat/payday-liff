@@ -112,6 +112,8 @@
     "availableBalance": "ထုတ်ယူနိုင်သောငွေ",
     "customAmount": "ပမာဏသတ်မှတ်",
     "amountError": "ပမာဏကန့်သတ်ကျော်သည်",
+    "requestLimitError": "ဤကာလတွင် တောင်းဆိုမှုအကြိမ်ရေ ကုန်ဆုံးသွားပြီ",
+    "suspendedError": "သင်၏ EWA အသုံးပြုခွင့် ရပ်ဆိုင်းထားသည်။ HR နှင့် ဆက်သွယ်ပါ။",
     "remainingBalance": "ကျန်ရှိပမာဏ",
     "reason": "အကြောင်းအရင်း",
     "reasons": {

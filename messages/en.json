@@ -245,6 +245,8 @@
     "availableBalance": "Available Balance",
     "customAmount": "Custom Amount",
     "amountError": "Amount exceeds your limit",
+    "requestLimitError": "You have used all your requests for this period",
+    "suspendedError": "Your EWA access has been suspended. Please contact HR.",
     "remainingBalance": "Remaining balance",
     "reason": "Reason",
     "reasons": {

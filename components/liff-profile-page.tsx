@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   ChevronDown,
   CreditCard,
@@ -10,22 +10,19 @@ import {
   MessageCircle,
   WalletCards,
   X,
-} from "lucide-react";
-import Image from "next/image";
-import { useLocale, useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
-import { LocaleSwitcher } from "@/components/shared/locale-switcher";
-import { Avatar } from "@/components/ui/avatar";
-import { PayCycleBadge } from "@/components/ui/pay-cycle-badge";
-import { ProgressBar } from "@/components/ui/progress-bar";
-import {
-  useAuth,
-  useLiffProfile,
-} from "@/components/liff-auth-gate";
-import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id";
-import { useEmployee } from "@/lib/api/hooks/use-employees";
-import { useSettingsActions } from "@/lib/api/hooks/use-settings";
-import { loadLiffClient } from "@/lib/liff-client";
+} from "lucide-react"
+import Image from "next/image"
+import { useLocale, useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
+import { LocaleSwitcher } from "@/components/shared/locale-switcher"
+import { Avatar } from "@/components/ui/avatar"
+import { PayCycleBadge } from "@/components/ui/pay-cycle-badge"
+import { ProgressBar } from "@/components/ui/progress-bar"
+import { useAuth, useLiffProfile } from "@/components/liff-auth-gate"
+import { getAuthEmployeeId } from "@/lib/auth/get-auth-employee-id"
+import { useEmployee } from "@/lib/api/hooks/use-employees"
+import { useSettingsActions } from "@/lib/api/hooks/use-settings"
+import { loadLiffClient } from "@/lib/liff-client"
 
 const THAI_BANKS = [
   { code: "KBANK", nameTh: "กสิกรไทย", nameEn: "Kasikorn Bank" },
@@ -36,74 +33,85 @@ const THAI_BANKS = [
   { code: "BAY", nameTh: "กรุงศรีอยุธยา", nameEn: "Bank of Ayudhya" },
   { code: "CIMBT", nameTh: "ซีไอเอ็มบีไทย", nameEn: "CIMB Thai" },
   { code: "GSB", nameTh: "ออมสิน", nameEn: "Government Savings Bank" },
-];
+]
 
 function getBankDisplayName(code: string, locale: string) {
-  const bank = THAI_BANKS.find((b) => b.code === code);
-  if (!bank) return code;
-  return locale === "th" ? bank.nameTh : bank.nameEn;
+  const bank = THAI_BANKS.find((b) => b.code === code)
+  if (!bank) return code
+  return locale === "th" ? bank.nameTh : bank.nameEn
 }
 
 function maskAccountNumber(num: string) {
-  const digits = num.replace(/\D/g, "");
-  if (digits.length < 4) return "xxx-x-xxxxx-x";
-  const tail = digits.slice(-4);
-  return `xxx-x-xx${tail.slice(0, 3)}-${tail.slice(-1)}`;
+  const digits = num.replace(/\D/g, "")
+  if (digits.length < 4) return "xxx-x-xxxxx-x"
+  const tail = digits.slice(-4)
+  return `xxx-x-xx${tail.slice(0, 3)}-${tail.slice(-1)}`
 }
 
 export function LiffProfilePage() {
-  const t = useTranslations();
-  const locale = useLocale();
-  const profile = useLiffProfile();
-  const { employee: authEmployee, isInLiff, logout } = useAuth();
-  const employeeId = getAuthEmployeeId(authEmployee);
-  const { data: employee } = useEmployee(employeeId);
-  const { updateNotifications } = useSettingsActions();
+  const t = useTranslations()
+  const locale = useLocale()
+  const profile = useLiffProfile()
+  const { employee: authEmployee, isInLiff, logout } = useAuth()
+  const employeeId = getAuthEmployeeId(authEmployee)
+  const { data: employee } = useEmployee(employeeId)
+  const { updateNotifications } = useSettingsActions()
 
-  const [line, setLine] = useState(true);
-  const [showEditBank, setShowEditBank] = useState(false);
+  const [line, setLine] = useState(true)
+  const [showEditBank, setShowEditBank] = useState(false)
 
-  const [bankCode, setBankCode] = useState("");
-  const [accountMasked, setAccountMasked] = useState("");
-  const [holderName, setHolderName] = useState("");
-  const hasLineProfile = isInLiff && Boolean(profile?.userId);
+  const maxPercent = employee?.ewaMaxPercent ?? 100
+  const usedRequests = employee?.currentPeriod?.usedRequests ?? 0
+  const maxRequests =
+    employee?.ewaMaxRequests && employee.ewaMaxRequests > 0
+      ? employee.ewaMaxRequests
+      : employee?.currentPeriod
+        ? employee.currentPeriod.usedRequests +
+          employee.currentPeriod.remainingRequests
+        : 0
+  const remainingRequests = employee?.currentPeriod?.remainingRequests ?? 0
+
+  const [bankCode, setBankCode] = useState("")
+  const [accountMasked, setAccountMasked] = useState("")
+  const [holderName, setHolderName] = useState("")
+  const hasLineProfile = isInLiff && Boolean(profile?.userId)
   const displayName = hasLineProfile
     ? profile?.displayName
-    : employee?.name ?? authEmployee?.name ?? authEmployee?.nameTh;
+    : (employee?.name ?? authEmployee?.name ?? authEmployee?.nameTh)
   const avatarName =
-    displayName ?? employee?.employeeCode ?? authEmployee?.employeeCode ?? "";
+    displayName ?? employee?.employeeCode ?? authEmployee?.employeeCode ?? ""
 
   useEffect(() => {
-    if (!employee) return;
-    setBankCode(employee.bankName ?? "");
-    setAccountMasked(employee.bankAccountMasked ?? "");
-    setHolderName(employee.name);
-  }, [employee]);
+    if (!employee) return
+    setBankCode(employee.bankName ?? "")
+    setAccountMasked(employee.bankAccountMasked ?? "")
+    setHolderName(employee.name)
+  }, [employee])
 
   function handleSaveBank(data: {
-    bankCode: string;
-    accountNumber: string;
-    holderName: string;
+    bankCode: string
+    accountNumber: string
+    holderName: string
   }) {
-    setBankCode(data.bankCode);
-    setAccountMasked(maskAccountNumber(data.accountNumber));
-    setHolderName(data.holderName);
-    setShowEditBank(false);
+    setBankCode(data.bankCode)
+    setAccountMasked(maskAccountNumber(data.accountNumber))
+    setHolderName(data.holderName)
+    setShowEditBank(false)
   }
 
   function handleUnlink() {
-    if (!hasLineProfile) return;
+    if (!hasLineProfile) return
     void logout()
       .catch(() => undefined)
       .finally(() => {
         if (isInLiff) {
           void loadLiffClient().then((liff) => {
-            liff.logout();
-            liff.closeWindow();
-          });
+            liff.logout()
+            liff.closeWindow()
+          })
         }
-        window.location.reload();
-      });
+        window.location.reload()
+      })
   }
 
   return (
@@ -185,18 +193,23 @@ export function LiffProfilePage() {
               {t("profile.maxPercent")}
             </span>
             <span className="font-semibold text-text-primary">
-              {t("profile.percentOfSalary", { percent: 100 })}
+              {t("profile.percentOfSalary", { percent: maxPercent })}
             </span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[16px]">
             <span className="text-text-secondary">{t("profile.used")}</span>
             <span className="font-semibold text-text-primary">
-              {t("profile.usedCount", { used: 1, max: 2 })}
+              {t("profile.usedCount", { used: usedRequests, max: maxRequests })}
             </span>
           </div>
-          <ProgressBar value={1} max={2} height="8px" className="mt-3" />
+          <ProgressBar
+            value={usedRequests}
+            max={maxRequests || 1}
+            height="8px"
+            className="mt-3"
+          />
           <p className="mt-2 text-[16px] font-semibold text-primary">
-            {t("profile.remaining")}: 1
+            {t("profile.remaining")}: {remainingRequests}
           </p>
         </section>
 
@@ -234,14 +247,14 @@ export function LiffProfilePage() {
             checked={line}
             disabled={!hasLineProfile}
             onChange={(v) => {
-              setLine(v);
+              setLine(v)
               void updateNotifications({
                 onApproval: { line: v },
                 onRejection: { line: v },
                 onDisbursement: { line: v },
                 onPaydayReminder: { line: v },
                 onCutoffWarning: { line: v },
-              }).catch(() => setLine(!v));
+              }).catch(() => setLine(!v))
             }}
           />
         </section>
@@ -285,20 +298,20 @@ export function LiffProfilePage() {
         onSave={handleSaveBank}
       />
     </div>
-  );
+  )
 }
 
 interface BankAccountSheetProps {
-  open: boolean;
-  onClose: () => void;
-  initialBankCode: string;
-  initialHolderName: string;
-  locale: string;
+  open: boolean
+  onClose: () => void
+  initialBankCode: string
+  initialHolderName: string
+  locale: string
   onSave: (data: {
-    bankCode: string;
-    accountNumber: string;
-    holderName: string;
-  }) => void;
+    bankCode: string
+    accountNumber: string
+    holderName: string
+  }) => void
 }
 
 function BankAccountSheet({
@@ -309,47 +322,47 @@ function BankAccountSheet({
   locale,
   onSave,
 }: BankAccountSheetProps) {
-  const t = useTranslations();
-  const [bankCode, setBankCode] = useState(initialBankCode);
-  const [accountNumber, setAccountNumber] = useState("");
-  const [holderName, setHolderName] = useState(initialHolderName);
-  const [visible, setVisible] = useState(open);
-  const [closing, setClosing] = useState(false);
+  const t = useTranslations()
+  const [bankCode, setBankCode] = useState(initialBankCode)
+  const [accountNumber, setAccountNumber] = useState("")
+  const [holderName, setHolderName] = useState(initialHolderName)
+  const [visible, setVisible] = useState(open)
+  const [closing, setClosing] = useState(false)
 
   useEffect(() => {
     if (open) {
-      setVisible(true);
-      setClosing(false);
-      setBankCode(initialBankCode);
-      setHolderName(initialHolderName);
-      setAccountNumber("");
+      setVisible(true)
+      setClosing(false)
+      setBankCode(initialBankCode)
+      setHolderName(initialHolderName)
+      setAccountNumber("")
     } else {
-      setClosing(true);
-      const timer = setTimeout(() => setVisible(false), 250);
-      return () => clearTimeout(timer);
+      setClosing(true)
+      const timer = setTimeout(() => setVisible(false), 250)
+      return () => clearTimeout(timer)
     }
-  }, [open, initialBankCode, initialHolderName]);
+  }, [open, initialBankCode, initialHolderName])
 
-  const onCloseRef = useRef(onClose);
+  const onCloseRef = useRef(onClose)
   useEffect(() => {
-    onCloseRef.current = onClose;
-  });
+    onCloseRef.current = onClose
+  })
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) return
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onCloseRef.current();
+      if (e.key === "Escape") onCloseRef.current()
     }
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [open]);
+    document.addEventListener("keydown", handleKey)
+    return () => document.removeEventListener("keydown", handleKey)
+  }, [open])
 
-  if (!visible) return null;
+  if (!visible) return null
 
   const canSave =
     bankCode.length > 0 &&
     accountNumber.replace(/\D/g, "").length >= 10 &&
-    holderName.trim().length > 0;
+    holderName.trim().length > 0
 
   return (
     <div className="fixed inset-0 z-50">
@@ -446,7 +459,7 @@ function BankAccountSheet({
         </footer>
       </div>
     </div>
-  );
+  )
 }
 
 function ToggleRow({
@@ -456,11 +469,11 @@ function ToggleRow({
   disabled = false,
   onChange,
 }: {
-  icon: ReactNode;
-  label: string;
-  checked: boolean;
-  disabled?: boolean;
-  onChange: (checked: boolean) => void;
+  icon: ReactNode
+  label: string
+  checked: boolean
+  disabled?: boolean
+  onChange: (checked: boolean) => void
 }) {
   return (
     <div className="flex items-center justify-between border-b border-border-light py-3 last:border-b-0">
@@ -488,5 +501,5 @@ function ToggleRow({
         />
       </button>
     </div>
-  );
+  )
 }
