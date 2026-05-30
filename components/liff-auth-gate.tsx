@@ -79,9 +79,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   const applySession = useCallback((session: AuthMeResponse) => {
     const employee = session.employee ?? null;
-    if (employee?.companyId && typeof window !== "undefined") {
-      localStorage.setItem("payday-company-id", employee.companyId);
-      getApiClient().setCompanyId(employee.companyId);
+    const companyId = getAuthCompanyId();
+    if (companyId && typeof window !== "undefined") {
+      localStorage.setItem("payday-company-id", companyId);
+      getApiClient().setCompanyId(companyId);
     }
     setEmployee(employee);
     setHrUser(session.hrUser ?? null);

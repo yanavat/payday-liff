@@ -95,8 +95,14 @@ class ApiClient {
   }
 
   private buildUrl(path: string): URL {
-    if (path.startsWith("/api/") && typeof window !== "undefined") {
-      return new URL(path, window.location.origin);
+    if (typeof window !== "undefined") {
+      if (path.startsWith("/api/")) {
+        return new URL(path, window.location.origin);
+      }
+
+      if (path.startsWith("/")) {
+        return new URL(`/api${path}`, window.location.origin);
+      }
     }
 
     return new URL(path, this.config.baseURL);
