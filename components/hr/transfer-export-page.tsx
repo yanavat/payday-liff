@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Download, RotateCcw } from "lucide-react";
+import { AlertTriangle, CalendarDays, Download, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -11,6 +11,7 @@ import { TableRowSkeleton } from "@/components/ui/table-row-skeleton";
 import { ApiErrorBoundary } from "@/components/ui/api-error-boundary";
 import { useToast } from "@/components/ui/toast";
 import {
+  useDepartments,
   useEmployees,
   useEWARequestActions,
   useEWARequests,
@@ -56,6 +57,9 @@ function TransferExportContent() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmExport, setConfirmExport] = useState(false);
   const [failedRequestId, setFailedRequestId] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [deptFilter, setDeptFilter] = useState("all");
 
   const {
     data: requestsData,
@@ -65,6 +69,7 @@ function TransferExportContent() {
   } = useEWARequests({ limit: 200 });
   const { data: employeesData, loading: employeesLoading } = useEmployees({ limit: 200 });
   const { data: settings, loading: settingsLoading } = useSettings();
+  const { data: departmentsData } = useDepartments();
   const {
     exportBatch,
     markTransferFailed,
@@ -79,6 +84,7 @@ function TransferExportContent() {
   }, [role, router]);
 
   const employees = useMemo(() => employeesData?.data ?? [], [employeesData]);
+  const allDepartments = useMemo(() => departmentsData?.data ?? [], [departmentsData]);
   const requests = useMemo(() => requestsData?.data ?? [], [requestsData]);
   const rows = useMemo<ExportRow[]>(() => {
     return requests
@@ -93,12 +99,19 @@ function TransferExportContent() {
           request.employee ??
           employees.find((employee) => employee.id === request.employeeId),
       }))
+      .filter(({ request, employee }) => {
+        const reqDate = dayjs(request.requestedAt);
+        const matchesFrom = !dateFrom || !reqDate.isBefore(dayjs(dateFrom), "day");
+        const matchesTo = !dateTo || !reqDate.isAfter(dayjs(dateTo), "day");
+        const matchesDept = deptFilter === "all" || employee?.department === deptFilter;
+        return matchesFrom && matchesTo && matchesDept;
+      })
       .sort((a, b) => {
         const aDate = a.request.exportedAt ?? a.request.requestedAt;
         const bDate = b.request.exportedAt ?? b.request.requestedAt;
         return dayjs(bDate).valueOf() - dayjs(aDate).valueOf();
       });
-  }, [employees, requests]);
+  }, [employees, requests, dateFrom, dateTo, deptFilter]);
 
   const selectableRows = rows.filter(
     ({ request }) => request.status === "approved" && !request.exported,
@@ -218,6 +231,41 @@ function TransferExportContent() {
         </button>
       </header>
 
+      <section className="rounded-xl border border-border bg-bg-canvas p-4 shadow-card">
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="inline-flex h-[34px] items-center gap-2 rounded-md border border-border bg-bg-secondary px-3 text-sm text-text-muted">
+            <CalendarDays className="h-4 w-4 shrink-0" aria-hidden />
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="bg-transparent text-text-primary outline-none"
+              aria-label="From date"
+            />
+          </label>
+          <label className="inline-flex h-[34px] items-center gap-2 rounded-md border border-border bg-bg-secondary px-3 text-sm text-text-muted">
+            <CalendarDays className="h-4 w-4 shrink-0" aria-hidden />
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="bg-transparent text-text-primary outline-none"
+              aria-label="To date"
+            />
+          </label>
+          <select
+            value={deptFilter}
+            onChange={(e) => setDeptFilter(e.target.value)}
+            className="h-[34px] min-w-[152px] rounded-md border border-border bg-bg-secondary px-3 text-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="all">{t("department")}</option>
+            {allDepartments.map((d) => (
+              <option key={d.id} value={d.name}>{d.nameTh || d.name}</option>
+            ))}
+          </select>
+        </div>
+      </section>
+
       <section className="overflow-hidden rounded-xl border border-border bg-bg-canvas shadow-card">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse">
@@ -266,7 +314,7 @@ function TransferExportContent() {
                       <div className="text-caption text-text-muted">{request.id}</div>
                     </td>
                     <td className="px-4 text-sm text-text-secondary">
-                      {employee?.department ?? "-"}
+                      {employee?.departmentName ?? employee?.department ?? "-"}
                     </td>
                     <td className="px-4 text-right font-number text-sm font-semibold">
                       {formatTHB(request.netAmount)}
