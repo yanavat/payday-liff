@@ -44,9 +44,9 @@ export function HRLoginPage() {
         return;
       }
 
-      setError(t("wrongPin", { attempts: 0 }));
+      setError(t("invalidCredentials"));
     } catch {
-      setError(t("wrongPin", { attempts: 0 }));
+      setError(t("invalidCredentials"));
     } finally {
       setIsLoading(false);
     }
