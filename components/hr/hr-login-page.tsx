@@ -13,7 +13,7 @@ export function HRLoginPage() {
   const t = useTranslations("login");
   const locale = useLocale();
   const router = useRouter();
-  const [email, setEmail] = useState("hr@paydayplus.co");
+  const [email, setEmail] = useState("somchai@pdp.co.th");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +101,7 @@ export function HRLoginPage() {
                 disabled={isLoading}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="hr@paydayplus.co"
+                placeholder="somchai@pdp.co.th"
                 className="min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
               />
             </div>

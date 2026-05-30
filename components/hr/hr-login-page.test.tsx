@@ -60,7 +60,7 @@ describe("HRLoginPage", () => {
     renderWithIntl(<HRLoginPage />);
 
     expect(
-      screen.getByText("Demo: hr@paydayplus.co / demo1234"),
+      screen.getByText("Demo: somchai@pdp.co.th / demo1234"),
     ).toBeInTheDocument();
   });
 
@@ -99,7 +99,7 @@ describe("HRLoginPage", () => {
           method: "POST",
           credentials: "include",
           body: JSON.stringify({
-            email: "hr@paydayplus.co",
+            email: "somchai@pdp.co.th",
             password: "demo1234",
           }),
         }),
@@ -127,7 +127,7 @@ describe("HRLoginPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Login" }));
 
     await waitFor(() => {
-      expect(screen.getByText(/Wrong PIN/)).toBeInTheDocument();
+      expect(screen.getByText(/Invalid email or password/)).toBeInTheDocument();
     });
 
     expect(pushMock).not.toHaveBeenCalled();
