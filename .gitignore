@@ -63,3 +63,8 @@ docs/feature/*.html
 *.html
 /test-results/
 tsconfig.spec.json
+
+# internal AI-agent files (excluded from public portfolio repo)
+.agent/
+AGENTS.md
+docs/superpowers/
