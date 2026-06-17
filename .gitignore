@@ -71,3 +71,10 @@ docs/superpowers/
 
 # local utility scripts (not for public)
 /scripts/
+
+# internal planning / process notes (not for public portfolio)
+PayDay+_LIFF_Migration_Plan.md
+DEMO.md
+docs/auth-plan.md
+docs/feature/
+docs/testing/
