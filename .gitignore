@@ -27,7 +27,7 @@ yarn-debug.log*
 yarn-error.log*
 .npm-cache/
 
-# local env files
+# local env files (.env.example is intentionally tracked)
 .env*.local
 .env
 
@@ -40,18 +40,26 @@ next-env.d.ts
 
 # windsurf
 .windsurfrules
+
 # superpowers
 .superpowers/
-.claude/settings.local.json
-.env.example
+
+# claude / local AI tooling
+.claude/
+.rtk/filters.toml
+CLAUDE.md
+
+# internal agent prompts & task tracking (not for public)
+ONBOARDING_AGENT_PROMPT.md
+ONBOARDING_BACKEND_PROMPT.md
+docs/auth-frontend-agent-prompt.md
+completed-tasks.md
+task.md
+
+# build artifacts
 PayDay+_Presentation_Script.md
 docs/tasks-*.html
 docs/feature/*.html
 *.html
 /test-results/
 tsconfig.spec.json
-
-# claude
-CLAUDE.md
-.gitignore
-.rtk/filters.toml
