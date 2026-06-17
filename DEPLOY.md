@@ -1,163 +1,105 @@
-# EWA System — MVP Deployment Guide
+# Deployment Guide
 
-> Stack: Next.js 15 · TypeScript · Tailwind · Vercel  
-> Repo: https://github.com/yanavat/paydayplus_poc  
-> Last updated: May 2026
+> Stack: Next.js 15 · TypeScript · Tailwind · Vercel
+
+This guide covers deploying the PayDay+ LIFF frontend to Vercel. The app
+runs against mock data out of the box, so it deploys with no backend or
+secrets required — useful for previews and demos.
 
 ---
 
 ## Prerequisites
 
-- GitHub account with access to `yanavat/paydayplus_poc`
-- Vercel account (free Hobby plan is fine for demo)
 - Node.js 18+ installed locally
+- A [Vercel](https://vercel.com) account (the free Hobby plan is sufficient)
+- The repository pushed to your own Git remote
 
 ---
 
-## Step 1 — Commit & Push to GitHub
+## Step 1 — Build locally
 
-Open a terminal in the project folder and run:
+Verify the project builds before deploying:
 
 ```bash
-# Stage the new deployment files
-git add .env.example vercel.json
-
-# Commit
-git commit -m "feat<deploy>: add vercel.json and .env.example for MVP"
-
-# Push to GitHub
-git push paydayplus_poc master
+npm install
+npm run build
 ```
 
 ---
 
 ## Step 2 — Deploy to Vercel
 
-### Option A — Vercel CLI (fastest)
+### Option A — Vercel CLI
 
 ```bash
-# Install Vercel CLI globally
 npm i -g vercel
 
-# From the project folder, deploy
-vercel
-
-# Follow the prompts:
-#   Set up and deploy? → Y
-#   Which scope? → select your account
-#   Link to existing project? → N (first time)
-#   Project name? → wow-payday-plus  (or any name)
-#   In which directory is your code? → ./  (press Enter)
-#
-# First deploy goes to a preview URL.
-# To deploy to production:
-vercel --prod
+# From the project root
+vercel            # creates a preview deployment
+vercel --prod     # promotes to production
 ```
 
-### Option B — Vercel Dashboard (no CLI)
+Vercel auto-detects Next.js, so the default build settings work as-is.
 
-1. Go to https://vercel.com/new
-2. Click **Import Git Repository**
-3. Select `yanavat/paydayplus_poc`
-4. Leave all build settings as-is (auto-detected as Next.js)
-5. Click **Deploy**
+### Option B — Vercel Dashboard
+
+1. Go to <https://vercel.com/new>
+2. Import your Git repository
+3. Leave the build settings at their auto-detected defaults
+4. Click **Deploy**
 
 ---
 
-## Step 3 — Environment Variables
+## Step 3 — Environment variables
 
-The MVP uses only mock data — no environment variables are required for the demo.
+The app runs entirely on mock data when `NEXT_PUBLIC_LIFF_MOCK=true`, so no
+variables are required for a demo deployment.
 
-When you're ready to add a real backend, add these in **Vercel → Project → Settings → Environment Variables**:
+To connect a real LINE LIFF app and backend, set these in
+**Vercel → Project → Settings → Environment Variables** (see
+[`.env.example`](.env.example) for the full list):
 
-| Variable | Required for | Example |
-|---|---|---|
-| `NEXT_PUBLIC_APP_URL` | Absolute URLs in emails | `https://your-project.vercel.app` |
-| `JWT_SECRET` | Auth (post-MVP) | 64-char random string |
-| `DATABASE_URL` | DB (post-MVP) | `postgresql://...` |
-| `LINE_NOTIFY_TOKEN` | LINE alerts (post-MVP) | from LINE Notify console |
-
----
-
-## Step 4 — Test on Mobile
-
-Once deployed, open the Vercel preview URL on your phone:
-
-### Employee side (mobile 390px)
-```
-https://your-project.vercel.app/employee/login
-```
-- PIN: `1234` (mock)
-- Employee ID: any from the list (e.g. `EMP001`)
-
-### HR side (desktop)
-```
-https://your-project.vercel.app/hr/login
-```
-- Email: `hr@company.com` (mock)
-- Password: `password` (mock)
-
-### Quick mobile test checklist
-- [ ] Login PIN pad is usable with thumbs
-- [ ] Home balance card renders correctly
-- [ ] 3-step request wizard flows end-to-end
-- [ ] History accordion taps correctly
-- [ ] Bottom tab bar stays fixed at bottom
-- [ ] Thai text renders correctly (Sarabun font loads)
+| Variable                    | Description                                   |
+| --------------------------- | --------------------------------------------- |
+| `NEXT_PUBLIC_LIFF_MOCK`     | `false` to use real LINE auth                 |
+| `NEXT_PUBLIC_LIFF_ID`       | LIFF App ID from the LINE Developer Console   |
+| `NEXT_PUBLIC_LIFF_URL`      | Public URL of the deployed LIFF app           |
+| `LINE_CHANNEL_ACCESS_TOKEN` | Channel Access Token (server-side only)       |
+| `NEXT_PUBLIC_API_BASE_URL`  | Base URL of the backend API                   |
 
 ---
 
-## Step 5 — Share Demo Link
+## Step 4 — Test the deployment
 
-Once Vercel assigns a production URL, share it with the HR team:
+Open the deployment URL and check both sides of the app:
 
-```
-Subject: EWA System Demo — ขอความเห็น
+**Employee app (mobile, LINE LIFF)** — the LIFF root route. With
+`NEXT_PUBLIC_LIFF_MOCK=true` it loads a mock profile, so it can be opened in a
+desktop browser at a 390px viewport without a real LINE account.
 
-สวัสดีครับ/ค่ะ
+**HR dashboard (desktop)** — `/<locale>/hr/login` (e.g. `/en/hr/login`).
 
-ขอนำเสนอระบบ EWA (Earned Wage Access) รุ่นทดลองใช้งานครับ
+A quick smoke-test checklist:
 
-🔗 HR Dashboard (เปิดบน desktop):
-   https://your-project.vercel.app/hr/login
-   Email: hr@company.com | Password: password
-
-📱 Employee App (เปิดบนมือถือ):
-   https://your-project.vercel.app/employee/login
-   รหัสพนักงาน: EMP001 | PIN: 1234
-
-ยินดีรับฟังความคิดเห็นทุกด้านครับ 🙏
-```
+- [ ] Employee home balance card renders
+- [ ] 3-step request wizard flows end to end
+- [ ] History tabs switch correctly
+- [ ] Bottom tab bar stays fixed
+- [ ] Thai and Myanmar text render with the correct fonts
+- [ ] HR dashboard metrics and request list load
 
 ---
 
-## Step 6 — Collect Feedback → Backlog
+## LINE LIFF on a real device
 
-After sharing, log feedback in GitHub Issues:
-
-```bash
-# Example: open issues directly from CLI
-gh issue create --title "Feedback: [ชื่อเรื่อง]" --body "..."
-```
-
-Or paste feedback into the **Backlog** section of `task.md`.
+To test inside the LINE app, register your deployment URL as the LIFF endpoint
+in the [LINE Developer Console](https://developers.line.biz/console/), set
+`NEXT_PUBLIC_LIFF_MOCK=false`, and provide a valid `NEXT_PUBLIC_LIFF_ID`.
 
 ---
 
-## Build Verification
+## Custom domain (optional)
 
-| Check | Status |
-|---|---|
-| `tsc --noEmit` | ✅ 0 errors |
-| `eslint` | ✅ 0 warnings |
-| `next build` (Vercel x64) | ✅ Expected to pass |
-| `next build` (local arm64 sandbox) | ⚠️ @parcel/watcher sandbox-only issue — not a Vercel concern |
-
----
-
-## Domains (Optional)
-
-To add a custom domain:
 1. Vercel → Project → Settings → Domains
-2. Add your domain (e.g. `ewa.yourcompany.com`)
+2. Add your domain
 3. Point a CNAME at `cname.vercel-dns.com` in your DNS provider

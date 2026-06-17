@@ -16,6 +16,8 @@
 
 PayDay+ lets employees request early access to wages they've already earned — directly from LINE, on their phone. HR managers review and approve requests on a desktop dashboard.
 
+> **Note:** This is a portfolio demo project using mock data. No real employee, payroll, or company data is included.
+
 | Side         | Audience                 | Viewport                   |
 | ------------ | ------------------------ | -------------------------- |
 | Employee App | Factory workers          | Mobile 390px via LINE LIFF |
@@ -36,8 +38,6 @@ PayDay+ lets employees request early access to wages they've already earned — 
 | Dashboard                                          | Request List                                  | Reports                                         |
 | -------------------------------------------------- | --------------------------------------------- | ----------------------------------------------- |
 | ![HR Dashboard](docs/screenshots/hr-dashboard.png) | ![Requests](docs/screenshots/hr-requests.png) | ![Employees](docs/screenshots/hr-employees.png) |
-
-> Add screenshots to `docs/screenshots/` to populate the preview above.
 
 ---
 
