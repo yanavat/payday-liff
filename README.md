@@ -3,10 +3,11 @@
   <h1>PayDay+ LIFF</h1>
   <p>Earned Wage Access platform for factory workers — LINE LIFF frontend</p>
 
-  ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
-  ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
-  ![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss)
-  ![LINE LIFF](https://img.shields.io/badge/LINE-LIFF-00C300?logo=line)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss)
+![LINE LIFF](https://img.shields.io/badge/LINE-LIFF-00C300?logo=line)
+
 </div>
 
 ---
@@ -15,10 +16,10 @@
 
 PayDay+ lets employees request early access to wages they've already earned — directly from LINE, on their phone. HR managers review and approve requests on a desktop dashboard.
 
-| Side | Audience | Viewport |
-|---|---|---|
-| Employee App | Factory workers | Mobile 390px via LINE LIFF |
-| HR Dashboard | HR managers, accountants | Desktop 1440px |
+| Side         | Audience                 | Viewport                   |
+| ------------ | ------------------------ | -------------------------- |
+| Employee App | Factory workers          | Mobile 390px via LINE LIFF |
+| HR Dashboard | HR managers, accountants | Desktop 1440px             |
 
 ---
 
@@ -26,15 +27,15 @@ PayDay+ lets employees request early access to wages they've already earned — 
 
 ### Employee App (Mobile · LINE LIFF)
 
-| Home | Request | History |
-|---|---|---|
+| Home                                                 | Request                                                | History                                           |
+| ---------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------- |
 | ![Employee Home](docs/screenshots/employee-home.png) | ![Request Flow](docs/screenshots/employee-request.png) | ![History](docs/screenshots/employee-history.png) |
 
 ### HR Dashboard (Desktop)
 
-| Dashboard | Request List | Reports |
-|---|---|---|
-| ![HR Dashboard](docs/screenshots/hr-dashboard.png) | ![Requests](docs/screenshots/hr-requests.png) | ![Reports](docs/screenshots/hr-reports.png) |
+| Dashboard                                          | Request List                                  | Reports                                         |
+| -------------------------------------------------- | --------------------------------------------- | ----------------------------------------------- |
+| ![HR Dashboard](docs/screenshots/hr-dashboard.png) | ![Requests](docs/screenshots/hr-requests.png) | ![Employees](docs/screenshots/hr-employees.png) |
 
 > Add screenshots to `docs/screenshots/` to populate the preview above.
 
@@ -43,6 +44,7 @@ PayDay+ lets employees request early access to wages they've already earned — 
 ## Features
 
 **Employee (LINE LIFF)**
+
 - LINE OAuth login with auto-link on return
 - Balance card with pay-period progress
 - 3-step EWA request wizard with PIN confirmation
@@ -52,6 +54,7 @@ PayDay+ lets employees request early access to wages they've already earned — 
 - Offline banner
 
 **HR Dashboard**
+
 - Metrics overview — pending / approved / disbursed / enrolled
 - EWA request list with search, filters, bulk approve
 - Request detail drawer with employee timeline
@@ -129,12 +132,12 @@ messages/          # i18n strings (th.json, en.json, my.json)
 
 See [`.env.example`](.env.example) for the full list. Key variables:
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_LIFF_MOCK` | `true` to skip LINE auth in browser |
-| `NEXT_PUBLIC_LIFF_ID` | LIFF App ID from LINE Developer Console |
-| `LINE_CHANNEL_ACCESS_TOKEN` | Channel Access Token (server-side only) |
-| `NEXT_PUBLIC_API_BASE_URL` | Backend base URL (default: `http://localhost:4000`) |
+| Variable                    | Description                                         |
+| --------------------------- | --------------------------------------------------- |
+| `NEXT_PUBLIC_LIFF_MOCK`     | `true` to skip LINE auth in browser                 |
+| `NEXT_PUBLIC_LIFF_ID`       | LIFF App ID from LINE Developer Console             |
+| `LINE_CHANNEL_ACCESS_TOKEN` | Channel Access Token (server-side only)             |
+| `NEXT_PUBLIC_API_BASE_URL`  | Backend base URL (default: `http://localhost:4000`) |
 
 ---
 
