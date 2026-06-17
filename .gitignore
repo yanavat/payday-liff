@@ -68,3 +68,6 @@ tsconfig.spec.json
 .agent/
 AGENTS.md
 docs/superpowers/
+
+# local utility scripts (not for public)
+/scripts/
